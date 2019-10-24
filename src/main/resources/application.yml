@@ -1,0 +1,68 @@
+spring:
+  datasource:
+    username: jinmy
+    password: 1234
+    url: jdbc:mysql://localhost:3306/cslearn?serverTimezone=GMT%2B8&useUnicode=yes&characterEncoding=UTF-8
+#    driver-class-name: com.mysql.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    open-in-view: false
+  thymeleaf:
+    encoding: utf-8
+    cache: false
+    mode: HTML
+  config:
+    additional-location: onlinejudge
+  servlet:
+    multipart:
+      max-file-size: 2050MB
+      max-request-size: 2050MB
+
+
+#
+#logging:
+#  path: onlinejudge/log
+#
+#onlinejudge:
+#  root-dir: /usr/judger/
+#  tmp_dir: /usr/judger/tmp/
+#  src-dir: /usr/judger/src/
+#  data-dir: /usr/judger/data/
+#  out-dir: /usr/judger/out/
+#  judger-dir: /usr/lib/judger/libjudger.so
+#  uid: 0
+#  gid: 0
+#  judge:
+#    java:
+#      args: -Djava.security.manager -Dfile.encoding=UTF-8 -Djava.awt.headless=true Main
+#    python2:
+#      args: main.pyc
+#    python3:
+#      args: __pycache__/main.cpython-36.pyc
+#
+#  compile:
+#    c:
+#      args: -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c99 -lm
+#    cpp:
+#      args: -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c++11 -lm
+#    java:
+#      args: -encoding UTF8
+#    python2:
+#      args: -m py_compile
+#    python3:
+#      args: -m py_compile
+#
+#  switches:
+#    executing: true
+#    submit: true
+#    enter-system: false
+#    ssl-enabled: false
+#    auto-create-dir: true
+
+server:
+  tomcat:
+    max-threads: 2000
+    max-connections: 20000
+    min-spare-threads: 30
