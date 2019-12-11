@@ -25,9 +25,9 @@ public class Tag {
     private Long id;
     @Column(nullable = false, unique = true, length = 200)
     private String name;
-    @JsonBackReference
-    @ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY)
-    private List<Problem> problems;
+//    @JsonBackReference
+//    @ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY)
+//    private List<Problem> problems;
     @Column(columnDefinition = "bigint default 0", nullable = false)
     private Long score;
 

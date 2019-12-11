@@ -1,11 +1,3 @@
-/*
- * Copyright (c) 2019. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
- * Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
- * Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
- * Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
- * Vestibulum commodo. Ut rhoncus gravida arcu.
- */
-
 package cn.edu.zjnu.learncs.entity.oj;
 
 
@@ -50,26 +42,26 @@ public class Problem {
     @Column(columnDefinition = "integer default 0")
     private Integer score;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    private List<Tag> tags;
-    @JsonBackReference
-    @OneToMany(mappedBy = "problem")
-    private List<Solution> solutions = new ArrayList<>();
+//    @ManyToMany(fetch = FetchType.EAGER)
+//    private List<Tag> tags;
+//    @JsonBackReference
+//    @OneToMany(mappedBy = "problem")
+//    private List<Solution> solutions = new ArrayList<>();
     @Column(columnDefinition = "integer default 0")
     private Integer submit = 0;
     @Column(columnDefinition = "integer default 0")
     private Integer accepted = 0;
-    public String tagsToString(){
-        String str="";
-        for (int i = 0; i < tags.size(); i++) {
-            str+=","+tags.get(i).getName();
-        }
-        return str.substring(1);
-    }
+//    public String tagsToString(){
+//        String str="";
+//        for (int i = 0; i < tags.size(); i++) {
+//            str+=","+tags.get(i).getName();
+//        }
+//        return str.substring(1);
+//    }
 
-    public Problem() {
-        solutions = null;
-    }
+//    public Problem() {
+//        solutions = null;
+//    }
 
     public Problem(String title, String description, String input, String output, String sampleInput, String sampleOutput, String hint, String source, Integer timeLimit, Integer memoryLimit, Integer score) {
         this.title = title;

@@ -1,13 +1,14 @@
 package cn.edu.zjnu.learncs.service;
 
-
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
 @Service
 public class RESTService {
     public String postJson(String json, String path) {
@@ -19,10 +20,11 @@ public class RESTService {
             connection.setDoOutput(true);
             connection.setUseCaches(false);
             connection.setInstanceFollowRedirects(true);
-            connection.setRequestMethod("GET");
-//            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Content-Type", "application/json");
+            byte[] writebytes = json.getBytes();
+            connection.setRequestProperty("Content-Length", String.valueOf(writebytes.length));
             connection.connect();
-
             OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream(), "UTF-8");
             out.append(json);
             out.flush();
@@ -33,8 +35,6 @@ public class RESTService {
                 result += line;
             }
             reader.close();
-
-
         } catch (Exception e) {
             e.printStackTrace();
             return null;
