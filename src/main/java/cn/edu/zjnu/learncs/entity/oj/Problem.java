@@ -13,6 +13,7 @@ import java.util.List;
 @Log4j2
 @Data
 @Entity
+
 public class Problem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -106,4 +107,8 @@ public class Problem {
         double ratio=this.accepted * 1.0 / this.submit * 100.0;
         return  String.format("%.2f%%",ratio);
     }
+    public int hashCode(){
+        return this.id.hashCode();
+    }
+
 }

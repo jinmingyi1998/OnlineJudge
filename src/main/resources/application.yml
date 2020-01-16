@@ -9,16 +9,22 @@ spring:
       ddl-auto: update
     show-sql: false
     open-in-view: false
+#  mvc:
+#    view:
+#      suffix: .html
+#  resources:
+#    static-locations: classpath:/templates/,classpath:/static/
   thymeleaf:
     encoding: utf-8
     cache: false
     mode: HTML
+    check-template: false
   config:
     additional-location: onlinejudge
   servlet:
     multipart:
-      max-file-size: 2050MB
-      max-request-size: 2050MB
+      max-file-size: 3050MB
+      max-request-size: 3050MB
 
 
 #
