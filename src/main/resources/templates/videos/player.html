@@ -1,0 +1,34 @@
+<!--
+  ~ Copyright (c) 2019. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+  ~ Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+  ~ Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+  ~ Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+  ~ Vestibulum commodo. Ut rhoncus gravida arcu.
+  -->
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<th:block th:insert="~{fragment/header :: header}"></th:block>
+<head>
+    <meta charset="UTF-8">
+    <title>Learn</title>
+</head>
+<body>
+<div class="container">
+    <h2 th:text="${video.name}"></h2>
+    <div class="media border" width="100%">
+        <div class="media-body" id="video">
+            <video controls controlslist="nodownload" id="videoElement" style="width: 100%">
+                <source th:src="${video.url}">
+            </video>
+        </div>
+    </div>
+</div>
+<script>$("#videoElement").bind('contextmenu', function () {
+    return false;
+});</script>
+<footer th:replace="~{fragment/footer :: footer}"></footer>
+</body>
+
+<script src="https://cdn.bootcss.com/flv.js/1.3.3/flv.min.js"></script>
+</html>

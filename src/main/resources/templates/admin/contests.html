@@ -1,0 +1,101 @@
+<!--
+  ~ Copyright (c) 2019. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+  ~ Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+  ~ Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+  ~ Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+  ~ Vestibulum commodo. Ut rhoncus gravida arcu.
+  -->
+
+<!DOCTYPE html>
+<html th:fragment="header" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta content="text/html;charset=UTF-8" http-equiv="Content-Type">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/font-awesome.css}">
+    <script th:src="@{/js/jquery-3.2.1.min.js}"></script>
+    <script th:src="@{/js/popper.min.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+    <script>
+        if (typeof (query.page) == "undefined") {
+            query.page = 0;
+        }
+        if (typeof (query.title) == "undefined") {
+            query.title = "";
+        }
+        $(function () {
+            for (var i = Math.max(0, parseInt(query.page) - 5); i < Math.min(parseInt(query.page) + 4, query.maxpage); i++) {
+                if (i == query.page)
+                    $("#Next").before("<li class=\"page-item active\" ><a class=\"page-link turnpage\"  page='" + i + "'>" + (parseInt(i) + 1) + "</a></li>");
+                else
+                    $("#Next").before("<li class=\"page-item\" ><a class=\"page-link turnpage\"  page='" + i + "'>" + (parseInt(i) + 1) + "</a></li>");
+            }
+            $(".turnpage").click(function () {
+                var act = $(this).attr("page");
+                if (act == "next-page") {
+                    query.page++;
+                } else if (act == "last-page") {
+                    query.page--;
+                } else {
+                    query.page = parseInt(act);
+                }
+                url = location.pathname + "?title=" + query.title + "&page=" + query.page;
+                location.href = url;
+            });
+            $("#search-btn").click(function () {
+                var act = $("#search-title").val();
+                query.title = act;
+                url = location.pathname + "?title=" + query.title + "&page=" + query.page;
+                location.href = url;
+            });
+        });
+
+    </script>
+    <script>
+        $(function () {
+            $(".remove-btn").click(function () {
+                if (confirm("You are going to delete problem " + $(this).attr("id"))) {
+                    $.ajax({
+                        type: "delete",
+                        url: "/oj/admin/delete/" + $(this).attr("id"),
+                        success: function () {
+                            location.reload();
+                        }
+                    });
+                }
+            });
+        });
+        $(function () {
+            $(".remove-btn").click(function () {
+                if (confirm("You are going to delete contest " + $(this).attr("id"))) {
+                    $.ajax({
+                        type: "delete",
+                        url: "/oj/admin/contest/delete/" + $(this).attr("id"),
+                        success: function () {
+                            location.reload();
+                        }
+                    });
+                }
+            });
+        })
+    </script>
+    <title>Admin-Contests</title>
+</head>
+<body>
+<div class="container">
+    <a class="btn btn-success" href="/oj/admin/contest/insert">Insert</a>
+    <div class="form-inline">Search Contest:<input id="search-title" type="text">
+        <a class="btn btn-sm btn-light" id="search-btn">Search</a></div>
+    <ul class="list-group">
+        <li class="list-group-item" th:each="contest:${contests}" th:object="${contest}">
+            <span class="text-center" th:text="*{id}+'  '+*{title}"></span>
+            <a class="btn-sm btn-primary float-right" th:href="'/oj/contest/background/'+*{id}">Update</a>
+            <a class="btn-danger btn-sm remove-btn float-right" th:id="*{id}">Remove</a></li>
+        </li>
+    </ul>
+    <ul class="pagination">
+        <li class="page-item"><a class="page-link turnpage" page="last-page">Last</a></li>
+        <li class="page-item" id="Next"><a class="page-link turnpage" page="next-page">Next</a></li>
+    </ul>
+</div>
+</body>
+</html>

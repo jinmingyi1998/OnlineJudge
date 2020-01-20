@@ -1,0 +1,81 @@
+<!--
+  ~ Copyright (c) 2019. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+  ~ Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+  ~ Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+  ~ Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+  ~ Vestibulum commodo. Ut rhoncus gravida arcu.
+  -->
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragment/header :: header}"></th:block>
+    <meta charset="UTF-8">
+    <title>Teams</title>
+
+</head>
+<body>
+<main class="container-fluid" height="100%" width="100%">
+    <form class="container" id="team-form" method="post">
+        <span class="font-weight-bold  alert alert-danger" id="input-name" style="display: none"></span>
+        <div class="form-inline">
+            Name: <input class="form-control" id="name" name="name" type="text" required>
+        </div>
+        <div class="form-group">
+            Introduction: <textarea class="form-control" cols="30" id="introduction" name="introduction"
+                                    rows="10"></textarea>
+        </div>
+        <div class="form-inline">
+            Join Policy:
+            <select class="form-control" id="joinPolicy" name="joinPolicy">
+                <option value="invite">invite</option>
+                <option value="apply">apply</option>
+                <option value="free">free</option>
+            </select>
+        </div>
+        <button class="btn btn-primary" onclick="return false" id="submit-btn">Create</button>
+    </form>
+</main>
+<script>
+    $(function () {
+        $("#submit-btn").click(function () {
+            createTeam();
+        });
+        $("#name").change(function () {
+            var tname = $(this).val();
+            $.get({
+                url: "/oj/team/api/checkname",
+                data: {
+                    name: tname
+                },
+                success: function (res) {
+                    if (res != "success") {
+                        $("#input-name").text(res);
+                        $("#input-name").show();
+                    } else {
+                        $("#input-name").hide();
+                    }
+                }
+            });
+        });
+    });
+
+    function createTeam() {
+        $.post({
+            url: "/oj/team/api/create",
+            data: $("#team-form").serialize(),
+            cache: false,
+            dataType: 'text',
+            success: function (res) {
+                console.log(res);
+                if (res == "success") {
+                    alert("Success");
+                    location.href = "/oj/team";
+                }
+            }
+        });
+    }
+</script>
+<footer th:replace="~{fragment/footer :: footer}"></footer>
+</body>
+</html>

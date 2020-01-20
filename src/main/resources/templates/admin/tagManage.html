@@ -1,0 +1,38 @@
+<!--
+  ~ Copyright (c) 2019. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+  ~ Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+  ~ Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+  ~ Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+  ~ Vestibulum commodo. Ut rhoncus gravida arcu.
+  -->
+
+<!DOCTYPE html>
+<html th:fragment="header" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta content="text/html;charset=UTF-8" http-equiv="Content-Type">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/font-awesome.css}">
+    <script th:src="@{/js/jquery-3.2.1.min.js}"></script>
+    <script th:src="@{/js/popper.min.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+    <title>Tags</title>
+
+</head>
+<body>
+<div class="row">
+    <ul class="row col-9">
+        <li class="list-inline-item col-3 border-success border rounded m-1" th:each="tag:${tags}">
+            <span th:text="${tag.name}"></span>
+            <button th:id="${tag.id}" class="btn btn-sm btn-danger">Delete</button>
+        </li>
+    </ul>
+    <div class="col-3">
+        新增标签
+        <form action="" method="post">
+            标签名<input type="text" name="name" required class="form-control">
+            <input type="submit" class="btn btn-outline-success">
+        </form>
+    </div>
+</div>
+</body>
+</html>

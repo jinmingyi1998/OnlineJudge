@@ -1,0 +1,199 @@
+<!--
+  ~ Copyright (c) 2019. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+  ~ Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+  ~ Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+  ~ Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+  ~ Vestibulum commodo. Ut rhoncus gravida arcu.
+  -->
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragment/header :: header}"></th:block>
+    <title>Insert</title>
+    <meta content="text/html;charset=UTF-8" http-equiv="Content-Type">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/font-awesome.css}">
+    <link rel="stylesheet" href="/editor/css/editormd.css">
+    <script src="/editor/lib/marked.min.js"></script>
+    <script src="/editor/lib/raphael.min.js"></script>
+    <script src="/editor/lib/underscore.min.js"></script>
+    <script src="/editor/lib/sequence-diagram.min.js"></script>
+    <script src="/editor/lib/flowchart.min.js"></script>
+    <script src="/editor/lib/jquery.flowchart.min.js"></script>
+    <script src="/editor/editormd.js"></script>
+    <link rel="stylesheet" href="/js/prettify/skins/sunburst.css">
+</head>
+<body>
+<div class="container">
+    <div class="alert alert-info">支持HTML，MathJax</div>
+    <div class="alert alert-info" th:if="${message!=''}" th:text="${message}"></div>
+    <form action="" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            Title:<input class="form-control" name="title" type="text">
+        </div>
+        <div class="form-group">Active: <select class="form-control" name="active" id="active" required>
+            <option value="1">Active</option>
+            <option value="0">No</option>
+        </select></div>
+        <div class="form-group">
+            Time Limit(ms):<input class="form-control" name="timeLimit" type="number" value="1000">
+        </div>
+        <div class="form-group">
+            Memory Limit(Bytes):<input class="form-control" name="memoryLimit" type="number" value="65536000">
+        </div>
+        <div class="form-group">Tags(用
+            <mark>英文逗号</mark>
+            分隔，只能是已经存在的tag)<input class="form-control" name="tag" type="text" required>
+        </div>
+        <div class="form-group">
+            Score: <input class="form-control" name="score" type="number" required>
+        </div>
+        <div class="form-group">
+            Description:
+            <div class="form-group" id="editor-description">
+                <textarea name="description" class="w-100"></textarea>
+            </div>
+            <!--Description: <textarea class="form-control" cols="35" name="description" rows="10"></textarea>-->
+        </div>
+        <div class="form-group">
+            Input:
+            <div class="form-group" id="editor-input">
+                <textarea name="input" class="w-100"></textarea></div>
+            <!--<textarea class="form-control" cols="35" name="input" rows="5"></textarea>-->
+        </div>
+        <div class="form-group">
+            Output:
+            <div class="form-group" id="editor-output">
+                <textarea name="output" class="w-100"></textarea></div>
+            <!--<textarea class="form-control" cols="35" name="output" rows="5"></textarea>-->
+        </div>
+        <div class="form-group">
+            Sample Input:
+            <textarea class="form-control" cols="35" name="sampleInput" rows="5"></textarea>
+        </div>
+        <div class="form-group">
+            Sample Output: <textarea class="form-control" cols="35" name="sampleOutput" rows="5"></textarea>
+        </div>
+        <div class="form-group">
+            Hint:
+            <div class="form-group" id="editor-hint">
+                <textarea name="hint" class="w-100"></textarea></div>
+            <!--<textarea class="form-control" cols="35" name="hint" rows="3"></textarea>-->
+        </div>
+        <div class="form-group">
+            Source: <textarea class="form-control" cols="35" name="source" rows="3"></textarea>
+        </div>
+        <div class="alert-danger alert">必须为zip格式（不能直接改扩展名为zip！）</div>
+        <div class="form-group">
+            Data Files: <input type="file" class="form-control" required="required" name="zipfile">
+        </div>
+        <div class="form-group">
+            <input class="btn btn-primary" type="submit">
+        </div>
+    </form>
+</div>
+<script>
+    var editor_description = editormd({
+        id: "editor-description",
+        path: "/editor/lib/",
+        height: 500,
+        autoFocus: false,
+        codeFold: true,
+        saveHTMLToTextarea: true,
+        searchReplace: true,
+        gfm: true,
+        toc: true,
+        autoLoadKaTeX: true,
+        pageBreak: true,
+        atLink: true,    // for @link
+        emailLink: true,    // for mail address auto link
+        tex: true,
+        taskList: true,   // Github Flavored Markdown task lists
+        flowChart: true,
+        sequenceDiagram: true,
+        previewCodeHighlight: true
+    });
+    var editor_description = editormd({
+        id: "editor-description",
+        path: "/editor/lib/",
+        autoFocus: false,
+        height: 500,
+        codeFold: true,
+        saveHTMLToTextarea: true,
+        searchReplace: true,
+        gfm: true,
+        toc: true,
+        autoLoadKaTeX: true,
+        pageBreak: true,
+        atLink: true,    // for @link
+        emailLink: true,    // for mail address auto link
+        tex: true,
+        taskList: true,   // Github Flavored Markdown task lists
+        flowChart: true,
+        sequenceDiagram: true,
+        previewCodeHighlight: true
+    });
+    var editor_input = editormd({
+        id: "editor-input",
+        path: "/editor/lib/",
+        autoFocus: false,
+        height: 500,
+        codeFold: true,
+        saveHTMLToTextarea: true,
+        searchReplace: true,
+        gfm: true,
+        toc: true,
+        autoLoadKaTeX: true,
+        pageBreak: true,
+        atLink: true,    // for @link
+        emailLink: true,    // for mail address auto link
+        tex: true,
+        taskList: true,   // Github Flavored Markdown task lists
+        flowChart: true,
+        sequenceDiagram: true,
+        previewCodeHighlight: true
+    });
+    var editor_output = editormd({
+        id: "editor-output",
+        path: "/editor/lib/",
+        autoFocus: false,
+        height: 500,
+        codeFold: true,
+        saveHTMLToTextarea: true,
+        searchReplace: true,
+        gfm: true,
+        toc: true,
+        autoLoadKaTeX: true,
+        pageBreak: true,
+        atLink: true,    // for @link
+        emailLink: true,    // for mail address auto link
+        tex: true,
+        taskList: true,   // Github Flavored Markdown task lists
+        flowChart: true,
+        sequenceDiagram: true,
+        previewCodeHighlight: true
+    });
+    var editor_hint = editormd({
+        id: "editor-hint",
+        path: "/editor/lib/",
+        autoFocus: false,
+        height: 500,
+        codeFold: true,
+        saveHTMLToTextarea: true,
+        searchReplace: true,
+        gfm: true,
+        toc: true,
+        autoLoadKaTeX: true,
+        pageBreak: true,
+        atLink: true,    // for @link
+        emailLink: true,    // for mail address auto link
+        tex: true,
+        taskList: true,   // Github Flavored Markdown task lists
+        flowChart: true,
+        sequenceDiagram: true,
+        previewCodeHighlight: true
+    });
+</script>
+</body>
+</html>

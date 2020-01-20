@@ -1,0 +1,89 @@
+<!--
+  ~ Copyright (c) 2019. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+  ~ Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+  ~ Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+  ~ Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+  ~ Vestibulum commodo. Ut rhoncus gravida arcu.
+  -->
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragment/header :: header}"></th:block>
+    <meta charset="UTF-8">
+    <title>训练&比赛</title>
+    <script src="/js/urlcontrol.js"></script>
+    <style>
+        a {
+            text-decoration: none;
+        }
+    </style>
+    <script th:inline="javascript">
+        query.page = [[${contests.number}]];
+        query.maxpage = [[${contests.totalPages}]]
+    </script>
+    <script>
+        if (typeof (query.page) == "undefined") {
+            query.page = 0;
+        }
+        if (typeof (query.title) == "undefined") {
+            query.title = "";
+        }
+        $(function () {
+            for (var i = Math.max(0, parseInt(query.page) - 5); i < Math.min(parseInt(query.page) + 4, query.maxpage); i++) {
+                if (i == query.page)
+                    $("#Next").before("<li class=\"page-item active\" ><a class=\"page-link turnpage\"  page='" + i + "'>" + (parseInt(i) + 1) + "</a></li>");
+                else
+                    $("#Next").before("<li class=\"page-item\" ><a class=\"page-link turnpage\"  page='" + i + "'>" + (parseInt(i) + 1) + "</a></li>");
+            }
+            $(".turnpage").click(function () {
+                var act = $(this).attr("page");
+                if (act == "next-page") {
+                    query.page++;
+                } else if (act == "last-page") {
+                    query.page--;
+                } else {
+                    query.page = parseInt(act);
+                }
+                url = location.pathname + "?title=" + query.title + "&page=" + query.page;
+                location.href = url;
+            });
+            $("#search-btn").click(function () {
+                var act = $("#search-title").val();
+                query.title = act;
+                url = location.pathname + "?title=" + query.title + "&page=" + query.page;
+                location.href = url;
+            });
+        });
+
+    </script>
+</head>
+<body>
+<div class="container-fluid" height="100%" width="100%">
+    <div class="form-inline mt-3">
+        <label for="search-title" style="font-size: 1.5rem">查找比赛:&nbsp;</label>
+        <input id="search-title" type="text" class="form-control">&nbsp;
+        <a class="btn btn-light" id="search-btn">查找</a></div>
+    <ul class="list-group" style="margin-top: 1rem;margin-bottom: 1rem;">
+        <li class="list-group-item card" th:each="contest:${contests}" th:object="${contest}">
+            <h3><a class="text-center" th:href="'/oj/contest/'+*{id}" th:text="*{id}+' '+*{title}"></a></h3>
+            <ul class="list-inline">
+                <li class="list-inline-item text-muted" th:text="'开始时间:'+*{normalStartTime}">开始</li>
+                <li class="text-muted list-inline-item" th:text="'结束时间:'+*{normalEndTime}">结束时间</li>
+                <li class="text-muted list-inline-item" th:text="*{runStatu}">已结束</li>
+                <li class="text-muted list-inline-item" th:switch="*{privilege}">
+                    <span th:case="private" class="badge badge-danger">私有</span>
+                    <span th:case="public" class="badge badge-success">公共</span>
+                    <span th:case="*" class="badge badge-warning">群租</span>
+                </li>
+            </ul>
+        </li>
+    </ul>
+    <ul class="pagination justify-content-center">
+        <li class="page-item"><a class="page-link turnpage" page="last-page">上一页</a></li>
+        <li class="page-item" id="Next"><a class="page-link turnpage" page="next-page">下一页</a></li>
+    </ul>
+</div>
+<footer th:replace="~{fragment/footer :: footer}"></footer>
+</body>
+</html>

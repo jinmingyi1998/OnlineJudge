@@ -1,0 +1,40 @@
+<!--
+  ~ Copyright (c) 2019. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+  ~ Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+  ~ Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+  ~ Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+  ~ Vestibulum commodo. Ut rhoncus gravida arcu.
+  -->
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragment/header :: header}"></th:block>
+    <meta charset="UTF-8">
+    <title>Teams</title>
+</head>
+<body>
+<main class="container-fluid" height="100%" width="100%">
+
+    <div class="ml-5 mr-5">
+        <div class="list-inline">
+            <!--            <h3 class=" list-inline-item">我的群组</h3>-->
+            <img src="/images/mygroup.png" alt="" style="height: 3rem">
+            <a class="btn btn-primary list-inline-item" href="/oj/team/search">添加群组</a>
+        </div>
+        <div class="row">
+            <div class="p-1 col-sm-3">
+                <div class="card" th:each="team:${teams}">
+                    <div class="card-body ">
+                        <h3 class="card-title font-weight-bold">
+                            <a th:href="'/oj/team/'+${team.id}" th:text="${team.name}"></a></h3>
+                        <p class="card-text" th:text="${team.introduction}"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<footer th:replace="~{fragment/footer :: footer}"></footer>
+</body>
+</html>

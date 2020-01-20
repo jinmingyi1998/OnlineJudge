@@ -1,0 +1,95 @@
+<!--
+  ~ Copyright (c) 2019. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+  ~ Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+  ~ Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+  ~ Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+  ~ Vestibulum commodo. Ut rhoncus gravida arcu.
+  -->
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragment/header :: header}"></th:block>
+    <meta charset="UTF-8">
+    <title>用户排行</title>
+</head>
+<body>
+<main class="container-fluid">
+    <div class="row">
+        <div class="container-fluid">
+            <table class="table  table-bordered table-hover table-responsive-lg table-light container-fluid rounded text-center">
+                <thead>
+                <tr>
+                    <th><i class="fa fa-list-ol"></i>&nbsp;排名</th>
+                    <th><i class="fa fa-user-circle"></i>&nbsp;用户名</th>
+                    <th><i class="fa fa-user-circle-o"></i>&nbsp;昵称</th>
+                    <th><i class="fa fa-graduation-cap"></i>&nbsp;学校</th>
+                    <th><i class="fa fa-upload"></i>&nbsp;提交</th>
+                    <th><i class="fa fa-check-circle-o"></i>&nbsp;通过</th>
+                    <th><i class="fa fa-percent"></i>&nbsp;通过率</th>
+                    <th><i class="fa fa-line-chart"></i>&nbsp;分数</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${session.currentUser!=null}" class="font-weight-bold">
+                    <td th:text="${user.standing}" th:if="${user.standing>0}"></td>
+                    <td th:unless="${user.standing>0}">500+</td>
+                    <td><span class="badge badge-primary">我</span>&nbsp;<a th:href="'/user/'+${user.id}"
+                                                                           th:text="${user.username}"></a></td>
+                    <td th:text="${user.name}"></td>
+                    <td th:text="${user.school}"></td>
+                    <td th:text="${user.submit}"></td>
+                    <td th:text="${user.solve}" class="text-success"></td>
+                    <td th:text="${user.ratio}"></td>
+                    <td th:text="${user.score}"></td>
+                </tr>
+                <tr th:each="u:${userPage}">
+                    <td th:text="${u.standing}">rank</td>
+                    <td><a th:href="'/user/'+${u.id}" th:text="${u.username}">username</a></td>
+                    <td th:text="${u.name}">name</td>
+                    <td th:text="${u.school}">school</td>
+                    <td th:text="${u.submit}">submit</td>
+                    <td th:text="${u.solve}" class="text-success">solve</td>
+                    <td th:text="${u.ratio}">ratio</td>
+                    <td th:text="${u.score}">score</td>
+                </tr>
+                </tbody>
+            </table>
+            <ul class="pagination justify-content-center" style="margin: 1rem">
+                <li class="page-item"><a class="page-link turnpage" page="last-page">上一页</a></li>
+                <li class="page-item"><a class="page-link turnpage" page="0">1</a></li>
+                <li class="page-item"><a class="page-link turnpage" page="1">2</a></li>
+                <li class="page-item"><a class="page-link turnpage" page="2">3</a></li>
+                <li class="page-item"><a class="page-link turnpage" page="3">4</a></li>
+                <li class="page-item"><a class="page-link turnpage" page="4">5</a></li>
+                <li class="page-item"><a class="page-link turnpage" page="5">6</a></li>
+                <li class="page-item"><a class="page-link turnpage" page="6">7</a></li>
+                <li class="page-item"><a class="page-link turnpage" page="7">8</a></li>
+                <li class="page-item"><a class="page-link turnpage" page="8">9</a></li>
+                <li class="page-item"><a class="page-link turnpage" page="9">10</a></li>
+                <li class="page-item" id="Next"><a class="page-link turnpage" page="next-page">下一页</a></li>
+            </ul>
+        </div>
+    </div>
+</main>
+<script src="/js/urlcontrol.js"></script>
+<script>
+    if (typeof (query.page) == "undefined") {
+        query.page = 0;
+    }
+    $(".turnpage").click(function () {
+        var act = $(this).attr("page");
+        if (act == "next-page") {
+            query.page++;
+        } else if (act == "last-page") {
+            query.page--;
+        } else {
+            query.page = parseInt(act);
+        }
+        url = location.pathname + "?page=" + query.page;
+        location.href = url;
+    });
+</script>
+<footer th:replace="~{fragment/footer :: footer}"></footer>
+</body>
+</html>

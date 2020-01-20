@@ -1,11 +1,66 @@
+<!--
+  ~ Copyright (c) 2019. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+  ~ Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+  ~ Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+  ~ Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+  ~ Vestibulum commodo. Ut rhoncus gravida arcu.
+  -->
+
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <th:block th:insert="~{fragment/header :: header}"></th:block>
     <meta charset="UTF-8">
     <title>Home</title>
 </head>
 <body>
-<a href="a">a</a>
-<a href="..">a</a>
+<main class="" height="100%" width="100%">
+    <!--<div class="jumbotron container" style="opacity: 0.8;">-->
+    <!--<h1 class="display-3">在线评测系统</h1>-->
+    <!--<h2>Online Judge System</h2>-->
+    <!--<blockquote class="blockquote">-->
+    <!--<p>使用Chrome或火狐浏览器体验更佳</p>-->
+    <!--</blockquote>-->
+    <!--</div>-->
+    <div class="container-fluid">
+        <img class="img-fluid rounded" src="/images/oj_homepage1.jpg" alt="home1">
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-4 text-center">
+                <a href="/oj/problems" class=" text-center fa fa-pencil-square"
+                   style="font-size: 6rem;color: #335bac;margin: 1rem"><h3>刷题</h3></a></div>
+            <div class="col-4 text-center">
+                <a href="/oj/contest" class=" text-center fa fa-lightbulb-o"
+                   style="font-size: 6rem;color: #d35400;margin: 1rem"><h3>比赛</h3></a></div>
+            <div class="col-4 text-center">
+                <a href="/" class=" text-center fa fa-book" style="font-size: 6rem;color: #982e22;margin: 1rem"><h3>
+                    学习</h3></a></div>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <h5 class="font-weight-bold" style="color: orangered">公告</h5>
+        <hr>
+        <div class="row">
+            <div class="col-5 p-0 m-0">
+                <img class="img-fluid w-100"
+                     src="http://12452007.s61i.faiusr.com/2/AD0Ip4H4BRACGAAg5P_WwwUon8zbvgUw4AM4rAI.jpg" alt="">
+            </div>
+            <div class="col-7 pl-3 m-0">
+                运行环境：<br>
+                C: gcc foo.c -o foo -ansi -fno-asm -O2 -Wall -lm --static -DONLINE_JUDGE <br>
+                C++: g++ foo.c -o foo -ansi -fno-asm -O2 -Wall -lm --static -DONLINE_JUDGE<br>
+                Java: No special options<br>
+                Our compiler software version:<br>
+                gcc/g++ 4.7.2 (Debian 4.7.2-5)<br>
+                GNU C Library (Debian EGLIBC 2.13-38+deb7u6)<br>
+                java version "1.8"<br>
+                Python 2.7<br>
+                Python 3.6<br>
+            </div>
+        </div>
+    </div>
+</main>
+<footer th:replace="~{fragment/footer :: footer}"></footer>
 </body>
 </html>

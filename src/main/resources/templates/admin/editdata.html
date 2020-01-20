@@ -1,0 +1,36 @@
+<!--
+  ~ Copyright (c) 2019. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+  ~ Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+  ~ Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+  ~ Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+  ~ Vestibulum commodo. Ut rhoncus gravida arcu.
+  -->
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragment/header :: header}"></th:block>
+    <title>Update Problem</title>
+    <meta content="text/html;charset=UTF-8" http-equiv="Content-Type">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/font-awesome.css}">
+</head>
+<body>
+<div class="container">
+    <form action="" method="post" enctype="multipart/form-data">
+        <h3 th:text="'Id : '+${problem.id}"></h3>
+        <h3 th:text="${problem.title}"></h3>
+        <div class="alert-info alert" th:text="${message}"></div>
+        <div class="alert alert-danger">将直接覆盖原数据</div>
+        <div class="alert-danger alert">必须为zip格式（不能直接改扩展名为zip！）</div>
+        <div class="form-group">
+            Data Files: <input type="file" class="form-control" required="required" name="zipfile">
+        </div>
+        <div class="form-group">
+            <input class="btn btn-primary" type="submit">
+        </div>
+    </form>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!--
+  ~ Copyright (c) 2019. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+  ~ Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+  ~ Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+  ~ Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+  ~ Vestibulum commodo. Ut rhoncus gravida arcu.
+  -->
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragment/header :: header}"></th:block>
+    <meta charset="UTF-8">
+    <title th:text="Status"></title>
+    <style>
+        i {
+            margin-right: 1rem;
+        }
+    </style>
+    <script language="JavaScript" th:src="@{/js/urlcontrol.js}"></script>
+    <script language="JavaScript" th:src="@{/js/StatusInModal.js}"></script>
+
+    <script language="JavaScript" th:inline="javascript">
+        if (typeof (query.username) == "undefined") {
+            query.username = "";
+        }
+        if (typeof (query.page) == "undefined") {
+            query.page = "";
+        }
+        if (typeof (query.result) == "undefined") {
+            query.result = "";
+        }
+        if (typeof (query.problem) == "undefined") {
+            query.problem = "";
+        }
+        $(function () {
+            $(".page-link").click(function () {
+                if ($(this).attr("id") == "top-page") {
+                    query.page = "0";
+                } else if ($(this).attr("id") == "next-page") {
+                    query.page = parseInt([[${solutions.number}]]) + 1;
+
+                } else if ($(this).attr("id") == "last-page") {
+                    query.page = parseInt([[${solutions.number}]]) - 1;
+                }
+                url = location.pathname + "?username=" + query.username + "&problem=" + query.problem + "&result=" + query.result + "&page=" + query.page;
+                location.href = url;
+            });
+            $("#search-submit").click(function () {
+                query.username = $("#search-username").val();
+                query.problem = $("#search-problem").val();
+                query.result = $("#search-result").val();
+                url = location.pathname + "?username=" + query.username + "&problem=" + query.problem + "&result=" + query.result + "&page=" + query.page;
+                location.href = url;
+            });
+        });
+    </script>
+</head>
+<body>
+<div class="container-fluid" height="100%">
+    <form class="form-inline justify-content-center">
+        <label for="search-username" style="font-size: 1.5rem;margin-right:0.5rem;margin-left: 1rem">用户名:</label>
+        <input class="form-control" id="search-username" name="username" type="text">
+        <label for="search-problem" style="margin-left: 1rem;margin-right:0.5rem;font-size: 1.5rem">题目:</label>
+        <input class="form-control" id="search-problem" name="problem" type="text">
+        <label for="search-result" style="margin-left: 1rem;margin-right:0.5rem;font-size: 1.5rem">结果:</label>
+        <select class="form-control" id="search-result" name="result">
+            <option selected value="">All</option>
+            <option value="Accepted">Accepted</option>
+            <option value="Wrong Answer">Wrong Answer</option>
+            <option value="Time Limit Exceed">Time Limit Exceed</option>
+            <option value="Memory Limit Exceed">Memory Limit Exceed</option>
+            <option value="Compile Error">Compile Error</option>
+            <option value="Runtime Error">Runtime Error</option>
+        </select>
+        <button class="btn btn-outline-primary" id="search-submit" style="margin: 0.5rem" onclick="return false"><i
+                class="fa fa-search"></i></button>
+
+    </form>
+    <table class="table-sm table-hover table-responsive-lg table-bordered table-light container-fluid"
+           style="opacity: 0.8;margin:1rem">
+        <thead class="thead-light text-center">
+        <tr>
+            <th>Run ID</th>
+            <th><i class="fa fa-user"></i>用户名</th>
+            <th><i class="fa fa-question-circle-o"></i>题目</th>
+            <th><i class="fa fa-check-circle"></i>结果</th>
+            <th><i class="fa fa-clock-o"></i>用时(ms)</th>
+            <th><i class="fa fa-database"></i>内存(KB)</th>
+            <th><i class="fa fa-files-o"></i>代码长度</th>
+            <th><i class="fa fa-keyboard-o"></i>语言</th>
+            <th><i class="fa fa-calendar"></i>提交时间</th>
+        </tr>
+        </thead>
+        <tbody class="text-center">
+        <tr th:each="solution,iter:${solutions}" th:object="${solution}">
+            <td th:text="*{id}"></td>
+            <td th:text="*{user.username}"></td>
+            <td><a th:href="'/oj/problems/'+*{problem.id}" th:text="*{problem.id}"></a></td>
+            <td class="view-code" data-toggle="tooltip" data-placement="top" title="查看源代码!" th:id="*{id}"
+                th:switch="*{result}">
+                <span class="text-success font-weight-bold" th:case="'Accepted'">Accepted</span>
+                <span class="text-muted" th:case="'Compile Error'" th:text="*{result}"></span>
+                <span class="text-muted" th:case="'Pending'" th:text="*{result}"></span>
+                <span class="text-danger" th:case="*" th:text="${solution.normalResult}"></span>
+            </td>
+            <td th:text="*{time}"></td>
+            <td th:text="*{memory/1024}"></td>
+            <td th:text="*{length}"></td>
+            <td><a data-toggle="tooltip" data-placement="top" href="#" title="查看源代码!" class="text-success view-code"
+                   th:id="*{id}" th:text="*{normalLanguage}"></a></td>
+            <td th:text="*{normalSubmitTime}"></td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="container">
+        <ul class="pagination justify-content-center">
+            <li class="page-item"><a class="page-link" id="top-page">首页</a></li>
+            <li class="page-item"><a class="page-link" id="last-page">上一页</a></li>
+            <li class="page-item"><a class="page-link" id="next-page">下一页</a></li>
+        </ul>
+    </div>
+</div>
+<div class="modal fade" id="codeModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">#<span id="modal-id"></span>&nbsp;用户名：<abbr id="modal-username"></abbr>&nbsp;题目：<abbr
+                        id="modal-problem"></abbr></h4>
+                <button class="close" data-dismiss="modal" type="button">&times;</button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-light table-responsive-sm">
+                    <thead class="thead-light text-center">
+                    <tr>
+                        <!--<th>Run ID</th>-->
+                        <!--<th><i class="fa fa-user"></i>用户名</th>-->
+                        <!--<th><i class="fa fa-question-circle-o"></i>题目</th>-->
+                        <th><i class="fa fa-check-circle"></i>结果</th>
+                        <th><i class="fa fa-clock-o"></i>用时(ms)</th>
+                        <th><i class="fa fa-database"></i>内存(Byte)</th>
+                        <th><i class="fa fa-files-o"></i>代码长度</th>
+                        <th><i class="fa fa-keyboard-o"></i>语言</th>
+                        <th><i class="fa fa-calendar"></i>提交时间</th>
+                    </tr>
+                    </thead>
+                    <tbody class="text-center">
+                    <!--<td id="modal-id"></td>-->
+                    <!--<td id="modal-username"></td>-->
+                    <!--<td id="modal-problem"></td>-->
+                    <td id="modal-result"></td>
+                    <td id="modal-time"></td>
+                    <td id="modal-memory"></td>
+                    <td id="modal-length"></td>
+                    <td id="modal-language"></td>
+                    <td id="modal-submit-time"></td>
+                    </tbody>
+                </table>
+                <button class="btn btn-sm share-code btn-danger" id="modal-share" th:if="${session.currentUser!=null}">
+                    Not Shared
+                </button>
+                <pre id="modal-ce" class="pre-scrollable"></pre>
+                <pre class="prettyprint pre-scrollable" id="source_code"></pre>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+</script>
+<footer th:replace="~{fragment/footer :: footer}"></footer>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!--
+  ~ Copyright (c) 2019. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+  ~ Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+  ~ Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+  ~ Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+  ~ Vestibulum commodo. Ut rhoncus gravida arcu.
+  -->
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Insert</title>
+    <meta content="text/html;charset=UTF-8" http-equiv="Content-Type">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/font-awesome.min.css}">
+    <link href="/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+    <script th:src="@{/js/jquery-3.2.1.min.js}"></script>
+    <script th:src="@{/js/popper.min.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+    <script src="/js/bootstrap-datetimepicker.min.js"></script>
+    <script>
+        $(function () {
+            $("#plus-problem").click(function () {
+                $(this).before("<div class=\"problem-input form-inline\">" +
+                    "                id:<input type=\"text\" class=\"form-control plus-problems\">" +
+                    "                alias:<input class=\"problem-name form-control\">" +
+                    "                <span class=\"fa fa-minus-square remove-problem\" style=\"font-size: 1.5rem;color: red\"></span>" +
+                    "            </div>");
+            });
+            $(".remove-problem").click(function () {
+                $(this).parent().remove();
+            });
+            $(".plus-problems").change(function () {
+                var obj = $(this);
+                $.get({
+                    url: "/oj/admin/contest/get-problem-name/" + $(this).val(),
+                    success: function (data) {
+                        obj.siblings(".problem-name").val(data);
+                    }
+                });
+            });
+            $("#submit-contest").click(function () {
+                var problems = new Array();
+                $(".plus-problems").each(function () {
+                    problems.push($(this).val() + "&" + $(this).siblings(".problem-name").val());
+                });
+                $.post({
+                    url: "/oj/admin/contest/insert",
+                    data: {
+                        title: $("#title").val(),
+                        description: $("#description").val(),
+                        privilege: $("#privilege").val(),
+                        password: $("#password").val(),
+                        startTime: $("#startTime").val(),
+                        lastTime: $("#lastTime").val(),
+                        list: problems
+                    },
+                    success: function (data) {
+                        alert(data);
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+<div class="container">
+    <div class="alert alert-info">支持HTML，MathJax</div>
+    <form>
+        <div class="form-group">
+            Title:<input class="form-control" id="title" name="title" type="text">
+        </div>
+        <div class="form-group">
+            Description:<input class="form-control" id="description" name="description" type="text">
+        </div>
+        <div class="form-group">
+            Privilege: <select class="form-control" id="privilege" name="privilege">
+            <option value="public">Public</option>
+            <option value="private">Private</option>
+        </select>
+        </div>
+        <div class="form-group">
+            Password:(Private 填写)<input class="form-control" id="password" name="password" type="text">
+        </div>
+        <div class="form-group">
+            Start Time: <input class="form-control form-datetime" data-date-format="yyyy-mm-dd hh:ii" id="startTime"
+                               name="startTime" type="text">
+        </div>
+        <div class="form-group">
+            Length: <input class="form-control " id="lastTime" name="lastTime" type="time">
+        </div>
+        <div class="form-group">
+            Problems :
+            <div class="problem-input form-inline">
+                id:<input class="form-control plus-problems" type="text">
+                alias:<input class="problem-name form-control" type="text">
+                <span class="fa fa-minus-square remove-problem" style="font-size: 1.5rem;color: red"></span>
+            </div>
+            <span class="fa fa-plus-square" id="plus-problem" style="color: green;font-size: 1.5rem;"></span>
+        </div>
+        <a class="btn btn-primary btn-lg" id="submit-contest">Submit</a>
+    </form>
+</div>
+<script type="text/javascript">
+    $('.form-datetime').datetimepicker();
+</script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!--
+  ~ Copyright (c) 2019. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+  ~ Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+  ~ Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+  ~ Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+  ~ Vestibulum commodo. Ut rhoncus gravida arcu.
+  -->
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragment/header :: header}"></th:block>
+    <meta charset="UTF-8">
+    <title th:text="'Tag: '+${tag.name}"></title>
+    <style>
+        .list-group-item {
+            background: rgba(255, 255, 255, 0.8);
+        }
+    </style>
+    <script src="/js/urlcontrol.js"></script>
+    <script th:inline="javascript">
+        query.page = [[${problems.number}]];
+        query.maxpage = [[${problems.totalPages}]];
+    </script>
+    <script>
+        if (typeof (query.page) == "undefined") {
+            query.page = 0;
+        }
+        if (typeof (query.tag) == "undefined") {
+            query.tag = "";
+        }
+        $(function () {
+            for (var i = Math.max(0, parseInt(query.page) - 5); i < Math.min(parseInt(query.page) + 4, query.maxpage); i++) {
+                if (i == query.page)
+                    $("#Next").before("<li class=\"page-item active\" ><a class=\"page-link turnpage\"  page='" + i + "'>" + (parseInt(i) + 1) + "</a></li>");
+                else
+                    $("#Next").before("<li class=\"page-item\" ><a class=\"page-link turnpage\"  page='" + i + "'>" + (parseInt(i) + 1) + "</a></li>");
+            }
+            $(".turnpage").click(function () {
+                var act = $(this).attr("page");
+                if (act == "next-page") {
+                    query.page++;
+                } else if (act == "last-page") {
+                    query.page--;
+                } else {
+                    query.page = parseInt(act);
+                }
+                url = location.pathname + "?page=" + query.page + "&tag=" + query.tag;
+                location.href = url;
+            });
+        });
+
+    </script>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="container-fluid bg-light rounded"
+                 style="opacity: 0.8;padding-bottom: 1rem;padding-top: 1rem;margin-top: 1rem">
+                <h2 class="text-center">标签</h2>
+                <a class="badge badge-primary badge-pill font-weight-bold" style="font-size: 1rem;margin: 5px"
+                   th:each="tag:${tags}"
+                   th:href="'/oj/problems/tags?tag='+${tag.name}" th:text="${tag.name}"></a>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <ul class="list-group container-fluid">
+                <li class="list-group-item card" style="margin: 10px;" th:each="problem,iterStat:${problems.content}"
+                    th:object="${problem}">
+                    <div class="card-body">
+                        <ul class="list-inline">
+                            <li class="list-inline-item">
+                                <h4 class="card-title">
+                                    <a th:href="@{/oj/problems/{id}(id=*{id})}"
+                                       th:text="${problem.id}+'  '+${problem.title}"></a></h4></li>
+                            <li class="list-inline-item float-right" th:each="ta:*{tags}">
+                                <a class="badge badge-pill badge-primary" th:href="'/oj/problems/tags?tag='+${ta.name}"
+                                   th:text="${ta.name}"></a></li>
+                        </ul>
+                        <ul class="card-text text-muted list-inline">
+                            <li class="list-inline-item" th:text="'提交 : '+${problem.submit}"></li>
+                            <li class="list-inline-item" th:text="'通过 : '+${problem.accepted}"></li>
+                            <li class="list-inline-item floa" th:text="'通过率 : '+${problem.ratio}"></li>
+                            <li class="list-inline-item floa" th:text="'分数 : '+${problem.score}"></li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+            <ul class="pagination justify-content-center">
+                <li class="page-item"><a class="page-link turnpage" page="last-page">上一页</a></li>
+                <li class="page-item" id="Next"><a class="page-link turnpage" page="next-page">下一页</a></li>
+            </ul>
+        </div>
+
+    </div>
+</div>
+<footer th:replace="~{fragment/footer :: footer}"></footer>
+</body>
+</html>

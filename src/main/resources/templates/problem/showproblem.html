@@ -1,0 +1,246 @@
+<!--
+  ~ Copyright (c) 2019. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+  ~ Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+  ~ Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+  ~ Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+  ~ Vestibulum commodo. Ut rhoncus gravida arcu.
+  -->
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragment/header :: header}"></th:block>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/editor/css/editormd.css">
+    <script src="/editor/lib/marked.min.js"></script>
+    <script src="/editor/lib/raphael.min.js"></script>
+    <script src="/editor/lib/underscore.min.js"></script>
+    <script src="/editor/lib/sequence-diagram.min.js"></script>
+    <script src="/editor/lib/flowchart.min.js"></script>
+    <script src="/editor/lib/jquery.flowchart.min.js"></script>
+    <script src="/editor/editormd.js"></script>
+    <script src="/js/clipboard.min.js"></script>
+    <link rel="stylesheet" href="/js/prettify/skins/sunburst.css">
+    <title></title>
+    <script>
+        Vue.component('submit-button',
+            {
+                data() {
+                    return {isdisabled: false}
+                },
+                template: `<a class="ui inverted primary button" v-bind:class="{disabled:isdisabled}" v-on:click="click_btn">提交</a>`,
+                methods: {
+                    click_btn: function () {
+                        this.isdisabled = true;
+                        var that = this
+                        setTimeout(function () {
+                            that.isdisabled = false;
+                        }, 2000);
+                        prom.submit();
+                    }
+                }
+            });
+    </script>
+</head>
+<body>
+<main class="ui container" style="margin-top: 5rem">
+    <div class="ui grid two column row" id="vue-problem">
+        <div class="ui four wide column">
+            <div style="opacity: 0.9;background-color: white">
+                <table class="ui celled padded center aligned orange table">
+                    <tr>
+                        <td><i class="fa fa-clock-o"></i>时间限制</td>
+
+                        <td>{{problem.timeLimit}}</td>
+                    </tr>
+                    <tr>
+                        <td><i class="fa fa-database"></i>空间限制</td>
+                        <td>{{problem.memoryLimit}}B</td>
+                    </tr>
+                    <tr>
+                        <td>来源</td>
+                        <td>{{problem.source}}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="ui container twelve wide column">
+            <div class="ui card fluid" style="opacity: 0.8;background-color: white; padding: 1rem">
+                <div class="content">
+                    <h2 class="center aligned">{{problem.title}}</h2>
+                </div>
+                <div class="content">
+                    <h5 class="header">题目描述</h5>
+                    <div class="description md-text">
+                        <textarea style="display: none">{{problem.description}}</textarea>
+                    </div>
+                </div>
+                <div class="content">
+                    <h5 class="header">输入</h5>
+                    <div class="description md-text">
+                        <textarea style="display: none;">{{problem.input}}</textarea>
+                    </div>
+                </div>
+                <div class="content">
+                    <h5 class="header ">输出</h5>
+                    <div class="description md-text">
+                        <textarea style="display: none;">{{problem.output}}</textarea>
+                    </div>
+                </div>
+                <div class="content">
+                    <h5 class=" header ">样例输入
+                        <button class="ui small button"
+                                data-clipboard-target="#input-content" data-clipboard-action="copy">Copy
+                        </button>
+                    </h5>
+
+                    <pre class="description" id="input-content">{{problem.sampleInput}}</pre>
+                </div>
+                <div class="content">
+                    <h5 class="header ">样例输出
+                        <button class="ui button small"
+                                data-clipboard-target="#output-content" data-clipboard-action="copy">Copy
+                        </button>
+                    </h5>
+                    <pre class="description" id="output-content">{{problem.sampleOutput}}</pre>
+                </div>
+                <div class="content">
+                    <h5 class="header ">提示</h5>
+                    <div class="description md-text">
+                        <textarea style="display: none;">{{problem.hint}}</textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="ui container fluid" style="opacity: 0.8;background-color: white;padding: 1rem">
+                <form id="form" class="ui form">
+                    <div>
+                        <label for="language">语言 :</label>
+                        <select class="ui search dropdown" id="language" name="language" v-model="language">
+                            <option value="c">C</option>
+                            <option selected value="cpp">C++</option>
+                            <option value="java">Java</option>
+                            <option value="py2">Python2</option>
+                            <option value="py3">Python3</option>
+                        </select>
+                        <div class="ui checked  checkbox">
+                            <label for="share">分享代码</label>
+                            <input id="share" name="share" v-model="share" type="checkbox">
+                        </div>
+                    </div>
+                    <textarea class="field" cols="40" id="" name="source" rows="20" placeholder="your code..."
+                              style="resize: none;" v-model="code"></textarea>
+                    <submit-button></submit-button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<script>
+    $('.ui.checkbox').checkbox();
+    pid = location.pathname.split('/');
+    pid = pid[pid.length - 1];
+    // new Vue({
+    //     el: '#codeModal',
+    //     data: {
+    //         username: "",
+    //         pid: "",
+    //         result: "",
+    //         time: "",
+    //         memory: "",
+    //         length: "",
+    //         language: "",
+    //         submit_time: "",
+    //         share: false,
+    //         source_code: ""
+    //     }
+    // });
+    var clipboard = new ClipboardJS('.btn-copy');
+    clipboard.on('success', function (e) {
+        e.clearSelection();
+    });
+    clipboard.on('error', function (e) {
+        console.error('Action:', e.action);
+        console.error('Trigger:', e.trigger);
+    });
+    // var vm = new Vue({
+    //     el: '#top-list',
+    //     data: {
+    //         status: []
+    //     }
+    // });
+    // $("#leader-board").click(function () {
+    //     $.get({
+    //         url: "/oj/problems/status/top/" + $("main").attr("id"),
+    //         success: function (res) {
+    //             vm._data.status = res;
+    //         }
+    //     });
+    // });
+    var prom = new Vue({
+        el: '#vue-problem',
+        data: {
+            problem: {},
+            code: "",
+            language: "c",
+            share: true
+        },
+        methods: {
+            submit: function () {
+                var that = this
+                axios.post('/api/problems/submit/' + pid, {
+                    language: that.language,
+                    source: that.code,
+                    share: that.share
+                }).then(function (res) {
+                    console.log(res.data)
+                    if (res.data != "success") {
+                        alert(res.data);
+                    } else {
+                        scrollTo(0, 0);
+                    }
+                })
+            }
+        },
+        created() {
+            var that = this;
+            axios.get('/api/problems/' + pid).then(function (response) {
+                that.problem = response.data;
+                $("title").text(response.data.title);
+                $(function () {
+                    $(".md-text").each(function () {
+                        $(this).attr("id", "editormd-view");
+                        editormd.markdownToHTML("editormd-view", {
+                            gfm: true,
+                            toc: true,
+                            tocm: false,
+                            tocStartLevel: 1,
+                            tocTitle: "目录",
+                            tocDropdown: false,
+                            tocContainer: "",
+                            markdown: "",
+                            autoLoadKaTeX: true,
+                            pageBreak: true,
+                            atLink: true,    // for @link
+                            emailLink: false,    // for mail address auto link
+                            tex: true,
+                            taskList: false,   // Github Flavored Markdown task lists
+                            flowChart: true,
+                            sequenceDiagram: true,
+                            previewCodeHighlight: true
+                        });
+                        $(this).attr("id", "");
+                    });
+                });
+            }).catch(function (e) {
+                console.log(e);
+                location.href = "/4O4";
+            })
+        }
+    });
+</script>
+<footer th:replace="~{fragment/footer :: footer}"></footer>
+<!--<script src="/js/StatusInModal.js"></script>-->
+</body>
+</html>

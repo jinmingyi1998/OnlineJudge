@@ -1,0 +1,70 @@
+<!--
+  ~ Copyright (c) 2019. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+  ~ Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+  ~ Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+  ~ Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+  ~ Vestibulum commodo. Ut rhoncus gravida arcu.
+  -->
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragment/header :: header}"></th:block>
+    <meta charset="UTF-8">
+    <title th:text="Status"></title>
+    <style>
+        table {
+            border-radius: 0.5rem;
+        }
+
+        td {
+            padding: 0.5rem;
+        }
+    </style>
+    <script th:inline="javascript">
+        $(function () {
+
+        });
+    </script>
+</head>
+<body>
+<div class="container" height="100%">
+    <table class="table-sm table-hover table-responsive-xl table-bordered table-light container-fluid"
+           style="opacity: 0.8">
+        <thead class="thead-light text-center">
+        <tr>
+            <th>Run ID</th>
+            <th>Username</th>
+            <th>Problem</th>
+            <th>Result</th>
+            <th>Time(ms)</th>
+            <th>Memory(KB)</th>
+            <th>Length</th>
+            <th>Language</th>
+            <th>Submit Time</th>
+        </tr>
+        </thead>
+        <tbody class="text-center">
+        <tr th:object="${solution}">
+            <td th:text="*{id}"></td>
+            <td th:text="*{user.username}"></td>
+            <td th:text="*{problem.id}"></td>
+            <td th:switch="*{result}">
+                <span class="text-success font-weight-bold" th:case="'Accepted'">Accepted</span>
+                <span class="text-muted" th:case="'Compile Error'">Compile Error</span>
+                <span class="text-danger" th:case="*" th:text="${solution.normalResult}"></span>
+            </td>
+            <td th:text="*{time}"></td>
+            <td th:text="*{memory/1024}"></td>
+            <td th:text="*{length}"></td>
+            <td th:text="*{normalLanguage}"></td>
+            <td th:text="*{normalSubmitTime}"></td>
+        </tr>
+        </tbody>
+    </table>
+    <div th:text="${solution.ce}"></div>
+    <pre class="prettyprint linenum" th:text="${solution.source}"></pre>
+</div>
+<footer th:replace="~{fragment/footer :: footer}"></footer>
+</body>
+</html>

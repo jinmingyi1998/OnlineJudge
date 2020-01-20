@@ -1,0 +1,147 @@
+<!--
+  ~ Copyright (c) 2019. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+  ~ Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+  ~ Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+  ~ Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+  ~ Vestibulum commodo. Ut rhoncus gravida arcu.
+  -->
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragment/header :: header}"></th:block>
+    <meta charset="UTF-8">
+    <title>注册</title>
+    <style>
+        .form-signin {
+            width: 100%;
+            max-width: 330px;
+            padding: 15px;
+            margin: 0 auto;
+        }
+
+        .form-signin .checkbox {
+            font-weight: 400;
+        }
+
+        .form-signin .form-control {
+            position: relative;
+            box-sizing: border-box;
+            height: auto;
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        .form-signin .form-control:focus {
+            z-index: 2;
+        }
+
+        .form-signin input[type="email"] {
+            margin-bottom: -1px;
+            border-bottom-right-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+
+        .form-signin input[type="password"] {
+            margin-bottom: -1px;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+
+        .form-signin input[type="submit"] {
+            margin-top: 10px;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+
+    </style>
+    <script>
+        var pattern = new RegExp("^[a-zA-Z0-9_]{6,15}$");
+        $(function () {
+            $("#submit-btn").click(function () {
+                $.post({
+                    data: $("#registerForm").serialize(),
+                    url: "/register",
+                    success: function (data) {
+                        if (data == "success") {
+                            location.href = "/";
+                        } else {
+                            $("#message").text(data);
+                            $("#message").show();
+                        }
+                    }
+                });
+            });
+
+        });
+
+        function checkInputUsername() {
+            var usr = $("#inputUsername").val();
+            if (pattern.test(usr)) {
+                $("#usr_wrg").fadeOut();
+                return true;
+            } else {
+                $("#usr_wrg").fadeIn();
+                return false;
+            }
+        }
+
+        function checkInputPassword() {
+            var pwd1 = $("#inputPassword").val();
+            var pwd2 = $("#inputPassword2").val();
+            if (pattern.test(pwd1)) {
+                $("#pwd_wrg").fadeOut();
+                if (pwd1 == pwd2) {
+                    $("#pwd2_wrg").fadeOut();
+                    return true;
+                } else {
+                    $("#pwd2_wrg").fadeIn();
+                    return false;
+                }
+            } else {
+                $("#pwd_wrg").fadeIn();
+                return false;
+            }
+        }
+
+        function checkInput() {//always false
+            return checkInputPassword() && checkInputUsername() && false;
+        }
+    </script>
+</head>
+<body>
+<div class="container text-center">
+    <form action="/register" class="form-signin" method="post" id="registerForm">
+        <h1 class="h3 mb-3 font-weight-normal">注册</h1>
+        <div class="alert alert-danger" id="message" style="display: none"></div>
+        <label class="sr-only" for="inputUsername">用户名</label>
+        <input autofocus="" class="form-control" id="inputUsername" name="username" onchange="checkInputUsername()"
+               pattern="\w{6,20}"
+               placeholder="用户名" required="" type="text">
+        <div class="alert alert-light" id="usr_wrg" style="display:none;">只包含字母数字字符或下划线，并且不能以下划线开头，为6-15个字符</div>
+        <label class="sr-only" for="inputName">姓名</label>
+        <input class="form-control" id="inputName" name="name" placeholder="姓名" required="" type="text">
+        <label class="sr-only" for="inputEmail">电子邮箱</label>
+        <input class="form-control" id="inputEmail" name="email" placeholder="电子邮箱" required type="email">
+        <label class="sr-only" for="inputPassword">密码</label>
+        <input class="form-control" id="inputPassword" name="password" pattern="\w{6,16}" placeholder="密码"
+               required
+               type="password">
+        <div class="alert alert-light" id="pwd_wrg" style="display: none">只包含字母数字字符或下划线，并且不能以下划线开头，为6-15个字符</div>
+        <label class="sr-only" for="inputPassword2">再次输入密码</label>
+        <input class="form-control" id="inputPassword2" onchange="checkInputPassword()" placeholder="再次输入密码"
+               required=""
+               type="password">
+        <div class="alert alert-danger" id="pwd2_wrg" style="display: none">两次密码不同</div>
+        <label class="sr-only" for="inputSchool">学校</label>
+        <input class="form-control" id="inputSchool" name="school" placeholder="学校" type="text">
+        <label class="sr-only" for="inputClass">班级</label>
+        <input class="form-control" id="inputClass" name="cls" placeholder="班级" type="text">
+        <input class="btn btn-lg btn-primary btn-block" id="submit-btn" onclick="checkInput();return false"
+               type="submit"
+               value="注册">
+    </form>
+</div>
+<footer th:replace="~{fragment/footer :: footer}"></footer>
+</body>
+</html>

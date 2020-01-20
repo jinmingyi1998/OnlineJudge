@@ -1,0 +1,319 @@
+<!--
+  ~ Copyright (c) 2019. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+  ~ Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+  ~ Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+  ~ Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+  ~ Vestibulum commodo. Ut rhoncus gravida arcu.
+  -->
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragment/header :: header}"></th:block>
+    <meta charset="UTF-8">
+    <title th:text="'Hi - '+${user.name}"></title>
+    <script src="/js/echarts.min.js"></script>
+    <script>
+        var pattern = new RegExp("^[a-zA-Z0-9_]{6,15}$");
+        $(function () {
+            $("#submit-btn").click(function () {
+                $.post({
+                    data: $("form").serialize(),
+                    url: "/user/api/update/" + $("main").attr("id"),
+                    success: function (data) {
+                        if (data == "success") {
+                            location.reload();
+                        } else {
+                            $("#message").text(data);
+                        }
+                    }
+                });
+            });
+        });
+
+        function checkInputUsername() {
+            var usr = $("#inputUsername").val();
+            if (pattern.test(usr)) {
+                $("#usr_wrg").fadeOut();
+                return true;
+            } else {
+                $("#usr_wrg").fadeIn();
+                return false;
+            }
+        }
+
+        function checkInputPassword() {
+            var pwd1 = $("#new_password").val();
+            var pwd2 = $("#new_password2").val();
+            if (pattern.test(pwd1)) {
+                $("#pwd_wrg").fadeOut();
+                if (pwd1 == pwd2) {
+                    $("#pwd2_wrg").fadeOut();
+                    return true;
+                } else {
+                    $("#pwd2_wrg").fadeIn();
+                    return false;
+                }
+            } else {
+                $("#pwd_wrg").fadeIn();
+                return false;
+            }
+        }
+
+        function checkInput() {//always false
+            return checkInputPassword() && checkInputUsername() && false;
+        }
+    </script>
+</head>
+<body>
+<main class="container" height="100%" width="100%" th:id="${user.id}">
+    <h2 class="p-3"><span th:text="${user.name}"></span>
+        <small>(</small>
+        <small th:text="${user.username}">name</small>
+        <small>)</small>
+    </h2>
+    <a th:href="@{/user/{id}/update(id=${user.id})}" class="btn btn-link mx-auto"
+       th:if="${session.currentUser!=null && session.currentUser.id==user.id}">更新个人信息</a>
+    <!--    <button class="btn btn-link mx-auto" data-target="#userModal"-->
+    <!--            data-toggle="modal"-->
+    <!--            th:if="${session.currentUser!=null && session.currentUser.id==user.id}">-->
+    <!--        更新个人信息-->
+    <!--    </button>-->
+    <span class="badge-secondary badge" th:text="${user.privilege.name}"
+          style="font-size: 0.9rem;">user privilege</span>
+    <table class="table table-light rounded table-responsive-md table-bordered text-center">
+        <thead>
+        <tr>
+            <th>注册时间</th>
+            <th>学校</th>
+            <th>分数</th>
+            <th>提交</th>
+            <th>通过</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td th:text="${user.normalRegisterTime}"></td>
+            <td th:text="${user.school}"></td>
+            <td th:text="${user.score}"></td>
+            <td th:text="${user.submit}"></td>
+            <td th:text="${user.solve}"></td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="row rounded bg-light m-1">
+        <div style="height:20rem;opacity: 0.8;" id="PieChart" class="col-sm-6"></div>
+        <div style="height:20rem;opacity: 0.8;" id="RadarChart" class="col-sm-6"></div>
+    </div>
+</main>
+<!--<div class="modal fade" id="userModal">-->
+<!--    <div class="modal-dialog">-->
+<!--        <div class="modal-content">-->
+<!--            <div class="modal-header">-->
+<!--                <h4 class="modal-title">更新个人信息</h4>-->
+<!--                <button class="close" data-dismiss="modal" type="button">&times;</button>-->
+<!--            </div>-->
+<!--            <div class="modal-body">-->
+<!--                <form action="" method="post">-->
+<!--                    <div class="form-inline">-->
+<!--                        <label for="name">姓名</label><input class="form-control" id="name" name="name" type="text"-->
+<!--                                                           th:value="${user.name}">-->
+<!--                    </div>-->
+<!--                    <div class="form-inline">-->
+<!--                        <label for="email">电子邮箱</label><input class="form-control" id="email" name="email" type="text"-->
+<!--                                                              th:value="${user.email}">-->
+<!--                    </div>-->
+<!--                    <div class="form-inline">-->
+<!--                        <label for="password">*旧密码</label><input class="form-control" id="password"-->
+<!--                                                                 name="password"-->
+<!--                                                                 required type="password">-->
+<!--                    </div>-->
+<!--                    <div class="form-inline">-->
+<!--                        <label for="new_password">*新密码</label><input class="form-control" id="new_password"-->
+<!--                                                                     name="new_password"-->
+<!--                                                                     required type="password">-->
+<!--                    </div>-->
+<!--                    <div class="form-inline">-->
+<!--                        <label for="new_password2">*重复新密码</label><input class="form-control"-->
+<!--                                                                        id="new_password2" required-->
+<!--                                                                        type="password">-->
+<!--                    </div>-->
+<!--                    <div class="form-inline">-->
+<!--                        <label for="school">学校</label><input class="form-control" id="school" name="school"-->
+<!--                                                             type="text" th:value="${user.school}">-->
+<!--                    </div>-->
+<!--                    <div class="form-inline">-->
+<!--                        <label for="class">班级</label><input class="form-control" id="cls" th:value="${user.cls}"-->
+<!--                                                            name="cls" type="text">-->
+<!--                    </div>-->
+<!--                    <div class="form-inline">-->
+<!--                        <input class="form-control" id="class" name="cls" type="text">-->
+<!--                    </div>-->
+<!--                </form>-->
+<!--            </div>-->
+<!--            <div class="modal-footer">-->
+<!--                <button class="btn btn-secondary" data-dismiss="modal" type="button">关闭</button>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+<script>
+    var radarChart = echarts.init(document.getElementById("RadarChart"));
+    var pieChart = echarts.init(document.getElementById("PieChart"));
+    $.get({
+        url: "/user/api/pie/" + $("main").attr("id"),
+        success: function (res) {
+            var graph = res;
+            if (graph != null) {
+                pieoption = {
+                    "color": [
+                        "#3fb1e3",
+                        "#6be6c1",
+                        "#626c91",
+                        "#a0a7e6",
+                        "#c4ebad",
+                        "#96dee8"
+                    ],
+                    legend: {
+                        orient: 'vertical',
+                        x: 'left',
+                        data: ['初级', '中级', '高级', '未通过']
+                    },
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: "{a} <br/>{b} : {c} ({d}%)"
+                    },
+                    series: [
+                        {
+                            name: '题目难度',
+                            type: 'pie',
+                            avoidLabelOverlap: false,
+                            radius: ['50%', '70%'],
+                            data: [
+                                {value: graph.pie.prime, name: '初级'},
+                                {value: graph.pie.medium, name: '中级'},
+                                {value: graph.pie.advance, name: '高级'},
+                                {value: graph.submit - graph.solve, name: '未通过'}
+                            ].sort(function (a, b) {
+                                return a.value - b.value;
+                            }),
+                            roseType: 'radius',
+                            label: {
+                                normal: {
+                                    show: false,
+                                    position: 'center'
+                                },
+                                emphasis: {
+                                    show: true,
+                                    textStyle: {
+                                        color: 'gray',
+                                        fontSize: '30',
+                                        fontWeight: 'bold'
+                                    }
+                                }
+                            },
+                            labelLine: {
+                                normal: {
+                                    show: false
+                                }
+                            },
+                            itemStyle: {
+                                normal: {
+                                    shadowBlur: 200,
+                                    shadowColor: 'white'
+                                }
+                            },
+                            animationType: 'scale',
+                            animationEasing: 'elasticOut',
+                            animationDelay: function (idx) {
+                                return Math.random() * 200;
+                            }
+                        }
+                    ]
+                };
+                radaroption = {
+                    title: {
+                        text: '能力雷达图',
+                        show: false
+                    },
+                    "color": [
+                        "#3fb1e3",
+                        "#6be6c1",
+                        "#626c91",
+                        "#a0a7e6",
+                        "#c4ebad",
+                        "#96dee8"
+                    ],
+                    tooltip: {},
+                    radar: {
+                        indicator: [
+                            {name: '数据结构', max: 100},
+                            {name: '图论', max: 100},
+                            {name: '动态规划', max: 100},
+                            {name: '搜索', max: 100},
+                            {name: '计算几何', max: 100},
+                            {name: '字符串', max: 100},
+                            {name: '数论', max: 100},
+                            {name: '通过率', max: 100}
+                        ],
+                        startAngle: 90,
+                        shape: 'circle',
+                        splitNumber: 5,
+                        name: {
+                            textStyle: {
+                                color: '#666666'
+                            }
+                        }
+                    },
+                    series: [
+                        {
+                            name: '能力值',
+                            type: 'radar',
+                            lineStyle: {
+                                normal: {
+                                    width: 3,
+                                    opacity: 0.5
+                                }
+                            },
+                            "symbolSize": "8",
+                            "symbol": "emptyCircle",
+                            "smooth": false,
+                            data: [
+                                {
+                                    value: [graph.radar.ds, graph.radar.graph, graph.radar.dp, graph.radar.search, graph.radar.geometry, graph.radar.string, graph.radar.math, graph.ratio],
+                                    symbol: 'circle',
+                                    label: {
+                                        normal: {
+                                            show: true,
+                                            formatter: function (params) {
+                                                return params.value;
+                                            }
+                                        }
+                                    }
+                                }
+                            ],
+                            itemStyle: {
+                                normal: {
+                                    normal: {
+                                        borderWidth: "2"
+                                    }
+                                }
+                            },
+                            areaStyle: {
+                                normal: {
+                                    color: 'white',
+                                    opacity: 0.1
+                                }
+                            }
+                        }
+                    ]
+                };
+                pieChart.setOption(pieoption);
+                radarChart.setOption(radaroption);
+            }
+        }
+    });
+</script>
+<footer th:replace="~{fragment/footer :: footer}"></footer>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!--
+  ~ Copyright (c) 2019. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+  ~ Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+  ~ Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+  ~ Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+  ~ Vestibulum commodo. Ut rhoncus gravida arcu.
+  -->
+
+<!DOCTYPE html>
+<html th:fragment="header" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta content="text/html;charset=UTF-8" http-equiv="Content-Type">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/font-awesome.css}">
+    <script th:src="@{/js/jquery-3.2.1.min.js}"></script>
+    <script th:src="@{/js/popper.min.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+    <script src="/js/urlcontrol.js"></script>
+    <script th:inline="javascript">
+        query.page = [[${problems.number}]];
+        query.maxpage = [[${problems.totalPages}]];
+    </script>
+    <script>
+        if (typeof (query.page) == "undefined") {
+            query.page = 0;
+        }
+        if (typeof (query.problem) == "undefined") {
+            query.problem = "";
+        }
+        $(function () {
+            for (var i = Math.max(0, parseInt(query.page) - 5); i < Math.min(parseInt(query.page) + 4, query.maxpage); i++) {
+                if (i == query.page)
+                    $("#Next").before("<li class=\"page-item active\" ><a class=\"page-link turnpage\"  page='" + i + "'>" + (parseInt(i) + 1) + "</a></li>");
+                else
+                    $("#Next").before("<li class=\"page-item\" ><a class=\"page-link turnpage\"  page='" + i + "'>" + (parseInt(i) + 1) + "</a></li>");
+            }
+            $(".turnpage").click(function () {
+                var act = $(this).attr("page");
+                if (act == "next-page") {
+                    query.page++;
+                } else if (act == "last-page") {
+                    query.page--;
+                } else {
+                    query.page = parseInt(act);
+                }
+                url = location.pathname + "?problem=" + query.problem + "&page=" + query.page;
+                location.href = url;
+            });
+            $("#search").click(function () {
+                var act = $("#search-problem").val();
+                query.problem = act;
+                url = location.pathname + "?problem=" + query.problem + "&page=" + query.page;
+                location.href = url;
+            });
+        });
+
+    </script>
+    <title>Admin</title>
+    <style>
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            margin: 30px;
+        }
+    </style>
+    <script>
+        $(function () {
+            $(".remove-btn").click(function () {
+                if (confirm("You are going to delete problem " + $(this).attr("id"))) {
+                    $.ajax({
+                        type: "delete",
+                        url: "/oj/admin/delete/" + $(this).attr("id"),
+                        success: function () {
+                            location.reload();
+                        }
+                    });
+                }
+            });
+        })
+    </script>
+</head>
+<body>
+<div class="container">
+    <a class="btn btn-success" href="/oj/admin/insert">Add a problem</a>
+    <a class="btn btn-primary" href="/oj/admin/contest">Contests</a>
+    <div action="" class="form-inline">Search: <input class="form-control" id="search-problem" name="search"
+                                                      type="text">
+        <button class="btn" id="search">Search</button>
+    </div>
+    <ul class="list-group" th:each="problem,proStat:${problems.content}">
+        <li class="list-group-item list-group-item-action">
+            <span th:text="${problem.id}"></span>
+            <span th:text="${problem.title}"></span>
+            <a class="btn-sm btn-primary float-right" th:href="'/oj/admin/edit/'+${problem.id}">Update</a>
+            <a class="btn-sm btn-primary float-right" th:href="'/oj/admin/editdata/'+${problem.id}">Change Data</a>
+            <a class="btn-danger btn-sm remove-btn float-right" th:id="${problem.id}">Remove</a></li>
+    </ul>
+    <div class="container">
+        <ul class="pagination">
+            <li class="page-item"><a class="page-link turnpage" page="last-page">Last</a></li>
+            <li class="page-item" id="Next"><a class="page-link turnpage" page="next-page">Next</a></li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>

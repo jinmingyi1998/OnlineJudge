@@ -1,0 +1,126 @@
+<!--
+  ~ Copyright (c) 2019. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+  ~ Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+  ~ Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+  ~ Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+  ~ Vestibulum commodo. Ut rhoncus gravida arcu.
+  -->
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragment/header :: header}"></th:block>
+    <meta charset="UTF-8">
+    <title th:text="|题解 of ${problem.title}|"></title>
+    <link rel="stylesheet" href="/editor/css/editormd.css">
+    <script src="/editor/lib/marked.min.js"></script>
+    <script src="/editor/lib/raphael.min.js"></script>
+    <script src="/editor/lib/underscore.min.js"></script>
+    <script src="/editor/lib/sequence-diagram.min.js"></script>
+    <script src="/editor/lib/flowchart.min.js"></script>
+    <script src="/editor/lib/jquery.flowchart.min.js"></script>
+    <script src="/editor/editormd.js"></script>
+    <link rel="stylesheet" href="/js/prettify/skins/sunburst.css">
+</head>
+<body>
+<main class="container" th:id="${problem.id}">
+    <div class="card mt-5 p-3">
+        <h2 class=" text-center" th:text="|${problem.title} - 题解|"></h2>
+        <div class="card-body">
+            <p class="card-text">
+                <span class="font-weight-bold lead">以下题解仅供学习参考使用。</span>
+            </p>
+            <p class="card-text">
+                <b class="text-danger">抄袭</b> 、<b class="text-danger">复制</b>题解，以达到刷AC率/AC数量或其他目的的行为，是严格禁止的。此类行为将会导致您成为
+                <b>作弊者</b>。
+            </p>
+        </div>
+    </div>
+    <div class="card mt-2" th:each="a:${articles}">
+        <div class="card-body">
+            <p class="card-text text-muted"><span class="m-3">作者：<a th:href="@{/user/{uid}(uid=${a.author.id})}"
+                                                                    th:text="${a.author.username}"></a></span><span
+                    th:text="|发布时间: ${a.normalPostTime}|" class="m-3"></span></p>
+            <hr>
+            <div class="card-text md-text">
+                <textarea style="display: none;" th:text="${a.text}"></textarea>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid mt-5 justify-content-sm-center">
+        <form action="" class="mt-1 justify-content-center" method="post">
+            <div class="form-group" id="editormd">
+                <textarea name="text" class="w-100"></textarea></div>
+            <input type="submit" th:value="发布"
+                   class="text-center text-light btn btn-primary mt-3 justify-content-center">
+        </form>
+    </div>
+</main>
+<script>
+    var editor = editormd({
+        id: "editormd",
+        path: "/editor/lib/",
+        height: 800,
+        codeFold: true,
+        saveHTMLToTextarea: true,
+        searchReplace: true,
+        gfm: true,
+        toc: true,
+        tocm: false,
+        tocStartLevel: 1,
+        tocTitle: "目录",
+        tocDropdown: false,
+        tocContainer: "",
+        markdown: "",
+        autoLoadKaTeX: true,
+        pageBreak: true,
+        atLink: true,    // for @link
+        emailLink: true,    // for mail address auto link
+        tex: true,
+        taskList: true,   // Github Flavored Markdown task lists
+        flowChart: true,
+        sequenceDiagram: true,
+        previewCodeHighlight: true
+    });
+    $(function () {
+        $(".md-text").each(function () {
+            $(this).attr("id", "editormd-view")
+            editormd.markdownToHTML("editormd-view", {
+                gfm: true,
+                toc: true,
+                tocm: false,
+                tocStartLevel: 1,
+                tocTitle: "目录",
+                tocDropdown: false,
+                tocContainer: "",
+                markdown: "",
+                autoLoadKaTeX: true,
+                pageBreak: true,
+                atLink: true,    // for @link
+                emailLink: true,    // for mail address auto link
+                tex: true,
+                taskList: true,   // Github Flavored Markdown task lists
+                flowChart: true,
+                sequenceDiagram: true,
+                previewCodeHighlight: true
+            });
+            $(this).attr("id", "");
+        });
+    });
+</script>
+<footer th:replace="~{fragment/footer :: footer}"></footer>
+<!--<script type="text/x-mathjax-config">-->
+<!--MathJax.Hub.Config({-->
+<!--extensions: ["tex2jax.js"],-->
+<!--jax: ["input/TeX", "output/HTML-CSS"],-->
+<!--tex2jax: {-->
+<!--inlineMath: [ ['$','$'], ["\\(","\\)"] ],-->
+<!--displayMath: [ ['$$','$$'], ["\\[","\\]"] ],-->
+<!--processEscapes: true-->
+<!--},-->
+<!--"HTML-CSS": { availableFonts: ["TeX"] }-->
+<!--});-->
+<!--</script>-->
+<!--<script type="text/javascript" src="/js/MathJax.js"></script>-->
+</body>
+</html>

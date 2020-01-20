@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN" th:fragment="footer" xmlns:th="http://www.thymeleaf.org">
+<div class="footer jumbotron" style=" background:#2f2f2f;">
+    <div class="footer_box">
+        <div class="footer">
+            <ul>
+                <li><span>XXX@XXXXX.com</span></li>
+                <li><span>XXX-XXXXXXXX</span></li>
+            </ul>
+        </div>
+        <div class="align_center">
+            <p>©版权所有©2019 奥赛平台 Al8 rights reserved© 2019 Al8 1200XX92号-11</p>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="loginModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">登录</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form class="form-signin" id="form-Modal">
+                    <div class="alert alert-warning" id="messageModal" style="display: none"></div>
+                    <label class="sr-only" for="inputUsernameModal">用户名</label>
+                    <input autofocus class="form-control" id="inputUsernameModal" name="username" placeholder="用户名"
+                           required=""
+                           type="text">
+                    <label class="sr-only" for="inputPasswordModal">密码</label>
+                    <input class="form-control" id="inputPasswordModal" name="password" placeholder="密码" required
+                           type="password">
+                    <input class="btn btn-lg btn-primary btn-block" id="submit-btn-loginModal" onclick="return false"
+                           type="submit"
+                           value="登录">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <a href="/register" class="btn btn-light">注册</a>
+                <button type="button" class="btn btn-light" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function () {
+        $("#submit-btn-loginModal").click(function () {
+            $.post({
+                url: "/login",
+                data: $("#form-Modal").serialize(),
+                success: function (data) {
+                    if (data == "success") {
+                        location.reload();
+                    } else {
+                        $("#messageModal").text(data);
+                        $("#messageModal").show();
+                    }
+                }
+            });
+        });
+    });
+</script>
+</html>

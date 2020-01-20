@@ -1,0 +1,46 @@
+<!--
+  ~ Copyright (c) 2019. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+  ~ Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+  ~ Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+  ~ Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+  ~ Vestibulum commodo. Ut rhoncus gravida arcu.
+  -->
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragment/header :: header}"></th:block>
+    <meta charset="UTF-8">
+    <title>查找队伍</title>
+
+</head>
+<body>
+<div class="container" height="100%" width="100%">
+    <form class="col-sm-5 justify-content-center container" action="" method="get">
+        <div class="input-group ">
+            <select name="search_by" id="search_by" class="form-control">
+                <option value="">查找方式</option>
+                <option value="id">群号</option>
+                <option value="name">群组名</option>
+            </select>
+            <input type="text" name="search" class="form-control">
+            <div class="input-group-append">
+                <button class="btn btn-primary">查找</button>
+            </div>
+        </div>
+    </form>
+    <div class="row">
+        <div class="mt-4 col-3" th:each="team:${teams}">
+            <div class="card h-100 ">
+                <div class="card-body">
+                    <h3 class="card-title font-weight-bold"><a th:href="@{/oj/team/{tid}(tid=${team.id})}"
+                                                               th:text="${team.name}"></a></h3>
+                    <p class="card-text" th:text="${team.introduction}"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<footer th:replace="~{fragment/footer :: footer}"></footer>
+</body>
+</html>

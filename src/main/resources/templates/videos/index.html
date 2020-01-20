@@ -1,0 +1,93 @@
+<!--
+  ~ Copyright (c) 2019. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+  ~ Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+  ~ Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+  ~ Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+  ~ Vestibulum commodo. Ut rhoncus gravida arcu.
+  -->
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<th:block th:insert="~{fragment/header :: header}"></th:block>
+<head>
+    <meta charset="UTF-8">
+    <title>Learn</title>
+    <style>
+        /* Make the image fully responsive */
+        .carousel-inner img {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div id="demo" class="carousel slide" data-ride="carousel">
+        <ul class="carousel-indicators">
+            <li data-target="#demo" data-slide-to="0" class="active"></li>
+            <li data-target="#demo" data-slide-to="1"></li>
+            <li data-target="#demo" data-slide-to="2"></li>
+        </ul>
+        <div class="carousel-inner">
+            <div class="carousel-item active"><a href="/video/13">
+                <img src="http://10.7.88.15:81/title_play/title_play0.jpg" style="height: 25rem;"></a>
+            </div>
+            <div class="carousel-item"><a href="/video/16">
+                <img src="http://10.7.88.15:81/title_play/title_play1.png" style="height: 25rem;"></a>
+            </div>
+            <div class="carousel-item"><a href="/video/3">
+                <img src="http://10.7.88.15:81/title_play/title_play2.png" style="height: 25rem;"></a>
+            </div>
+        </div>
+        <a class="carousel-control-prev" href="#demo" data-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+        </a>
+        <a class="carousel-control-next" href="#demo" data-slide="next">
+            <span class="carousel-control-next-icon"></span>
+        </a>
+    </div>
+</div>
+<div class="container" id="v-row">
+    <div class="row">
+        <div class="col-3" style="margin-top: 3rem" v-for="v in videos">
+            <div class="card" style="height: 100%;">
+                <a style="color: black" v-bind:href="geturl(v.id)"><img alt="" class="card-img-top"
+                                                                        style="width: 100%;height: 9rem;"
+                                                                        v-bind:src="v.thumburl">
+                    <div class="card-body">
+                        <div class="card-title">
+                            <h5>{{v.name}}</h5>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    vlist = new Vue({
+        el: "#v-row",
+        data: {videos: []},
+        methods: {
+            geturl: function (id) {
+                return 'oj/video/' + id;
+            }
+        }
+    });
+
+    function getList() {
+        $.get({
+            url: "/oj/video/api/list",
+            success: function (res) {
+                vlist._data.videos = res;
+            }
+        });
+    }
+
+    $(function () {
+        getList();
+    });
+</script>
+<footer th:replace="~{fragment/footer :: footer}"></footer>
+</body>
+</html>

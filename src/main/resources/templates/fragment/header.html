@@ -1,0 +1,53 @@
+<!--
+  ~ Copyright (c) 2019. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+  ~ Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+  ~ Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+  ~ Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+  ~ Vestibulum commodo. Ut rhoncus gravida arcu.
+  -->
+
+<!DOCTYPE html>
+<html lang="zh-CN" th:fragment="header" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta content="text/html;charset=UTF-8" http-equiv="Content-Type">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/js/prettify/skins/sunburst.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+    <script src="/js/jquery-3.2.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="/js/prettify/prettify.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+    <style>
+        body {
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+<nav class="ui fixed huge menu borderless">
+    <div class="ui container">
+        <a href="/" class="header item">
+            <img src="/images/logo-title.png" alt="logo"></a>
+        <a class="link item" href="/">主页</a>
+        <a class="link item" href="/problems">题库</a>
+        <a class="link item" href="/contest">比赛</a>
+        <a class="link item" href="/status">提交记录</a>
+        <a class="link item" href="/standing">排名</a>
+        <a class="link item" href="/team">群组</a>
+        <div class="ui right big borderless menu">
+            <a class="item" href="#" th:if="${session.currentUser== null}"
+               data-toggle="modal" data-target="#loginModal">登录</a>
+            <a class="item" th:href="'/user/'+${session.currentUser.id}"
+               th:unless="${session.currentUser== null}"
+               data-toggle="tooltip" th:title="${session.currentUser.name}">个人中心</a>
+            <a class="item" th:href="@{/register}"
+               th:if="${session.currentUser==null}">注册</a>
+            <a class="item" th:href="@{/logout}" th:unless="${session.currentUser==null}">注销</a></div>
+    </div>
+</nav>
+</body>
+</html>

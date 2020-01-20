@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragment/header :: header}"></th:block>
+    <meta charset="UTF-8">
+    <title>Problem List</title>
+</head>
+<body>
+<main class="ui container" style="margin-top: 5rem">
+    <div class="ui grid" id="problem-list">
+        <div class="ui eleven wide column container">
+            <div class="ui container">
+                <div class="center aligned">
+                    <form class="ui icon input" v-on:submit.prevent="search_problem()">
+                        <input type="text" v-model="search_string" placeholder="搜索题目或题号">
+                        <i class="search link icon" v-on:click="search_problem()"></i>
+                    </form>
+                </div>
+            </div>
+
+            <div class="ui middle aligned animated selection massive vertically celled list">
+                <div class="ui item" v-for="p in problems">
+                    <a class="header" :href="'/problems/'+p.id">{{p.id}} - <span class="text massive">{{p.title}}</span></a>
+                    <div class="right floated content">
+                        <div class="ui container right aligned">
+                            <div class="ui mini horizontal blue statistic">
+                                <div class="value">{{p.submit}}</div>
+                                <div class="label">提交</div>
+                            </div>
+                            <div class="ui mini horizontal green statistic">
+                                <div class="value">{{p.accepted}}</div>
+                                <div class="label">通过</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="ui center aligned pagination menu">
+                <pagination content='<i class="angle double left icon"></i>' v-on:change_page="get_page"
+                            v-bind:to_page="0"></pagination>
+                <pagination :class="{disabled:number == 0}" content="<i class='angle left icon'></i>"
+                            v-on:change_page="get_page" v-bind:to_page="number-1"></pagination>
+                <div v-for="n in npage">
+                    <pagination :class="{active:number == n}" v-bind:content="n+1" v-on:change_page="get_page"
+                                v-bind:to_page="n"></pagination>
+                </div>
+                <pagination :class="{disabled:number == (totpage-1)}" content='<i class="angle  right icon"></i>'
+                            v-on:change_page="get_page" v-bind:to_page="number+1"></pagination>
+                <pagination content='<i class="angle double right icon"></i>' v-on:change_page="get_page"
+                            v-bind:to_page="totpage-1"></pagination>
+            </div>
+        </div>
+        <div class="ui five wide column">other things -tags...</div>
+    </div>
+
+</main>
+<footer th:replace="~{fragment/footer :: footer}"></footer>
+</body>
+<script>
+    var pagination = Vue.component('pagination', {
+        props: ['to_page', 'content'],
+        template: `<a class="link item" v-html="content" v-on:click="$emit('change_page',to_page)"></a>`,
+    });
+    var problems_list = new Vue({
+        el: "#problem-list",
+        data: {
+            problems: [],
+            totpage: 0,
+            number: 0,
+            size: 0,
+            totelement: 0,
+            first: false,
+            last: false,
+            npage: [],
+            search_string: ""
+        },
+        methods: {
+            search_problem: function () {
+                console.log("searching")
+                let that = this;
+                if (that.search_string.length == 0)
+                    return;
+                url = "/api/problems?search=" + that.search_string
+                console.log(url)
+                axios.get(url)
+                    .then(function (response) {
+                        response = response.data
+                        that.problems = response.content;
+                        that.totelement = response.totalElements;
+                        that.size = response.size;
+                        that.totpage = response.totalPages;
+                        that.last = response.last;
+                        that.first = response.first;
+                        that.number = response.number;
+                        that.npage = []
+                        for (var i = Math.max(0, that.number - 3); i < Math.min(that.totpage, that.number + 3); i++) {
+                            that.npage.push(i)
+                        }
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+            },
+            get_page: function (to_page) {
+                var that = this
+                if (to_page < 0 || to_page >= that.totpage)
+                    return null
+                url = "/api/problems?page=" + to_page + "&search=" + that.search_string
+                axios.get(url)
+                    .then(function (response) {
+                        response = response.data
+                        that.problems = response.content;
+                        that.totelement = response.totalElements;
+                        that.size = response.size;
+                        that.totpage = response.totalPages;
+                        that.last = response.last;
+                        that.first = response.first;
+                        that.number = response.number;
+                        that.npage = []
+                        for (var i = Math.max(0, that.number - 3); i < Math.min(that.totpage, that.number + 3); i++) {
+                            that.npage.push(i)
+                        }
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+            }
+        },
+        created() {
+            var that = this;
+            axios.get('/api/problems')
+                .then(function (response) {
+                    response = response.data
+                    that.problems = response.content;
+                    that.totelement = response.totalElements;
+                    that.size = response.size;
+                    that.totpage = response.totalPages;
+                    that.last = response.last;
+                    that.first = response.first;
+                    that.number = response.number;
+                    for (var i = Math.max(0, that.number - 3); i < Math.min(that.totpage, that.number + 3); i++) {
+                        that.npage.push(i)
+                    }
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        }
+    });
+
+</script>
+</html>
