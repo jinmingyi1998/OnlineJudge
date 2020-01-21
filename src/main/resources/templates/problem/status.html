@@ -22,25 +22,23 @@
     });
 </script>
 <div class="ui container" height="100%" id="vue-solutions">
-    <!--<form class="form-inline justify-content-center">
-        <label for="search-username" style="font-size: 1.5rem;margin-right:0.5rem;margin-left: 1rem">用户名:</label>
-        <input class="form-control" id="search-username" name="username" type="text">
-        <label for="search-problem" style="margin-left: 1rem;margin-right:0.5rem;font-size: 1.5rem">题目:</label>
-        <input class="form-control" id="search-problem" name="problem" type="text">
-        <label for="search-result" style="margin-left: 1rem;margin-right:0.5rem;font-size: 1.5rem">结果:</label>
-        <select class="form-control" id="search-result" name="result">
-            <option selected value="">All</option>
-            <option value="Accepted">Accepted</option>
-            <option value="Wrong Answer">Wrong Answer</option>
-            <option value="Time Limit Exceed">Time Limit Exceed</option>
-            <option value="Memory Limit Exceed">Memory Limit Exceed</option>
-            <option value="Compile Error">Compile Error</option>
-            <option value="Runtime Error">Runtime Error</option>
-        </select>
-        <button class="btn btn-outline-primary" id="search-submit" style="margin: 0.5rem" onclick="return false"><i
-                class="fa fa-search"></i></button>
-
-    </form>-->
+    <form class="ui form" v-on:submit.prevent="search()">
+        <div class=" fields">
+            <div class="inline field">
+                <label for="search-username">用户名:</label>
+                <input id="search-username" type="text" v-model="searchUser"></div>
+            <div class="inline field">
+                <label for="search-problem">题目:</label>
+                <input id="search-problem" type="text" v-model="searchProblem"></div>
+            <div class="inline field ui checkbox">
+                <input type="checkbox" id="search-result" v-model="searchAC">
+                <label for="search-result">仅通过:</label>
+            </div>
+            <button class="ui mini pink inverted button" id="search-submit"><i
+                    class="search icon"></i>查找
+            </button>
+        </div>
+    </form>
     <table class="ui padded celled orange table"
            style="opacity: 0.8;margin:1rem">
         <thead class="thead-light text-center">
@@ -132,6 +130,7 @@
     </div>
 </div>-->
 <script>
+    $('.ui.checkbox').checkbox();
     vue_solu = new Vue({
         el: "#vue-solutions",
         data: {
@@ -188,6 +187,9 @@
                         that.npage.push(i)
                     }
                 })
+            },
+            search() {
+                this.get_page(this.number)
             }
         }
     })

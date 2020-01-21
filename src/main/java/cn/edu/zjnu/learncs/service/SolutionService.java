@@ -12,15 +12,16 @@ import cn.edu.zjnu.learncs.entity.User;
 import cn.edu.zjnu.learncs.entity.oj.Problem;
 import cn.edu.zjnu.learncs.entity.oj.Solution;
 import cn.edu.zjnu.learncs.repo.SolutionRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.LinkedList;
 import java.util.List;
 
+@Slf4j
 @Service
 public class SolutionService {
     public static final String[] STATUS = {"Accepted", "Wrong Answer", "Compile Error",
@@ -50,16 +51,16 @@ public class SolutionService {
     }
 
     public Page<Solution> getStatus(User user, Problem problem, String result, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size)//,new Sort(Sort.Direction.DESC,"id"));
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id"));
         if (user != null) {
             if (problem != null) {
-                if (result != null && result.length() > 0) {
+                if (result.length() > 0) {
                     return solutionRepository.findAllByUserAndProblemAndResult(pageable, user, problem, result);
                 } else {
                     return solutionRepository.findAllByUserAndProblem(pageable, user, problem);
                 }
             } else {
-                if (result != null && result.length() > 0) {
+                if (result.length() > 0) {
                     return solutionRepository.findAllByUserAndResult(pageable, user, result);
                 } else {
                     return solutionRepository.findAllByUser(pageable, user);
@@ -76,7 +77,7 @@ public class SolutionService {
                 if (result != null && result.length() > 0) {
                     return solutionRepository.findAllByResult(pageable, result);
                 } else {
-                    return solutionRepository.findAll(pageable);
+                    return new PageImpl<Solution>(new LinkedList<>());
                 }
             }
         }

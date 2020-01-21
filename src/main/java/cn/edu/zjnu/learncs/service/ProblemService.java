@@ -9,7 +9,10 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -40,8 +43,7 @@ public class ProblemService {
     }
 
     public Problem getActiveProblemById(Long id) {
-        Optional<Problem> problem = problemRepository.findProblemByIdAndActive(id, true);
-        return problem.orElse(null);
+        return problemRepository.findProblemByIdAndActive(id, true).orElse(null);
     }
 
 }

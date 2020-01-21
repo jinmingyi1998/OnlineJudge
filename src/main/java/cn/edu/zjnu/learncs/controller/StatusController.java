@@ -1,7 +1,9 @@
 package cn.edu.zjnu.learncs.controller;
 
 import cn.edu.zjnu.learncs.entity.User;
+import cn.edu.zjnu.learncs.entity.oj.Problem;
 import cn.edu.zjnu.learncs.entity.oj.Solution;
+import cn.edu.zjnu.learncs.service.ProblemService;
 import cn.edu.zjnu.learncs.service.SolutionService;
 import cn.edu.zjnu.learncs.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -34,17 +36,26 @@ class StatusAPIController {
     SolutionService solutionService;
     @Autowired
     UserService userService;
+    @Autowired
+    ProblemService problemService;
 
     @GetMapping
-    public Page<Solution> getStatus(@RequestParam(value = "page", defaultValue = "0") Integer page,
-                                    @RequestParam(value = "user", defaultValue = "") String username,
-                                    @RequestParam(value = "pid", defaultValue = "") Integer pid,
-                                    @RequestParam(value = "AC", defaultValue = "") Integer AC) {
+    public Page<Solution> searchStatus(@RequestParam(value = "page", defaultValue = "0") Integer page,
+                                       @RequestParam(value = "user", defaultValue = "") String username,
+                                       @RequestParam(value = "pid", defaultValue = "") Long pid,
+                                       @RequestParam(value = "AC", defaultValue = "") String AC) {
+        if (AC.equals("true"))
+            AC = "Accepted";
+        else
+            AC = "";
         page = Math.max(page, 0);
-        Page<Solution> solutionPage;
+        boolean getAll = false;
+        if (username.equals("") && pid == null && AC.equals(""))
+            getAll = true;
         User user = userService.getUserByUsername(username);
-        if (user == null && pid == null && AC == null)
-            return solutionPage = solutionService.getStatus(page, PAGE_SIZE);
-
+        Problem problem = problemService.getActiveProblemById(pid);
+        return getAll ?
+                solutionService.getStatus(page, PAGE_SIZE) :
+                solutionService.getStatus(user, problem, AC, page, PAGE_SIZE);
     }
 }
