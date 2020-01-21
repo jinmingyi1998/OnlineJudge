@@ -100,11 +100,10 @@ public class SolutionService {
         Sort _sort = new Sort(Sort.Direction.DESC, "submitTime");
         Page<Solution> solutionPage = solutionRepository.findAllByUser(new PageRequest(page, size, _sort), user);
         return solutionPage;
-    }
-
-    public List<Solution> getSolutionsOfUser(User user) {
-        return solutionRepository.findAllByUser(user, new Sort(Sort.Direction.DESC, "id"));
     }*/
+    public List<Solution> getProblemSubmitOfUser(User user, Problem problem) {
+        return solutionRepository.findAllByUserAndProblem(PageRequest.of(0, 50, Sort.by(Sort.Direction.DESC, "id")), user, problem).getContent();
+    }
 
     /**
      * get a page with sort

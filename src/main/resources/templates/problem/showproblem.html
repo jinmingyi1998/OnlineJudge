@@ -1,11 +1,3 @@
-<!--
-  ~ Copyright (c) 2019. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-  ~ Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
-  ~ Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
-  ~ Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
-  ~ Vestibulum commodo. Ut rhoncus gravida arcu.
-  -->
-
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -28,7 +20,7 @@
                 data() {
                     return {isdisabled: false}
                 },
-                template: `<a class="ui inverted primary button" v-bind:class="{disabled:isdisabled}" v-on:click="click_btn">提交</a>`,
+                template: `<a class="ui inverted primary button" v-bind:class="{disabled:isdisabled,loading:isdisabled}" v-on:click="click_btn">提交</a>`,
                 methods: {
                     click_btn: function () {
                         this.isdisabled = true;
@@ -44,69 +36,87 @@
 </head>
 <body>
 <main class="ui container">
-    <div class="ui grid two column row" id="vue-problem">
+    <div class="ui grid two column row">
         <div class="ui four wide column">
-            <div style="opacity: 0.9;background-color: white">
-                <table class="ui celled padded center aligned orange table">
+            <div class="ui padded blue segment">
+                标签
+            </div>
+            <div class="ui  green segment" id="vue-history">
+                <table class="ui selectable single line compact small striped center aligned table">
+                    <thead>
                     <tr>
-                        <td><i class="fa fa-clock-o"></i>时间限制</td>
-
-                        <td>{{problem.timeLimit}}</td>
+                        <th>提交结果</th>
+                        <th>提交时间</th>
                     </tr>
-                    <tr>
-                        <td><i class="fa fa-database"></i>空间限制</td>
-                        <td>{{problem.memoryLimit}}B</td>
+                    </thead>
+                    <tbody>
+                    <tr v-for="s in status">
+                        <td class="view-code" v-bind:id="s.id" v-bind:class="{
+                            positive:s.result=='Accepted',
+                            warning:s.result=='Pending',
+                            error:s.result!='Accepted'&&s.result!='Pending'
+                            }">{{s.normalResult}}
+                        </td>
+                        <td class="">{{s.normalSubmitTime}}</td>
                     </tr>
-                    <tr>
-                        <td>来源</td>
-                        <td>{{problem.source}}</td>
-                    </tr>
+                    </tbody>
                 </table>
+                <a v-bind:href="'/status?pid='+problem_id">More</a>
             </div>
         </div>
-        <div class="ui container twelve wide column">
-            <div class="ui card fluid" style="opacity: 0.8;background-color: white; padding: 1rem">
-                <div class="content">
-                    <h2 class="center aligned">{{problem.title}}</h2>
+        <div class="ui container twelve wide column" id="vue-problem">
+            <div class="ui raised piled segments fluid" style="opacity: 0.8;background-color: white; padding: 1rem">
+                <div class="ui secondary center aligned segment" v-bind:class="{loading:!dataready}">
+                    <h1>{{problem.title}}</h1>
+                    <table class="ui celled center aligned table">
+                        <tr>
+                            <td><i class="fa fa-clock-o"></i>时间限制</td>
+                            <td>{{problem.timeLimit}}</td>
+                            <td><i class="fa fa-database"></i>空间限制</td>
+                            <td>{{problem.memoryLimit}}B</td>
+                            <td>来源</td>
+                            <td>{{problem.source}}</td>
+                        </tr>
+                    </table>
                 </div>
-                <div class="content">
-                    <h5 class="header">题目描述</h5>
-                    <div class="description md-text">
+                <div class="ui padded segment" v-bind:class="{loading:!dataready}">
+                    <h2 class="">题目描述</h2>
+                    <div class=" md-text">
                         <textarea style="display: none">{{problem.description}}</textarea>
                     </div>
                 </div>
-                <div class="content">
-                    <h5 class="header">输入</h5>
-                    <div class="description md-text">
+                <div class="ui segment" v-bind:class="{loading:!dataready}">
+                    <h2 class="">输入</h2>
+                    <div class=" md-text">
                         <textarea style="display: none;">{{problem.input}}</textarea>
                     </div>
                 </div>
-                <div class="content">
-                    <h5 class="header ">输出</h5>
-                    <div class="description md-text">
+                <div class="ui segment" v-bind:class="{loading:!dataready}">
+                    <h2 class="">输出</h2>
+                    <div class=" md-text">
                         <textarea style="display: none;">{{problem.output}}</textarea>
                     </div>
                 </div>
-                <div class="content">
-                    <h5 class=" header ">样例输入
-                        <button class="ui small button"
+                <div class="ui segment" v-bind:class="{loading:!dataready}">
+                    <h2 class="">样例输入
+                        <button class="ui small button btn-copy"
                                 data-clipboard-target="#input-content" data-clipboard-action="copy">Copy
                         </button>
-                    </h5>
+                    </h2>
 
-                    <pre class="description" id="input-content">{{problem.sampleInput}}</pre>
+                    <pre class="" id="input-content">{{problem.sampleInput}}</pre>
                 </div>
-                <div class="content">
-                    <h5 class="header ">样例输出
-                        <button class="ui button small"
+                <div class="ui segment" v-bind:class="{loading:!dataready}">
+                    <h2 class="">样例输出
+                        <button class="ui button small btn-copy"
                                 data-clipboard-target="#output-content" data-clipboard-action="copy">Copy
                         </button>
-                    </h5>
-                    <pre class="description" id="output-content">{{problem.sampleOutput}}</pre>
+                    </h2>
+                    <pre class="" id="output-content">{{problem.sampleOutput}}</pre>
                 </div>
-                <div class="content">
-                    <h5 class="header ">提示</h5>
-                    <div class="description md-text">
+                <div class="ui tertiary segment" v-bind:class="{loading:!dataready}">
+                    <h2 class="">提示</h2>
+                    <div class="md-text">
                         <textarea style="display: none;">{{problem.hint}}</textarea>
                     </div>
                 </div>
@@ -136,26 +146,51 @@
     </div>
 
 </main>
-
+<div class="ui large modal" id="codemodal">
+    <div class="">
+        <div class="" style="padding: 1rem;">
+            <div class="ui header">
+                <h4 class="">#<span id="modal-id"></span>&nbsp;用户名：<abbr id="modal-username"></abbr>&nbsp;题目：<abbr
+                        id="modal-problem"></abbr></h4>
+            </div>
+            <div class="scrolling content">
+                <table class="ui celled table">
+                    <thead class="center aligned">
+                    <tr>
+                        <th><i class="fa fa-check-circle"></i>结果</th>
+                        <th><i class="fa fa-clock-o"></i>用时(ms)</th>
+                        <th><i class="fa fa-database"></i>内存(Byte)</th>
+                        <th><i class="fa fa-files-o"></i>代码长度</th>
+                        <th><i class="fa fa-keyboard-o"></i>语言</th>
+                        <th><i class="fa fa-calendar"></i>提交时间</th>
+                    </tr>
+                    </thead>
+                    <tbody class="text center aligned">
+                    <td id="modal-result">{{normalResult}}</td>
+                    <td id="modal-time">{{time}}</td>
+                    <td id="modal-memory">{{memory}}</td>
+                    <td id="modal-length">{{length}}</td>
+                    <td id="modal-language">{{normalLanguage}}</td>
+                    <td id="modal-submit-time">{{normalSubmitTime}}</td>
+                    </tbody>
+                </table>
+                <button class="ui button red" id="modal-share">
+                    Not Shared
+                </button>
+                <pre id="modal-ce"></pre>
+                <pre class="prettyprint" id="source_code"></pre>
+            </div>
+            <div class="actions">
+                <button class="ui black deny button"><i class="close icon"></i>Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script language="JavaScript" src="/js/StatusInModal.js"></script>
 <script>
     $('.ui.checkbox').checkbox();
     pid = location.pathname.split('/');
     pid = pid[pid.length - 1];
-    // new Vue({
-    //     el: '#codeModal',
-    //     data: {
-    //         username: "",
-    //         pid: "",
-    //         result: "",
-    //         time: "",
-    //         memory: "",
-    //         length: "",
-    //         language: "",
-    //         submit_time: "",
-    //         share: false,
-    //         source_code: ""
-    //     }
-    // });
     var clipboard = new ClipboardJS('.btn-copy');
     clipboard.on('success', function (e) {
         e.clearSelection();
@@ -163,6 +198,19 @@
     clipboard.on('error', function (e) {
         console.error('Action:', e.action);
         console.error('Trigger:', e.trigger);
+    });
+    vue_history = new Vue({
+        el: "#vue-history",
+        data: {
+            status: [],
+            problem_id: pid
+        },
+        created: function () {
+            var that = this;
+            axios.get('/api/status/user/latest/submit/' + pid).then(function (res) {
+                that.status = res.data;
+            })
+        }
     });
     // var vm = new Vue({
     //     el: '#top-list',
@@ -184,7 +232,8 @@
             problem: {},
             code: "",
             language: "c",
-            share: true
+            share: true,
+            dataready: false
         },
         methods: {
             submit: function () {
@@ -198,7 +247,7 @@
                     if (res.data != "success") {
                         alert(res.data);
                     } else {
-                        scrollTo(0, 0);
+                        // scrollTo(0, 0);//x,y
                     }
                 })
             }
@@ -233,6 +282,7 @@
                         $(this).attr("id", "");
                     });
                 });
+                that.dataready = true;
             }).catch(function (e) {
                 console.log(e);
                 location.href = "/4O4";

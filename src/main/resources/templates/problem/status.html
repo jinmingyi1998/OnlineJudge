@@ -9,10 +9,7 @@
             margin-right: 1rem;
         }
     </style>
-    <!--    <script language="JavaScript" src="/js/urlcontrol.js"></script>-->
     <script language="JavaScript" src="/js/StatusInModal.js"></script>
-
-
 </head>
 <body>
 <script>
@@ -31,15 +28,15 @@
                 <label for="search-problem">题目:</label>
                 <input id="search-problem" type="text" v-model="searchProblem"></div>
             <div class="inline field ui checkbox">
-                <input type="checkbox" id="search-result" v-model="searchAC">
                 <label for="search-result">仅通过:</label>
+                <input type="checkbox" id="search-result" v-model="searchAC">
             </div>
-            <button class="ui mini pink inverted button" id="search-submit"><i
+            <button class="ui mini orange inverted button" id="search-submit"><i
                     class="search icon"></i>查找
             </button>
         </div>
     </form>
-    <table class="ui padded celled orange table"
+    <table class="ui padded celled selectable striped orange table"
            style="opacity: 0.8;margin:1rem">
         <thead class="thead-light text-center">
         <tr>
@@ -58,8 +55,8 @@
         <tr v-for="solution in solutions" v-bind:key="solution.id">
             <td>{{solution.id}}</td>
             <td>{{solution.user.username}}</td>
-            <td><a v-bind:href="'/oj/problems/'+solution.problem.id">{{solution.problem.id}}</a></td>
-            <td v-bind:class="{
+            <td><a v-bind:href="'/problems/'+solution.problem.id">{{solution.problem.id}}</a></td>
+            <td class="view-code" v-bind:id="solution.id" v-bind:class="{
             positive:solution.result=='Accepted',
             warning:solution.result=='Pending',
             error:solution.result!='Accepted'&&solution.result!='Pending'
@@ -68,7 +65,7 @@
             <td>{{solution.time}}</td>
             <td>{{parseInt(solution.memory/1024)}}</td>
             <td>{{solution.length}}</td>
-            <td><a class="view-code" v-bind:id="solution.id">{{solution.normalLanguage}}</a></td>
+            <td><a class="view-code link item" v-bind:id="solution.id">{{solution.normalLanguage}}</a></td>
             <td>{{solution.normalSubmitTime}}</td>
         </tr>
         </tbody>
@@ -88,17 +85,16 @@
                     v-bind:to_page="totalPages-1"></pagination>
     </div>
 </div>
-<!--<div class="modal fade" id="codeModal">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">#<span id="modal-id"></span>&nbsp;用户名：<abbr id="modal-username"></abbr>&nbsp;题目：<abbr
+<div class="ui large modal" id="codemodal">
+    <div class="">
+        <div class="" style="padding: 1rem;">
+            <div class="ui header">
+                <h4 class="">#<span id="modal-id"></span>&nbsp;用户名：<abbr id="modal-username"></abbr>&nbsp;题目：<abbr
                         id="modal-problem"></abbr></h4>
-                <button class="close" data-dismiss="modal" type="button">&times;</button>
             </div>
-            <div class="modal-body">
-                <table class="table table-light table-responsive-sm">
-                    <thead class="thead-light text-center">
+            <div class="scrolling content">
+                <table class="ui celled table">
+                    <thead class="center aligned">
                     <tr>
                         <th><i class="fa fa-check-circle"></i>结果</th>
                         <th><i class="fa fa-clock-o"></i>用时(ms)</th>
@@ -108,29 +104,44 @@
                         <th><i class="fa fa-calendar"></i>提交时间</th>
                     </tr>
                     </thead>
-                    <tbody class="text-center">
-                    <td id="modal-result"></td>
-                    <td id="modal-time"></td>
-                    <td id="modal-memory"></td>
-                    <td id="modal-length"></td>
-                    <td id="modal-language"></td>
-                    <td id="modal-submit-time"></td>
+                    <tbody class="text center aligned">
+                    <td id="modal-result">{{normalResult}}</td>
+                    <td id="modal-time">{{time}}</td>
+                    <td id="modal-memory">{{memory}}</td>
+                    <td id="modal-length">{{length}}</td>
+                    <td id="modal-language">{{normalLanguage}}</td>
+                    <td id="modal-submit-time">{{normalSubmitTime}}</td>
                     </tbody>
                 </table>
-                <button class="btn btn-sm share-code btn-danger" id="modal-share" th:if="${session.currentUser!=null}">
+                <button class="ui button red" id="modal-share">
                     Not Shared
                 </button>
-                <pre id="modal-ce" class="pre-scrollable"></pre>
-                <pre class="prettyprint pre-scrollable" id="source_code"></pre>
+                <pre id="modal-ce"></pre>
+                <pre class="prettyprint" id="source_code"></pre>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
+            <div class="actions">
+                <button class="ui black deny button"><i class="close icon"></i>Close</button>
             </div>
         </div>
     </div>
-</div>-->
+</div>
 <script>
     $('.ui.checkbox').checkbox();
+
+    function getRequest() {
+        const url = location.search; //获取url中"?"符后的字串
+        let theRequest = new Object();
+        if (url.indexOf("?") != -1) {
+            let str = url.substr(1);
+            strs = str.split("&");
+            for (let i = 0; i < strs.length; i++) {
+                theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+            }
+        }
+        return theRequest;
+    }
+
+    seaRequest = getRequest();
     vue_solu = new Vue({
         el: "#vue-solutions",
         data: {
@@ -145,12 +156,16 @@
             empty: true,
             searchUser: "",
             searchAC: "",
-            searchProblem: "",
+            searchProblem: seaRequest['pid'],
             npage: []
         },
         created: function () {
             var that = this;
-            axios.get('/api/status').then(function (res) {
+            url = '/api/status';
+            if (seaRequest['pid'] != undefined) {
+                url += "?pid=" + that.searchProblem;
+            }
+            axios.get(url).then(function (res) {
                 res = res.data;
                 that.solutions = res.content;
                 that.totalPages = res.totalPages;
