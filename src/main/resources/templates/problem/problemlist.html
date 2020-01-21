@@ -6,7 +6,7 @@
     <title>Problem List</title>
 </head>
 <body>
-<main class="ui container" style="margin-top: 5rem">
+<main class="ui container">
     <div class="ui grid" id="problem-list">
         <div class="ui eleven wide column container">
             <div class="ui container">
@@ -108,7 +108,7 @@
                 url = "/api/problems?page=" + to_page + "&search=" + that.search_string
                 axios.get(url)
                     .then(function (response) {
-                        response = response.data
+                        response = response.data;
                         that.problems = response.content;
                         that.totelement = response.totalElements;
                         that.size = response.size;
@@ -116,7 +116,7 @@
                         that.last = response.last;
                         that.first = response.first;
                         that.number = response.number;
-                        that.npage = []
+                        that.npage = [];
                         for (var i = Math.max(0, that.number - 3); i < Math.min(that.totpage, that.number + 3); i++) {
                             that.npage.push(i)
                         }
