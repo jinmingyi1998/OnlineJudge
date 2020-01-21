@@ -39,9 +39,6 @@ public class Solution {
     private Instant submitTime;
     @Column(nullable = false)
     private String ip;
-//    @JsonIgnore
-//    @ManyToOne
-//    private Contest contest;
     @Column(nullable = false, columnDefinition = "integer default -1")
     private Integer time;
     @Column(nullable = false, columnDefinition = "integer default -1")
@@ -52,50 +49,14 @@ public class Solution {
     private String result;
     @Column
     private Boolean share;
-//    @OneToOne(mappedBy = "solution", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private CompileError ce;
+    @Column(nullable = false, columnDefinition = "LONGTEXT default ''")
+    private String info;
     @Column
     private Integer caseNumber = 0;
 
     public Solution() {
-//        contest = null;
     }
 
-    public Solution(User user, Problem problem, String language, String source, String ip, Boolean share) {
-        this.user = user;
-        this.problem = problem;
-        this.language = language;
-        this.source = source;
-        this.ip = ip;
-        this.share = share;
-        length = source.length();
-        submitTime = Instant.now();
-        result = "Pending";
-        memory = 0;
-        time = 0;
-//        ce = null;
-//        contest = null;
-    }
-
-    public Solution(User user, Problem problem, String language, String source, Instant submitTime, String ip,
-//                    Contest contest,
-                    Integer time, Integer memory, Integer length, String result, Boolean share
-//            ,CompileError ce
-    ) {
-        this.user = user;
-        this.problem = problem;
-        this.language = language;
-        this.source = source;
-        this.submitTime = submitTime;
-        this.ip = ip;
-//        this.contest = contest;
-        this.time = time;
-        this.memory = memory;
-        this.length = length;
-        this.result = result;
-        this.share = share;
-//        this.ce = ce;
-    }
 
     public String getNormalResult() {
         if (result.equals("Accepted")) return result;

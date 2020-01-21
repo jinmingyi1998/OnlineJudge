@@ -8,13 +8,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ProblemRepository extends JpaRepository<Problem,Long> {
-    Problem findProblemById(Long id);
+    Optional<Problem> findProblemByIdAndActive(Long id, Boolean active);
     Page<Problem> findAll(Pageable pageable);
     Page<Problem> findProblemsByActive(Pageable pageable,Boolean active);
     List<Problem> findProblemsByActiveAndId(Boolean active,Long id);
-    List<Problem> findProblemsByActiveAndTitleLike(Boolean active, String title);
     @Query("select p from Problem p where p.title like %:title% and p.active = :active")
     List<Problem> getProblemsByActiveAndTitle(@Param("active")Boolean active,@Param("title") String name);
 }

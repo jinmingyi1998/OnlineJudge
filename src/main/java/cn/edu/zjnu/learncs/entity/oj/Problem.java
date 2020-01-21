@@ -1,13 +1,10 @@
 package cn.edu.zjnu.learncs.entity.oj;
 
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 //@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Log4j2
@@ -60,9 +57,8 @@ public class Problem {
 //        return str.substring(1);
 //    }
 
-//    public Problem() {
-//        solutions = null;
-//    }
+    public Problem() {
+    }
 
     public Problem(String title, String description, String input, String output, String sampleInput, String sampleOutput, String hint, String source, Integer timeLimit, Integer memoryLimit, Integer score) {
         this.title = title;
@@ -107,8 +103,19 @@ public class Problem {
         double ratio=this.accepted * 1.0 / this.submit * 100.0;
         return  String.format("%.2f%%",ratio);
     }
-    public int hashCode(){
-        return this.id.hashCode();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Problem problem = (Problem) o;
+
+        return getId().equals(problem.getId());
     }
 
+    @Override
+    public int hashCode() {
+        return getId().hashCode();
+    }
 }

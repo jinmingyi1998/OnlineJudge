@@ -1,7 +1,5 @@
 package cn.edu.zjnu.learncs.service;
 
-import java.util.*;
-
 import cn.edu.zjnu.learncs.entity.oj.Problem;
 import cn.edu.zjnu.learncs.repo.ProblemRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +9,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -40,4 +38,10 @@ public class ProblemService {
         List<Problem> _problems = new ArrayList<>(set);
         return new PageImpl<>(_problems, PageRequest.of(page, size), _problems.size());
     }
+
+    public Problem getActiveProblemById(Long id) {
+        Optional<Problem> problem = problemRepository.findProblemByIdAndActive(id, true);
+        return problem.orElse(null);
+    }
+
 }
