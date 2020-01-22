@@ -156,7 +156,7 @@
             empty: true,
             searchUser: "",
             searchAC: "",
-            searchProblem: seaRequest['pid'],
+            searchProblem: seaRequest['pid'] == undefined ? "" : seaRequest['pid'],
             npage: []
         },
         created: function () {

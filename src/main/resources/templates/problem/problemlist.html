@@ -18,18 +18,20 @@
                 </div>
             </div>
 
-            <div class="ui middle aligned animated selection massive vertically celled list">
+            <div class="ui animated huge selection vertically celled list">
                 <a class="ui link item" v-for="p in problems" :href="'/problems/'+p.id">
                     <div class="header">{{p.id}} - <span class="text massive">{{p.title}}</span></div>
-                    <div class="right floated content">
-                        <div class="ui container right aligned">
-                            <div class="ui mini horizontal blue statistic">
-                                <div class="value">{{p.submit}}</div>
-                                <div class="label">提交</div>
-                            </div>
-                            <div class="ui mini horizontal green statistic">
-                                <div class="value">{{p.accepted}}</div>
-                                <div class="label">通过</div>
+                    <div class="description">{{p.description.substring(0,35)}}
+                        <div class="right relaxed floated content">
+                            <div class="ui container right aligned">
+                                <div class="ui mini horizontal blue statistic">
+                                    <div class="value">{{p.submit}}</div>
+                                    <div class="label">提交</div>
+                                </div>
+                                <div class="ui mini horizontal green statistic">
+                                    <div class="value">{{p.accepted}}</div>
+                                    <div class="label">通过</div>
+                                </div>
                             </div>
                         </div>
                     </div>
