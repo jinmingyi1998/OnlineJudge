@@ -17,4 +17,14 @@ public class UserService {
     public User getUserByUsername(String username) {
         return userRepository.findByUsername(username).orElse(null);
     }
+
+    public User registerUser(User u) {
+        if (userRepository.findByUsername(u.getUsername()).isPresent())
+            return null;
+        return userRepository.save(u);
+    }
+
+    public User loginUser(User user) {
+        return userRepository.findByUsernameAndPassword(user.getUsername(), user.getPassword()).orElse(null);
+    }
 }

@@ -19,8 +19,8 @@
             </div>
 
             <div class="ui middle aligned animated selection massive vertically celled list">
-                <div class="ui item" v-for="p in problems">
-                    <a class="header" :href="'/problems/'+p.id">{{p.id}} - <span class="text massive">{{p.title}}</span></a>
+                <a class="ui link item" v-for="p in problems" :href="'/problems/'+p.id">
+                    <div class="header">{{p.id}} - <span class="text massive">{{p.title}}</span></div>
                     <div class="right floated content">
                         <div class="ui container right aligned">
                             <div class="ui mini horizontal blue statistic">
@@ -33,7 +33,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </a>
             </div>
             <div class="ui center aligned pagination menu">
                 <pagination content='<i class="angle double left icon"></i>' v-on:change_page="get_page"

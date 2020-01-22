@@ -40,12 +40,12 @@
         <a class="link item" href="/standing">排名</a>
         <a class="link item" href="/team">群组</a>
         <div class="ui right big borderless menu">
-            <a class="item" href="#" th:if="${session.currentUser== null}"
+            <a class="link item" href="/login" th:if="${session.currentUser== null}"
                data-toggle="modal" data-target="#loginModal">登录</a>
             <a class="item" th:href="'/user/'+${session.currentUser.id}"
                th:unless="${session.currentUser== null}"
                data-toggle="tooltip" th:title="${session.currentUser.name}">个人中心</a>
-            <a class="item" th:href="@{/register}"
+            <a class="item" href="/register"
                th:if="${session.currentUser==null}">注册</a>
             <a class="item" th:href="@{/logout}" th:unless="${session.currentUser==null}">注销</a></div>
     </div>

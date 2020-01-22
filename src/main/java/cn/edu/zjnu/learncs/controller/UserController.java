@@ -1,46 +1,61 @@
 package cn.edu.zjnu.learncs.controller;
 
 import cn.edu.zjnu.learncs.entity.User;
-import cn.edu.zjnu.learncs.service.RESTService;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import cn.edu.zjnu.learncs.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpSession;
+import java.util.Date;
 
 @RestController
 public class UserController {
     @Autowired
-    RESTService restService;
-    private String userSystemURL = "";
+    private UserService userService;
 
-    @GetMapping("/user/login")
-    public ModelAndView login() {
-        ModelAndView modelAndView = new ModelAndView("login.html");
-        return modelAndView;
-    }
-    @GetMapping("/user/logout")
-    public ModelAndView logout() {
-        ModelAndView modelAndView = new ModelAndView("index.html");
-        return modelAndView;
-    }
-    @GetMapping("/user/register")
+    @GetMapping("/register")
     public ModelAndView register() {
-        ModelAndView modelAndView = new ModelAndView("register.html");
-        return modelAndView;
-    }
-    @PostMapping("/user/register")
-    public User registerAction(User user, HttpSession session) {
-        String jsonString = String.format("\"username\":\"%s\",\"password\":\"%s\"",user.getUsername(),user.getPassword());
-        String result = restService.postJson(jsonString,userSystemURL+"/register");
-        JSONObject jsonObject = JSON.parseObject(result);
-        String msg = jsonObject.getString("msg");
-//        if(msg.equals("Request Success!"))
-        return user;
+        return new ModelAndView("user/register");
     }
 
+    @PostMapping("/register")
+    public String registerUser(@RequestBody User user) {
+        try {
+            User t_user = userService.registerUser(user);
+            if (t_user != null)
+                return "success";
+            else return "false";
+        } catch (Exception e) {
+            return e.getMessage();
+        }
+    }
+
+    @GetMapping("/login")
+    public ModelAndView login() {
+        return new ModelAndView("user/login");
+    }
+
+    @GetMapping("/logout")
+    public ModelAndView logout(HttpSession session) {
+        session.removeAttribute("currentUser");
+        session.invalidate();
+        return login();
+    }
+
+    @PostMapping("/login")
+    public String loginUser(@RequestBody User user, HttpSession session, Model m) {
+        User t_user = userService.loginUser(user);
+        if (t_user != null) {
+            session.setMaxInactiveInterval(6 * 60 * 60);
+            session.setAttribute("currentUser", t_user);
+            session.setAttribute("loginTime", new Date());
+            return "success";
+        }
+        return "用户名或密码错误。";
+    }
 }

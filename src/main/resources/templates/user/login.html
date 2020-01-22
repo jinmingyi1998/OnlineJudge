@@ -1,95 +1,139 @@
-<!--
-  ~ Copyright (c) 2019. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-  ~ Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
-  ~ Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
-  ~ Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
-  ~ Vestibulum commodo. Ut rhoncus gravida arcu.
-  -->
-
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <th:block th:insert="~{fragment/header :: header}"></th:block>
     <meta charset="UTF-8">
     <title>登录</title>
-    <script>
-        $(function () {
-            $("[data-target='#loginModal']").remove();
-            $("#submit-btn").click(function () {
-                $.post({
-                    url: "/login",
-                    data: $("#loginForm").serialize(),
-                    success: function (data) {
-                        if (data == "success") {
-                            location = window.document.referrer;
-                        } else {
-                            $("#message").text(data);
-                            $("#message").show();
-                        }
-                    }
-                });
-            });
-        });
-    </script>
-    <style>
-        .form-signin {
-            width: 100%;
-            max-width: 330px;
-            padding: 15px;
-            margin: 0 auto;
+
+    <style type="text/css">
+        body {
+            background-color: #EEEEEE;
+            margin: 0;
         }
 
-        .form-signin .checkbox {
-            font-weight: 400;
+        body > .grid {
+            height: 100%;
         }
 
-        .form-signin .form-control {
-            position: relative;
-            box-sizing: border-box;
-            height: auto;
-            padding: 10px;
-            font-size: 16px;
+        .image {
+            margin-top: -100px;
         }
 
-        .form-signin .form-control:focus {
-            z-index: 2;
-        }
-
-        .form-signin input[type="email"] {
-            margin-bottom: -1px;
-            border-bottom-right-radius: 0;
-            border-bottom-left-radius: 0;
-        }
-
-        .form-signin input[type="password"] {
-            margin-bottom: -1px;
-            border-top-left-radius: 0;
-            border-top-right-radius: 0;
-        }
-
-        .form-signin input[type="submit"] {
-            margin-top: 10px;
-            border-top-left-radius: 0;
-            border-top-right-radius: 0;
+        .column {
+            max-width: 450px;
         }
     </style>
+    <script>
+        $(document).ready(function () {
+            $('.ui.form')
+                .form({
+                    inline: true,
+                    on: "change",
+                    fields: {
+                        username: {
+                            identifier: 'username',
+                            rules: [
+                                {
+                                    type: 'empty',
+                                    prompt: 'Please enter your username'
+                                },
+                                {
+                                    type: 'regExp[/^[a-zA-Z0-9_]{6,16}$/]',
+                                    prompt: 'Please enter a 4-16 letter username'
+                                }
+                            ]
+                        },
+                        password: {
+                            identifier: 'password',
+                            rules: [
+                                {
+                                    type: 'empty',
+                                    prompt: 'Please enter your password'
+                                },
+                                {
+                                    type: 'length[6]',
+                                    prompt: 'Your password must be at least 6 characters'
+                                }
+                            ]
+                        }
+                    }
+                })
+            ;
+        });
+    </script>
 </head>
 <body>
-<div class="container text-center">
-    <form class="form-signin" id="loginForm">
-        <h1 class="h3 mb-3 font-weight-normal">登录</h1>
-        <div class="alert alert-warning" id="message" style="display: none"></div>
-        <label class="sr-only" for="inputUsername">用户名</label>
-        <input autofocus class="form-control" id="inputUsername" name="username" placeholder="用户名" required=""
-               type="text">
-        <label class="sr-only" for="inputPassword">密码</label>
-        <input class="form-control" id="inputPassword" name="password" placeholder="密码" required type="password">
-        <input class="btn btn-lg btn-primary btn-block" id="submit-btn" onclick="return false" type="submit"
-               value="登录">
-    </form>
+
+<div class="ui middle aligned center aligned grid">
+    <div class="column" id="vue-login">
+        <h2 class="ui blue image header">
+            <img src="/images/acmlogo.png" style="width: max-content ;height: auto" class=" big image">
+            <div class="content">
+                Log-in to your account
+            </div>
+        </h2>
+        <form class="ui form" @submit.prevent="userlogin" onsubmit="return false">
+            <div class="ui stacked segment">
+                <div class="field">
+                    <div class="ui left icon input">
+                        <i class="user icon"></i>
+                        <input type="text" name="username" v-model="username" placeholder="Username">
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="ui left icon input">
+                        <i class="lock icon"></i>
+                        <input type="password" name="password" v-model="password" placeholder="Password">
+                    </div>
+                </div>
+                <div class="ui fluid large green inverted button" :class="{disabled:!ready,loading:!ready}"
+                     @click.prevent="userlogin">Login
+                </div>
+            </div>
+
+            <div class="ui error message"></div>
+
+        </form>
+
+        <div class="ui message">
+            New to us? <a href="/register">Sign Up</a>
+        </div>
+    </div>
 </div>
-
-
-<footer th:replace="~{fragment/footer :: footer}"></footer>
+<script>
+    vlogin = new Vue({
+        el: "#vue-login",
+        data: {
+            username: "",
+            password: "",
+            ready: true,
+        },
+        methods: {
+            userlogin() {
+                if (!$('form').form('validate form'))
+                    return;
+                this.ready = false;
+                var that = this;
+                axios.post('/login', {
+                    username: this.username,        // 参数 firstName
+                    password: this.password,  // 参数 lastName
+                })
+                    .then(function (response) {
+                        $('form').form('reset')
+                        console.log(response);
+                        if (response.data == "success") {
+                            location.href = "/"
+                        }
+                        setTimeout(function () {
+                            that.ready = true;
+                        }, 1500)
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+            }
+        }
+    })
+</script>
 </body>
 </html>

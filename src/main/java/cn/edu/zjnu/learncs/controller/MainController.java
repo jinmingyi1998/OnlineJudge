@@ -1,6 +1,5 @@
 package cn.edu.zjnu.learncs.controller;
 
-import cn.edu.zjnu.learncs.entity.oj.Problem;
 import cn.edu.zjnu.learncs.service.RESTService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -16,21 +15,9 @@ public class MainController {
     @GetMapping("/")
     public ModelAndView home(){
         ModelAndView m = new ModelAndView("index");
-        String res = restService.postJson("", "http://www.baidu.com");
-        System.out.println(res);
+//        String res = restService.postJson("", "http://www.baidu.com");
+//        System.out.println(res);
         return m;
-    }
-    @GetMapping("/a/a")
-    public ModelAndView homeaa(){
-        ModelAndView m = new ModelAndView("index");
-        String res = restService.postJson("", "http://www.baidu.com");
-        System.out.println(res);
-        return m;
-    }
-    @GetMapping("/a")
-    public Problem homeb() {
-        ModelAndView m = new ModelAndView("index");
-        return new Problem();
     }
 //    @GetMapping
 //    public String baidu(){
