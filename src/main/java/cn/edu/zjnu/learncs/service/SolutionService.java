@@ -12,13 +12,16 @@ import cn.edu.zjnu.learncs.entity.User;
 import cn.edu.zjnu.learncs.entity.oj.Problem;
 import cn.edu.zjnu.learncs.entity.oj.Solution;
 import cn.edu.zjnu.learncs.repo.SolutionRepository;
+import cn.edu.zjnu.learncs.util.PageHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.LinkedList;
 import java.util.List;
 
 @Slf4j
@@ -77,7 +80,7 @@ public class SolutionService {
                 if (result != null && result.length() > 0) {
                     return solutionRepository.findAllByResult(pageable, result);
                 } else {
-                    return new PageImpl<Solution>(new LinkedList<>());
+                    return new PageHolder<Solution>();
                 }
             }
         }

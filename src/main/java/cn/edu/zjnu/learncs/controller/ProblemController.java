@@ -3,7 +3,10 @@ package cn.edu.zjnu.learncs.controller;
 import cn.edu.zjnu.learncs.NotFoundException;
 import cn.edu.zjnu.learncs.entity.User;
 import cn.edu.zjnu.learncs.entity.oj.Problem;
+import cn.edu.zjnu.learncs.entity.oj.Solution;
+import cn.edu.zjnu.learncs.entity.oj.Tag;
 import cn.edu.zjnu.learncs.service.ProblemService;
+import cn.edu.zjnu.learncs.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,12 +15,15 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.validation.constraints.NotNull;
 import java.time.Instant;
+import java.util.Arrays;
+import java.util.List;
 
 @Slf4j
 @RequestMapping("/problems")
 @Controller
-public class ProblemController {
+class ProblemViewController {
     @GetMapping
     public String problemsList() {
         return "problem/problemlist";
@@ -26,19 +32,6 @@ public class ProblemController {
     @GetMapping("/{id}")
     public String showproblem(@PathVariable Long id) {
         return "problem/showproblem";
-//        Problem problem = problemService.getProblemById(id);
-//        ModelAndView m = new ModelAndView("problem/showproblem");
-//        if (problem == null || problem.getActive() == false) {
-//            throw new NotFoundException();
-//        } else
-//            m.addObject("problem", problemService.getProblemById(id));
-//        List<Solution> solutionList = new ArrayList<>();
-//        if (session.getAttribute("currentUser") != null) {
-//            User user = (User) session.getAttribute("currentUser");
-//            solutionList = solutionService.getTop5ProblemSolution(user, problem);
-//        }
-//        m.addObject("solutions", solutionList);
-//        return m;
     }
 
 }
@@ -48,15 +41,25 @@ public class ProblemController {
 @RestController
 @CrossOrigin
 @RequestMapping("/api/problems")
-class ProblemAPIController {
+public class ProblemController {
     private static final int PAGE_SIZE = 30;
     @Autowired
     ProblemService problemService;
     @Autowired
     private HttpSession session;
+    @Autowired
+    UserService userService;
 
     static class SubmitCodeObject {
         public SubmitCodeObject() {
+        }
+
+        public Boolean isShare() {
+            return share.equals("true");
+        }
+
+        public void setShare(String share) {
+            this.share = share;
         }
 
         public void setSource(String source) {
@@ -76,16 +79,9 @@ class ProblemAPIController {
             return language;
         }
 
-        @Override
-        public String toString() {
-            return "SubmitCodeObject{" +
-                    "source='" + source + '\'' +
-                    ", language='" + language + '\'' +
-                    '}';
-        }
-
         private String source;
         private String language;
+        private String share;
     }
 
     @GetMapping
@@ -94,7 +90,16 @@ class ProblemAPIController {
         page = Math.max(page, 0);
         Page<Problem> problemPage;
         if (search != null && search.length() > 0) {
-            problemPage = problemService.searchActiveProblem(page, PAGE_SIZE, search);
+            int spl = search.lastIndexOf("$$");
+            if (spl >= 0) {
+                String tags = search.substring(spl + 2);
+                search = search.substring(0, spl);
+                String[] tagNames = tags.split("\\,");
+                List<Problem> _problems = problemService.searchActiveProblem(0, 1, search, true).getContent();
+                return problemService.getByTagName(page, PAGE_SIZE, Arrays.asList(tagNames), _problems);
+            } else {
+                return problemService.searchActiveProblem(page, PAGE_SIZE, search, false);
+            }
         } else {
             problemPage = problemService.getAllActiveProblems(page, PAGE_SIZE);
         }
@@ -115,6 +120,7 @@ class ProblemAPIController {
                                 HttpServletRequest request
     ) {
         String source = submitCodeObject.getSource();
+        boolean share = submitCodeObject.isShare();
         String language = submitCodeObject.getLanguage();
         if (session.getAttribute("last_submit") != null) {
             Instant instant = (Instant) session.getAttribute("last_submit");
@@ -127,24 +133,29 @@ class ProblemAPIController {
             }
         }
         session.setAttribute("last_submit", Instant.now());
+        @NotNull User user;
         try {
-            User user = (User) session.getAttribute("currentUser");
-//            if (!userAuthorityService.isLogin(user)) {// user doesn't login
-//                log.error("User not exist");
-//                return "Please Login";
-//            }
-//            Problem problem = problemService.getProblemById(id);
-//            if (problem == null || problem.getActive() == false) {
-//                return "Problem Not Exist";
-//            }
-            //null检验完成
-
-//            Solution solution = new Solution(user, problem, language, source, request.getRemoteAddr(), share);
-
-//            judgeService.submit(solution);
-            return "success";
+            user = (User) session.getAttribute("currentUser");
+            if (userService.getUserById(user.getId()) == null) {// user doesn't login
+                log.debug("User not exist");
+                return "Please Login";
+            }
         } catch (Exception e) {
-            return "fail";
+            return "Please Login";
         }
+        Problem problem = problemService.getActiveProblemById(id);
+        if (problem == null) {
+            return "Problem Not Exist";
+        }
+        //null检验完成
+
+        Solution solution = new Solution(user, problem, language, source, request.getRemoteAddr(), share);
+//            judgeService.submit(solution);
+        return "success";
+    }
+
+    @GetMapping("/tags")
+    public List<Tag> showTags() {
+        return problemService.getAllTags();
     }
 }

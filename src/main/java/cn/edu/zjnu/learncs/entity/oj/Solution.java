@@ -57,6 +57,14 @@ public class Solution {
     public Solution() {
     }
 
+    public Solution(User user, Problem problem, String language, String source, String ip, Boolean share) {
+        this.user = user;
+        this.problem = problem;
+        this.language = language;
+        this.source = source;
+        this.ip = ip;
+        this.share = share;
+    }
 
     public String getNormalResult() {
         if (result.equals("Accepted")) return result;

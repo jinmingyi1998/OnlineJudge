@@ -8,13 +8,11 @@
 
 package cn.edu.zjnu.learncs.entity.oj;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.List;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Data
@@ -25,9 +23,6 @@ public class Tag {
     private Long id;
     @Column(nullable = false, unique = true, length = 200)
     private String name;
-//    @JsonBackReference
-//    @ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY)
-//    private List<Problem> problems;
     @Column(columnDefinition = "bigint default 0", nullable = false)
     private Long score;
 
@@ -37,7 +32,6 @@ public class Tag {
     }
 
     public Tag() {
-
     }
 
     @Override

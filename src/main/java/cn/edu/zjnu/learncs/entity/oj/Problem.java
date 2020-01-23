@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 
 import javax.persistence.*;
+import java.util.List;
 
 //@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Log4j2
@@ -39,9 +40,8 @@ public class Problem {
     private Boolean active = false;
     @Column(columnDefinition = "integer default 0")
     private Integer score;
-
-//    @ManyToMany(fetch = FetchType.EAGER)
-//    private List<Tag> tags;
+    @ManyToMany(fetch = FetchType.EAGER)
+    private List<Tag> tags;
 //    @JsonBackReference
 //    @OneToMany(mappedBy = "problem")
 //    private List<Solution> solutions = new ArrayList<>();
