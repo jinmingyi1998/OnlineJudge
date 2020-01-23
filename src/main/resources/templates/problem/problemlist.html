@@ -4,24 +4,35 @@
     <th:block th:insert="~{fragment/header :: header}"></th:block>
     <meta charset="UTF-8">
     <title>Problem List</title>
+    <style>
+        .ui.statistic {
+            margin-bottom: 0px;
+        }
+
+        .ui.fluid.container {
+            max-width: 85% !important;
+        }
+    </style>
 </head>
 <body>
-<main class="ui container">
+<main class="ui fluid container">
     <div class="ui grid" id="problem-list">
-        <div class="ui eleven wide column container">
+        <div class="ui twelve wide column container">
             <div class="ui container">
-                <div class="center aligned">
-                    <form class="ui icon input" v-on:submit.prevent="search_problem()">
-                        <input type="text" v-model="search_string" placeholder="搜索题目或题号">
-                        <i class="search link icon" v-on:click="search_problem()"></i>
-                    </form>
+                <form class="ui icon input" v-on:submit.prevent="search_problem()">
+                    <input type="text" v-model="search_string" placeholder="搜索题目或题号">
+                    <i class="search link icon" v-on:click="search_problem()"></i>
+                </form>
+                <div class="ui labels">
+                    <div class="ui label" v-for="tag in search_tag">{{tag}} <i class="close icon"
+                                                                               @click="remove_search_tag"></i></div>
                 </div>
             </div>
 
-            <div class="ui animated huge selection vertically celled list">
-                <a class="ui link item" v-for="p in problems" :href="'/problems/'+p.id">
-                    <div class="header">{{p.id}} - <span class="text massive">{{p.title}}</span></div>
-                    <div class="description">{{p.description.substring(0,35)}}
+            <div class="ui animated huge selection vertically celled list segment" :class="{loading:!ready}">
+                <a class="ui link item" target="_blank" v-for="p in problems" :href="'/problems/'+p.id">
+                    <div class="ui header">{{p.id}} - {{p.title}}</div>
+                    <div class="meta">{{p.description.substring(0,35)}}
                         <div class="right relaxed floated content">
                             <div class="ui container right aligned">
                                 <div class="ui mini horizontal blue statistic">
@@ -52,13 +63,27 @@
                             v-bind:to_page="totpage-1"></pagination>
             </div>
         </div>
-        <div class="ui five wide column">other things -tags...</div>
+        <div class="ui four wide column">
+            <div class="ui orange segment" :class="{loading:!ready}">
+                <div class="ui dividing header">题目分类</div>
+                <a v-bind:key="t.id" v-for="t in tags" v-html="t.name"
+                   class="ui label horizontal relaxed" :class="[colorClass(t.id)]"
+                   style="margin:0.2rem;"
+                   @click="add_search_tag"
+                ></a>
+            </div>
+        </div>
     </div>
 
 </main>
 <footer th:replace="~{fragment/footer :: footer}"></footer>
 </body>
 <script>
+    Array.prototype.remove = function (from, to) {
+        var rest = this.slice((to || from) + 1 || this.length);
+        this.length = from < 0 ? this.length + from : from;
+        return this.push.apply(this, rest);
+    };
     var pagination = Vue.component('pagination', {
         props: ['to_page', 'content'],
         template: `<a class="link item" v-html="content" v-on:click="$emit('change_page',to_page)"></a>`,
@@ -66,7 +91,9 @@
     var problems_list = new Vue({
         el: "#problem-list",
         data: {
+            ready: false,
             problems: [],
+            tags: [],
             totpage: 0,
             number: 0,
             size: 0,
@@ -74,40 +101,52 @@
             first: false,
             last: false,
             npage: [],
-            search_string: ""
+            search_string: "",
+            search_tag: [],
+            color: ["red", "blue", "green", "orange", "yellow", "pink", "brown", "purple", "olive", "teal"]
         },
         methods: {
-            search_problem: function () {
-                console.log("searching")
-                let that = this;
-                if (that.search_string.length == 0)
+            search() {
+                let ss = this.search_string;
+                if (this.search_tag.length > 0)
+                    ss += "$$" + this.search_tag.toString();
+                return ss;
+            },
+            colorClass(id) {
+                try {
+                    return this.color[parseInt(id) % 10]
+                } catch (e) {
+                    return this.color[Math.floor(Math.random() * 10)]
+                }
+            },
+            add_search_tag(event) {
+                ss = event.target.innerText.trim();
+                console.log(event.target);
+                if (this.search_tag.indexOf(ss) === -1)
+                    this.search_tag.push(ss);
+                this.get_page(0);
+            },
+            remove_search_tag(event) {
+                ss = event.target.parentNode.innerText.trim();
+                console.log(event.target.parentNode);
+                if (this.search_tag.indexOf(ss) === -1) {
+                    console.log(ss);
                     return;
-                url = "/api/problems?search=" + that.search_string
-                console.log(url)
-                axios.get(url)
-                    .then(function (response) {
-                        response = response.data
-                        that.problems = response.content;
-                        that.totelement = response.totalElements;
-                        that.size = response.size;
-                        that.totpage = response.totalPages;
-                        that.last = response.last;
-                        that.first = response.first;
-                        that.number = response.number;
-                        that.npage = []
-                        for (var i = Math.max(0, that.number - 3); i < Math.min(that.totpage, that.number + 3); i++) {
-                            that.npage.push(i)
-                        }
-                    })
-                    .catch(function (error) {
-                        console.log(error);
-                    });
+                }
+                this.search_tag.remove(this.search_tag.indexOf(ss));
+                this.get_page(0);
+            },
+            search_problem: function () {
+                if (this.search().length === 0)
+                    return;
+                this.get_page(0);
             },
             get_page: function (to_page) {
-                var that = this
-                if (to_page < 0 || to_page >= that.totpage)
-                    return null
-                url = "/api/problems?page=" + to_page + "&search=" + that.search_string
+                var that = this;
+                if (to_page !== 0 && (to_page < 0 || to_page >= that.totpage))
+                    return null;
+                url = "/api/problems?page=" + to_page + "&search=" + this.search();
+                console.log(url)
                 axios.get(url)
                     .then(function (response) {
                         response = response.data;
@@ -147,6 +186,10 @@
                 .catch(function (error) {
                     console.log(error);
                 });
+            axios.get("/api/problems/tags").then(function (response) {
+                that.tags = response.data;
+            });
+            that.ready = true;
         }
     });
 

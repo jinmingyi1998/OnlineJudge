@@ -38,8 +38,9 @@
 <main class="ui container">
     <div class="ui grid two column row">
         <div class="ui four wide column">
-            <div class="ui padded blue segment">
-                标签
+            <div class="ui padded blue segment" id="vue-tags" :class="{loading:!ready}">
+                <div class="ui dividing center aligned grey header">标签</div>
+                <div v-for="t in tags" v-html="t.name" class="ui small label" :class="[colorClass()]"></div>
             </div>
             <div class="ui  green segment" id="vue-history">
                 <table class="ui selectable single line compact small striped center aligned table">
@@ -68,7 +69,7 @@
             <div class="ui raised piled segments fluid" style="opacity: 0.8;background-color: white; padding: 1rem">
                 <div class="ui secondary center aligned segment" v-bind:class="{loading:!dataready}">
                     <h1>{{problem.title}}</h1>
-                    <table class="ui celled center aligned table">
+                    <table class="ui center aligned table">
                         <tr>
                             <td><i class="fa fa-clock-o"></i>时间限制</td>
                             <td>{{problem.timeLimit}}</td>
@@ -82,19 +83,19 @@
                 <div class="ui padded segment" v-bind:class="{loading:!dataready}">
                     <h2 class="">题目描述</h2>
                     <div class=" md-text">
-                        <textarea style="display: none">{{problem.description}}</textarea>
+                        <textarea style="display: none" v-html="problem.description"></textarea>
                     </div>
                 </div>
                 <div class="ui segment" v-bind:class="{loading:!dataready}">
                     <h2 class="">输入</h2>
                     <div class=" md-text">
-                        <textarea style="display: none;">{{problem.input}}</textarea>
+                        <textarea style="display: none;" v-html="problem.input"></textarea>
                     </div>
                 </div>
                 <div class="ui segment" v-bind:class="{loading:!dataready}">
                     <h2 class="">输出</h2>
                     <div class=" md-text">
-                        <textarea style="display: none;">{{problem.output}}</textarea>
+                        <textarea style="display: none;" v-html="problem.output"></textarea>
                     </div>
                 </div>
                 <div class="ui segment" v-bind:class="{loading:!dataready}">
@@ -104,7 +105,7 @@
                         </button>
                     </h2>
 
-                    <pre class="" id="input-content">{{problem.sampleInput}}</pre>
+                    <pre class="" id="input-content" v-html="problem.sampleInput"></pre>
                 </div>
                 <div class="ui segment" v-bind:class="{loading:!dataready}">
                     <h2 class="">样例输出
@@ -112,12 +113,12 @@
                                 data-clipboard-target="#output-content" data-clipboard-action="copy">Copy
                         </button>
                     </h2>
-                    <pre class="" id="output-content">{{problem.sampleOutput}}</pre>
+                    <pre class="" id="output-content" v-html="problem.sampleOutput"></pre>
                 </div>
                 <div class="ui tertiary segment" v-bind:class="{loading:!dataready}">
                     <h2 class="">提示</h2>
                     <div class="md-text">
-                        <textarea style="display: none;">{{problem.hint}}</textarea>
+                        <textarea style="display: none;" v-html="problem.hint"></textarea>
                     </div>
                 </div>
             </div>
@@ -212,20 +213,19 @@
             })
         }
     });
-    // var vm = new Vue({
-    //     el: '#top-list',
-    //     data: {
-    //         status: []
-    //     }
-    // });
-    // $("#leader-board").click(function () {
-    //     $.get({
-    //         url: "/oj/problems/status/top/" + $("main").attr("id"),
-    //         success: function (res) {
-    //             vm._data.status = res;
-    //         }
-    //     });
-    // });
+    var tags = new Vue({
+        el: "#vue-tags",
+        data: {
+            ready: false,
+            tags: [],
+            color: ["red", "blue", "green", "orange", "yellow", "pink", "brown", "purple", "olive", "teal"]
+        },
+        methods: {
+            colorClass() {
+                return this.color[Math.floor(Math.random() * 10)]
+            }
+        }
+    });
     var prom = new Vue({
         el: '#vue-problem',
         data: {
@@ -237,7 +237,7 @@
         },
         methods: {
             submit: function () {
-                var that = this
+                var that = this;
                 axios.post('/api/problems/submit/' + pid, {
                     language: that.language,
                     source: that.code,
@@ -256,6 +256,8 @@
             var that = this;
             axios.get('/api/problems/' + pid).then(function (response) {
                 that.problem = response.data;
+                tags.tags = that.problem.tags;
+                tags.ready = true;
                 $("title").text(response.data.title);
                 $(function () {
                     $(".md-text").each(function () {
@@ -289,6 +291,7 @@
             })
         }
     });
+
 </script>
 <footer th:replace="~{fragment/footer :: footer}"></footer>
 <!--<script src="/js/StatusInModal.js"></script>-->
