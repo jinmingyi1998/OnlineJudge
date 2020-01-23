@@ -33,6 +33,9 @@
                 <a class="ui link item" target="_blank" v-for="p in problems" :href="'/problems/'+p.id">
                     <div class="ui header">{{p.id}} - {{p.title}}</div>
                     <div class="meta">{{p.description.substring(0,35)}}
+                        <div class="ui small horizontal labels">
+                            <div class="ui label" v-for="pt in p.tags" v-html="pt.name"></div>
+                        </div>
                         <div class="right relaxed floated content">
                             <div class="ui container right aligned">
                                 <div class="ui mini horizontal blue statistic">
