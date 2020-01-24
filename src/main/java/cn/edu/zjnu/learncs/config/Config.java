@@ -4,6 +4,8 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.ArrayList;
+
 @Data
 @Configuration
 @ConfigurationProperties(prefix = "onlinejudge")
@@ -19,6 +21,7 @@ public class Config {
     private String judgerDir;
     private String uid;
     private String gid;
+    private ArrayList<String> judgerhost;
 
     @Data
     public static class Compile {

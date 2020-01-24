@@ -20,7 +20,7 @@ import java.util.List;
 @Slf4j
 @Controller
 @RequestMapping("/status")
-public class StatusController {
+class StatusViewController {
     private static final int PAGE_SIZE = 30;
 
     @GetMapping
@@ -33,7 +33,7 @@ public class StatusController {
 @RestController
 @CrossOrigin
 @RequestMapping("/api/status")
-class StatusAPIController {
+public class StatusController {
     private final int PAGE_SIZE = 50;
 
 

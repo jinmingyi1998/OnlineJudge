@@ -31,7 +31,12 @@ spring:
 #logging:
 #  path: onlinejudge/log
 #
-#onlinejudge:
+onlinejudge:
+  judgerhost:
+    - 127.0.0.1:8001
+    - 127.0.0.1:8002
+    - 127.0.0.1:8003
+    - 127.0.0.1:8004
 #  root-dir: /usr/judger/
 #  tmp_dir: /usr/judger/tmp/
 #  src-dir: /usr/judger/src/
