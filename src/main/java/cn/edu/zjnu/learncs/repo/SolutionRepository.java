@@ -15,6 +15,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -48,6 +52,23 @@ public interface SolutionRepository extends JpaRepository<Solution, Long> {
 
     Page<Solution> findAllByUserAndProblem(Pageable pageable, User user, Problem problem);
 
+    @Transactional
+    @Modifying
+    @Query(value = "update solution set solution.result=:re , solution.time=:ti, solution.memory=:me where solution.id=:id", nativeQuery = true)
+    void updateResultTimeMemory(@Param(value = "id") Long id,
+                                @Param(value = "re") String result,
+                                @Param(value = "ti") int time,
+                                @Param(value = "me") int memory);
+
+    @Transactional
+    @Modifying
+    @Query(value = "update solution set share = :share where id = :id", nativeQuery = true)
+    void updateShare(@Param("id") Long id, @Param("share") Boolean share);
+
+    @Transactional
+    @Modifying
+    @Query(value = "update solution set solution.result = :result , solution.info = :info where solution.id = :id", nativeQuery = true)
+    void updateResultInfo(@Param("id") Long id, @Param("result") String result, @Param("info") String info);
     //   Page<Solution> findAllByUserAndProblemAndResult( Pageable pageable, User user, Problem problem, String result);
 }
 

@@ -46,7 +46,11 @@ public class SolutionService {
 
     @Transactional
     public Solution insertSolution(Solution solution) {
-        return solutionRepository.save(solution);
+        try {
+            return solutionRepository.save(solution);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public Page<Solution> getStatus(int page, int size) {
@@ -120,10 +124,24 @@ public class SolutionService {
         Page<Solution> solutionPage = solutionRepository.findAll(new PageRequest(page, size, _sort));
         return solutionPage;
     }*/
-    @Transactional
-    public Solution updateSolution(Solution solution) {
-        return solutionRepository.save(solution);
+    public Solution updateSolutionResultTimeMemory(Solution solution) {
+        solutionRepository.updateResultTimeMemory(solution.getId(),
+                solution.getResult(),
+                solution.getTime(),
+                solution.getMemory());
+        return solution;
     }
+
+    public Solution updateSolutionShare(Solution solution) {
+        solutionRepository.updateShare(solution.getId(), solution.getShare());
+        return solution;
+    }
+
+    public Solution updateSolutionResultInfo(Solution solution) {
+        solutionRepository.updateResultInfo(solution.getId(), solution.getResult(), solution.getInfo());
+        return solution;
+    }
+
 /*
 
     public List<Solution> getSolutionsOfUserInContest(User u, Contest c) {

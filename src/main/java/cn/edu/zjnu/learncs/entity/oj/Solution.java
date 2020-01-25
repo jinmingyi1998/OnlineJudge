@@ -64,6 +64,12 @@ public class Solution {
         this.source = source;
         this.ip = ip;
         this.share = share;
+        length = source.length();
+        submitTime = Instant.now();
+        result = "Pending";
+        memory = 0;
+        time = 0;
+        info = "";
     }
 
     public String getNormalResult() {
