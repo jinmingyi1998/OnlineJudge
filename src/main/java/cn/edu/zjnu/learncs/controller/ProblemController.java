@@ -6,6 +6,8 @@ import cn.edu.zjnu.learncs.entity.oj.Problem;
 import cn.edu.zjnu.learncs.entity.oj.Solution;
 import cn.edu.zjnu.learncs.entity.oj.Tag;
 import cn.edu.zjnu.learncs.service.ProblemService;
+import cn.edu.zjnu.learncs.service.RESTService;
+import cn.edu.zjnu.learncs.service.SolutionService;
 import cn.edu.zjnu.learncs.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +51,10 @@ public class ProblemController {
     private HttpSession session;
     @Autowired
     UserService userService;
+    @Autowired
+    RESTService restService;
+    @Autowired
+    SolutionService solutionService;
 
     static class SubmitCodeObject {
         public SubmitCodeObject() {
@@ -117,8 +123,7 @@ public class ProblemController {
     @PostMapping("/submit/{id}")
     public String submitProblem(@PathVariable("id") Long id,
                                 @RequestBody SubmitCodeObject submitCodeObject,
-                                HttpServletRequest request
-    ) {
+                                HttpServletRequest request) {
         String source = submitCodeObject.getSource();
         boolean share = submitCodeObject.isShare();
         String language = submitCodeObject.getLanguage();
@@ -149,9 +154,10 @@ public class ProblemController {
         }
         //null检验完成
 
-        Solution solution = new Solution(user, problem, language, source, request.getRemoteAddr(), share);
-//            judgeService.submit(solution);
-        return "success";
+        Solution solution = solutionService.insertSolution(new Solution(user, problem, language, source, request.getRemoteAddr(), share));
+        if (solution == null)
+            return "submit failed";
+        return restService.submitCode(solution) == null ? "judge failed" : "success";
     }
 
     @GetMapping("/tags")

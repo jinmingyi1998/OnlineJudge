@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
 @Service
 public class RESTService {
 
@@ -63,14 +64,15 @@ public class RESTService {
                 "c_cpp",
                 "./main",
                 "/usr/bin/g++ main.cpp -lm -o main",
-                "\"#include<stdio.h>\\nint main()\\n{\\n\\tint a,b;\\n\\tscanf(\\\"%d %d\\\",&a,&b);\\n\\tprintf(\\\"%d\\\\n\\\",a+b);\\n}\\n\"\n}"
+                solution.getSource()
+
         );
         String jsonString = JSON.toJSONString(submitCode);
-        return postJson(jsonString, "http://localhost:12345/judge");
+        return postJson(jsonString, "http://localhost:6000/judge");
     }
 
     public String postJson(String json, String path) {
-        String result = "";
+        String result = null;
         try {
             URL url = new URL(path);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -95,7 +97,6 @@ public class RESTService {
             }
             reader.close();
         } catch (Exception e) {
-            e.printStackTrace();
             return null;
         }
         return result;

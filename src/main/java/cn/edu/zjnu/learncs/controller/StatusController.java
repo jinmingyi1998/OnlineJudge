@@ -92,7 +92,7 @@ public class StatusController {
                 Solution solution = solutionService.getSolutionById(id);
                 if (solution.getUser().equals(user)) {
                     solution.setShare(!solution.getShare());
-                    solutionService.updateSolution(solution);
+                    solutionService.updateSolutionShare(solution);
                     return solution.getShare();
                 }
             }
