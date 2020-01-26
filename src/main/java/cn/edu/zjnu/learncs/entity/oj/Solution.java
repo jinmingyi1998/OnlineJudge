@@ -26,7 +26,7 @@ public class Solution {
     private Problem problem;
     /**
      * C: c
-     * C++11: cpp
+     * C++: cpp
      * Java: java
      * Python2: py2
      * Python3: py3

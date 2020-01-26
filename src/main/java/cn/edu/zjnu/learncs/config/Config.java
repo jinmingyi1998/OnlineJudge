@@ -10,79 +10,42 @@ import java.util.ArrayList;
 @Configuration
 @ConfigurationProperties(prefix = "onlinejudge")
 public class Config {
-    private String rootDir;
-    private String srcDir;
-    private String dataDir;
-    private String excDir;
-    private String outDir;
-    private String tmpDir;
-    private Judge judge;
-    private Compile compile;
-    private String judgerDir;
-    private String uid;
-    private String gid;
+    //    private String rootDir;
+//    private String srcDir;
+//    private String dataDir;
+//    private String excDir;
+//    private String outDir;
+//    private String tmpDir;
+//    private String judgerDir;
+//    private String uid;
+//    private String gid;
     private ArrayList<String> judgerhost;
+    private LanguageConfig c;
+    private LanguageConfig cpp;
+    private LanguageConfig java;
+    private LanguageConfig python2;
+    private LanguageConfig python3;
+    private LanguageConfig go;
 
     @Data
-    public static class Compile {
-        private C c;
-        private Cpp cpp;
-        private Java java;
-        private Python2 python2;
-        private Python3 python3;
+    public static class LanguageConfig {
+        private String src;
+        private String seccomp_rule = "";
+        private String run_command;
+        private String compile_command;
+        private String memory_limit_check_only = "0";
 
-        @Data
-        public static class C extends LanguageConfigBase {
-        }
-
-        @Data
-        public static class Cpp extends LanguageConfigBase {
-        }
-
-        @Data
-        public static class Java extends LanguageConfigBase {
-        }
-
-        @Data
-        public static class Python2 extends LanguageConfigBase {
-        }
-
-        @Data
-        public static class Python3 extends LanguageConfigBase {
+        @Override
+        public String toString() {
+            return "LanguageConfig{" +
+                    "src='" + src + '\'' +
+                    ", seccomp_rule='" + seccomp_rule + '\'' +
+                    ", run_command='" + run_command + '\'' +
+                    ", compile_command='" + compile_command + '\'' +
+                    ", memory_limit_check_only='" + memory_limit_check_only + '\'' +
+                    '}';
         }
     }
 
-    @Data
-    public static class Judge {
-        private C c;
-        private Cpp cpp;
-        private Java java;
-        private Python2 python2;
-        private Python3 python3;
-
-        @Data
-        public static class C extends LanguageConfigBase {
-        }
-
-        @Data
-        public static class Cpp extends LanguageConfigBase {
-        }
-
-        @Data
-        public static class Java extends LanguageConfigBase {
-        }
-
-        @Data
-        public static class Python2 extends LanguageConfigBase {
-        }
-
-        @Data
-        public static class Python3 extends LanguageConfigBase {
-        }
-    }
 }
 
-@Data
-class LanguageConfigBase {
-    private String args;
-}

@@ -3,20 +3,20 @@ spring:
     username: jinmy
     password: 1234
     url: jdbc:mysql://localhost:3306/cslearn?serverTimezone=GMT%2B8&useUnicode=yes&characterEncoding=UTF-8
-#    driver-class-name: com.mysql.jdbc.Driver
+  #    driver-class-name: com.mysql.jdbc.Driver
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: false
     open-in-view: false
-#  mvc:
-#    view:
-#      suffix: .html
-#  resources:
-#    static-locations: classpath:/templates/,classpath:/static/
+  #  mvc:
+  #    view:
+  #      suffix: .html
+  #  resources:
+  #    static-locations: classpath:/templates/,classpath:/static/
   thymeleaf:
     encoding: utf-8
-    cache: false
+    cache: true
     mode: HTML
     check-template: false
   config:
@@ -33,44 +33,48 @@ spring:
 #
 onlinejudge:
   judgerhost:
-    - 127.0.0.1:8001
-    - 127.0.0.1:8002
-    - 127.0.0.1:8003
-    - 127.0.0.1:8004
-#  root-dir: /usr/judger/
-#  tmp_dir: /usr/judger/tmp/
-#  src-dir: /usr/judger/src/
-#  data-dir: /usr/judger/data/
-#  out-dir: /usr/judger/out/
-#  judger-dir: /usr/lib/judger/libjudger.so
-#  uid: 0
-#  gid: 0
-#  judge:
-#    java:
-#      args: -Djava.security.manager -Dfile.encoding=UTF-8 -Djava.awt.headless=true Main
-#    python2:
-#      args: main.pyc
-#    python3:
-#      args: __pycache__/main.cpython-36.pyc
-#
-#  compile:
-#    c:
-#      args: -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c99 -lm
-#    cpp:
-#      args: -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c++11 -lm
-#    java:
-#      args: -encoding UTF8
-#    python2:
-#      args: -m py_compile
-#    python3:
-#      args: -m py_compile
-#
-#  switches:
-#    executing: true
-#    submit: true
-#    enter-system: false
-#    ssl-enabled: false
-#    auto-create-dir: true
+    - http://localhost:12345/judge
+  #    - http://localhost:8001/judge
+  #    - http://localhost:8002/judge
+  #    - http://localhost:8003/judge
+  #    - http://localhost:8004/judge
+  #    - http://localhost:6000/judge
+  c:
+    src: main.c
+    seccomp_rule: c_cpp
+    run_command: ./main
+    compile_command: /usr/bin/gcc -DONLINE_JUDGE -fno-tree-ch -O2 -Wall -std=c99 main.c -lm -o main
+    memory_limit_check_only: 0
+  cpp:
+    src: main.cpp
+    seccomp_rule: c_cpp
+    run_command: ./main
+    compile_command: /usr/bin/g++ -DONLINE_JUDGE -fno-tree-ch -O2 -Wall -std=c++14 main.cpp -lm -o main
+    memory_limit_check_only: 0
+  go:
+    src: main.go
+    compile_command: gccgo -g -Wall main.go -o main
+    run_command: main
+    memory_limit_check_only: 0
+    seccomp_rule: general
+  java:
+    src: Main.java
+    run_command: /usr/bin/java -Djava.security.manager -Dfile.encoding=UTF-8 -Djava.awt.headless=true Main
+    compile_command: /usr/bin/javac Main.java -encoding UTF8
+    memory_limit_check_only: 1
+  python2:
+    src: main.py
+    run_command: /usr/bin/python main.pyc
+    compile_command: /usr/bin/python -m py_compile main.py
+    memory_limit_check_only: 0
+    seccomp_rule: general
+  python3:
+    src: main.py
+    run_command: /usr/bin/python3 __pycache__/main.cpython-36.pyc
+    compile_command: /usr/bin/python3 -m py_compile main.py
+    memory_limit_check_only: 0
+    seccomp_rule: general
+
 
 server:
   tomcat:

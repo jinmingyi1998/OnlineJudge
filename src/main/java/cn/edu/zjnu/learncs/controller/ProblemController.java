@@ -157,7 +157,11 @@ public class ProblemController {
         Solution solution = solutionService.insertSolution(new Solution(user, problem, language, source, request.getRemoteAddr(), share));
         if (solution == null)
             return "submit failed";
-        return restService.submitCode(solution) == null ? "judge failed" : "success";
+        try {
+            return restService.submitCode(solution) == null ? "judge failed" : "success";
+        } catch (Exception e) {
+            return "Internal error";
+        }
     }
 
     @GetMapping("/tags")
