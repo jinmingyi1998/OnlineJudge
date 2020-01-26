@@ -1,6 +1,7 @@
 package cn.edu.zjnu.learncs.entity.oj;
 
 import cn.edu.zjnu.learncs.entity.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
@@ -10,13 +11,11 @@ import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 
-//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Data
 @Log4j2
 @Entity
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Solution {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -53,6 +52,9 @@ public class Solution {
     private String info;
     @Column
     private Integer caseNumber = 0;
+    @JsonIgnore
+    @ManyToOne
+    private Contest contest = null;
 
     public Solution() {
     }
@@ -70,6 +72,7 @@ public class Solution {
         memory = 0;
         time = 0;
         info = "";
+        contest = null;
     }
 
     public String getNormalResult() {

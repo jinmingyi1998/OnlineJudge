@@ -9,5 +9,9 @@ public class LearncsApplication {
     public static void main(String[] args) {
         SpringApplication.run(LearncsApplication.class, args);
     }
+    /*
+    TODO:
+    名字颜色可变色
+     */
 
 }

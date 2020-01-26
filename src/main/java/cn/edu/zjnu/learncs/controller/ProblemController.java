@@ -35,9 +35,7 @@ class ProblemViewController {
     public String showproblem(@PathVariable Long id) {
         return "problem/showproblem";
     }
-
 }
-
 
 @Slf4j
 @RestController
@@ -56,7 +54,22 @@ public class ProblemController {
     @Autowired
     SolutionService solutionService;
 
-    static class SubmitCodeObject {
+    public static String checkSubmitFrequncy(HttpSession session, String source) {
+        if (session.getAttribute("last_submit") != null) {
+            Instant instant = (Instant) session.getAttribute("last_submit");
+            if (Instant.now().minusSeconds(10).compareTo(instant) < 0) {
+                return "Don't submit within 10 seconds";
+            } else if (source.length() > 20000) {
+                return "Source code too long";
+            } else if (source.length() < 2) {
+                return "Source code too short";
+            }
+        }
+        session.setAttribute("last_submit", Instant.now());
+        return null;
+    }
+
+    public static class SubmitCodeObject {
         public SubmitCodeObject() {
         }
 
@@ -127,17 +140,9 @@ public class ProblemController {
         String source = submitCodeObject.getSource();
         boolean share = submitCodeObject.isShare();
         String language = submitCodeObject.getLanguage();
-        if (session.getAttribute("last_submit") != null) {
-            Instant instant = (Instant) session.getAttribute("last_submit");
-            if (Instant.now().minusSeconds(10).compareTo(instant) < 0) {
-                return "Don't submit within 10 seconds";
-            } else if (source.length() > 20000) {
-                return "Source code too long";
-            } else if (source.length() < 2) {
-                return "Source code too short";
-            }
-        }
-        session.setAttribute("last_submit", Instant.now());
+        String _temp = checkSubmitFrequncy(session, source);
+        if (_temp != null)
+            return _temp;
         @NotNull User user;
         try {
             user = (User) session.getAttribute("currentUser");

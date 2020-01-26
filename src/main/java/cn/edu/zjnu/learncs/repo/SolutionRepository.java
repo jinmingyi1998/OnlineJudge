@@ -9,6 +9,7 @@
 package cn.edu.zjnu.learncs.repo;
 
 import cn.edu.zjnu.learncs.entity.User;
+import cn.edu.zjnu.learncs.entity.oj.Contest;
 import cn.edu.zjnu.learncs.entity.oj.Problem;
 import cn.edu.zjnu.learncs.entity.oj.Solution;
 import org.springframework.data.domain.Page;
@@ -70,5 +71,7 @@ public interface SolutionRepository extends JpaRepository<Solution, Long> {
     @Query(value = "update solution set solution.result = :result , solution.info = :info where solution.id = :id", nativeQuery = true)
     void updateResultInfo(@Param("id") Long id, @Param("result") String result, @Param("info") String info);
     //   Page<Solution> findAllByUserAndProblemAndResult( Pageable pageable, User user, Problem problem, String result);
+
+    Page<Solution> findAllByContestAndUser(Pageable pageable, Contest contest, User user);
 }
 

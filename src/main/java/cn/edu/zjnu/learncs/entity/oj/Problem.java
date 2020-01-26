@@ -1,17 +1,14 @@
 package cn.edu.zjnu.learncs.entity.oj;
 
-
 import lombok.Data;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
 import java.util.List;
 
-//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-@Log4j2
+@Slf4j
 @Data
 @Entity
-
 public class Problem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,22 +37,12 @@ public class Problem {
     private Boolean active = false;
     @Column(columnDefinition = "integer default 0")
     private Integer score;
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     private List<Tag> tags;
-//    @JsonBackReference
-//    @OneToMany(mappedBy = "problem")
-//    private List<Solution> solutions = new ArrayList<>();
     @Column(columnDefinition = "integer default 0")
     private Integer submit = 0;
     @Column(columnDefinition = "integer default 0")
     private Integer accepted = 0;
-//    public String tagsToString(){
-//        String str="";
-//        for (int i = 0; i < tags.size(); i++) {
-//            str+=","+tags.get(i).getName();
-//        }
-//        return str.substring(1);
-//    }
 
     public Problem() {
     }
@@ -76,7 +63,6 @@ public class Problem {
         active = false;
         this.score = score;
     }
-
 
     @Override
     public String toString() {
@@ -100,17 +86,15 @@ public class Problem {
 
     public String getRatio() {
         if (this.submit == 0) return "0%";
-        double ratio=this.accepted * 1.0 / this.submit * 100.0;
-        return  String.format("%.2f%%",ratio);
+        double ratio = this.accepted * 1.0 / this.submit * 100.0;
+        return String.format("%.2f%%", ratio);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Problem problem = (Problem) o;
-
         return getId().equals(problem.getId());
     }
 

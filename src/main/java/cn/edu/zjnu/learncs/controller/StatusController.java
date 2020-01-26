@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpSession;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Controller
@@ -75,13 +76,13 @@ public class StatusController {
     public Solution restfulShowSourceCode(@PathVariable(value = "id") Long id) {
         Solution solution = solutionService.getSolutionById(id);
         try {
-//            User user = (User) session.getAttribute("currentUser");
+            User user = (User) session.getAttribute("currentUser");
             if (solution != null && solution.getShare()) {
                 return solution;
             }
-//            if (user != null && user.getId() == solution.getUser().getId()) {
-//                return solution;
-//            }
+            if (user != null && Objects.equals(user.getId(), solution.getUser().getId())) {
+                return solution;
+            }
             solution.setSource("This Source Code Is Not Shared!");
             return solution;
         } catch (Exception e) {

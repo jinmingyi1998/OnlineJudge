@@ -1,14 +1,7 @@
-/*
- * Copyright (c) 2019. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
- * Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
- * Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
- * Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
- * Vestibulum commodo. Ut rhoncus gravida arcu.
- */
-
 package cn.edu.zjnu.learncs.service;
 
 import cn.edu.zjnu.learncs.entity.User;
+import cn.edu.zjnu.learncs.entity.oj.Contest;
 import cn.edu.zjnu.learncs.entity.oj.Problem;
 import cn.edu.zjnu.learncs.entity.oj.Solution;
 import cn.edu.zjnu.learncs.repo.SolutionRepository;
@@ -142,12 +135,13 @@ public class SolutionService {
         return solution;
     }
 
+    public Page<Solution> getSolutionsOfUserInContest(int page, int size, User u, Contest c) {
+        return solutionRepository.findAllByContestAndUser(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")), c, u);
+    }
+
 /*
 
-    public List<Solution> getSolutionsOfUserInContest(User u, Contest c) {
-        List<Solution> solutions = solutionRepository.findAllByUserAndContest(u, c);
-        return solutions;
-    }
+
 
     public List<Solution> getSolutionsInContest(Contest contest) {
         return solutionRepository.findAllByContestOrderByIdAsc(contest);
