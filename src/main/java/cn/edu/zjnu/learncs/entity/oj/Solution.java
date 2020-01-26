@@ -1,8 +1,7 @@
 package cn.edu.zjnu.learncs.entity.oj;
 
 import cn.edu.zjnu.learncs.entity.User;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 
@@ -11,10 +10,11 @@ import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Data
 @Log4j2
 @Entity
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Solution {
 
     @Id

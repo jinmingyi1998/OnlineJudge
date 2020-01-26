@@ -36,7 +36,6 @@ class StatusViewController {
 public class StatusController {
     private final int PAGE_SIZE = 50;
 
-
     @Autowired
     SolutionService solutionService;
     @Autowired
@@ -47,10 +46,10 @@ public class StatusController {
     HttpSession session;
 
     @GetMapping
-    public Page<Solution> searchStatus(@RequestParam(value = "page", defaultValue = "0") Integer page,
-                                       @RequestParam(value = "user", defaultValue = "") String username,
-                                       @RequestParam(value = "pid", defaultValue = "") Long pid,
-                                       @RequestParam(value = "AC", defaultValue = "") String AC) {
+    public Page searchStatus(@RequestParam(value = "page", defaultValue = "0") Integer page,
+                             @RequestParam(value = "user", defaultValue = "") String username,
+                             @RequestParam(value = "pid", defaultValue = "") Long pid,
+                             @RequestParam(value = "AC", defaultValue = "") String AC) throws Exception {
         if (AC.equals("true"))
             AC = "Accepted";
         else
@@ -61,9 +60,15 @@ public class StatusController {
             getAll = true;
         User user = userService.getUserByUsername(username);
         Problem problem = problemService.getActiveProblemById(pid);
-        return getAll ?
+        Page<Solution> page_return = getAll ?
                 solutionService.getStatus(page, PAGE_SIZE) :
                 solutionService.getStatus(user, problem, AC, page, PAGE_SIZE);
+        for (Solution s : page_return.getContent()) {
+            s.setSource(null);
+            s.setInfo(null);
+            s.setIp(null);
+        }
+        return page_return;
     }
 
     @GetMapping("/view/{id}")
