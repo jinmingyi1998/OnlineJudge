@@ -19,13 +19,14 @@
         </form>
     <div class="ui animated huge selection vertically celled list segment" :class="{loading:!ready}">
         <a class="ui link item" target="_blank" v-for="c in contests" :href="'/contests/'+c.id">
-            <div class="ui header" v-html="c.title"></div>
-            <div class="meta">{{c.description.substring(0,35)}}</div>
-            <div class="ui small left ribbon label" :class="{blue:c.privilege=='public',orange:c.privilege=='group'}"
-                 v-html="c.privilege"></div>
+            <div class="ui relaxed header" v-html="c.title"></div>
+            <div class="ui relaxed meta">{{c.description.substring(0,35)}}</div>
+            <div class="ui small ribbon label" :class="{blue:c.privilege=='public',orange:c.privilege=='group'}"
+                 v-html="c.privilege.toUpperCase()"></div>
             <div class="right floated">
-                <div class="ui label">{{c.runStatu}}
-                    <div class="detail"> {{c.normalStartTime}} <i class="ui hourglass half icon"></i>
+                <div class="ui big label">{{c.runStatu}}
+                    <div class="detail"> {{c.normalStartTime}} <i class="ui hourglass icon"
+                    :class="{start:c.runStatu=='未开始',half:c.runStatu=='进行中',end:c.runStatu=='已结束'}"></i>
                         {{c.normalEndTime}}
                     </div>
                 </div>
