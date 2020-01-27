@@ -15,9 +15,14 @@
     <link rel="stylesheet" href="/js/prettify/skins/sunburst.css">
     <title></title>
     <script src="/js/submit_button.js"></script>
+    <style>
+        .ui.fluid.container {
+            max-width: 85% !important;
+        }
+    </style>
 </head>
 <body>
-<main class="ui container">
+<main class="ui container fluid">
     <div class="ui grid two column row">
         <div class="ui four wide column">
             <div class="ui padded blue segment" id="vue-tags" :class="{loading:!ready}">
