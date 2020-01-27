@@ -8,5 +8,5 @@ COPY gradlew /onlinejudge
 COPY settings.gradle /onlinejudge
 COPY build.gradle /onlinejudge
 WORKDIR /onlinejudge
-RUN ./gradlew classes
+RUN chmod 755 gradlew && ./gradlew classes
 CMD ./gradlew bootRun
