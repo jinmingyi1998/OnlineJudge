@@ -1,0 +1,33 @@
+version: "3"
+services:
+  db:
+    image: mariadb:10.2.8
+    ports:
+      - 13306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=1234
+      - MYSQL_DATABASE=oj
+      - MYSQL_USER=oj
+      - MYSQL_PASSWORD=1234
+    volumes:
+      - /mysql:/var/lib/mysql
+
+  judgerserver:
+    image: registry.cn-hangzhou.aliyuncs.com/jinmingyi/judgerserver
+    volumes:
+      - /ojdata:/ojdata
+    ports:
+      - 12345:12345
+    environment:
+      - SERVICE_PORT=12345
+      - OJ_BACKEND_CALLBACK=http://onlinejudge:8080/judge/callback
+
+  onlinejudge:
+    image: registry.cn-hangzhou.aliyuncs.com/jinmingyi/onlinejudge
+    depends_on:
+      - db
+    ports:
+      - 8080:8080
+    environment:
+      - MYSQL_USER=oj
+      - MYSQL_PASSWORD=1234

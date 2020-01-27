@@ -22,7 +22,7 @@ import java.util.Objects;
 
 @Slf4j
 @Controller
-@RequestMapping("/oj/contest")
+@RequestMapping("/contest")
 class ContestViewController {
     @GetMapping
     public String contestPage(@RequestParam(value = "page", defaultValue = "0") int page,
