@@ -68,6 +68,12 @@ public class StatusController {
             s.setSource(null);
             s.setInfo(null);
             s.setIp(null);
+            s.getUser().setPassword(null);
+            s.getUser().setEmail(null);
+            s.getUser().setIntro(null);
+            Problem p = new Problem();
+            p.setId(s.getProblem().getId());
+            s.setProblem(p);
         }
         return page_return;
     }
