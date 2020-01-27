@@ -67,15 +67,20 @@ public class StatusController {
         for (Solution s : page_return.getContent()) {
             s.setSource(null);
             s.setInfo(null);
-            s.setIp(null);
-            s.getUser().setPassword(null);
-            s.getUser().setEmail(null);
-            s.getUser().setIntro(null);
-            Problem p = new Problem();
-            p.setId(s.getProblem().getId());
-            s.setProblem(p);
+            s = solutionFilter(s);
         }
         return page_return;
+    }
+
+    public Solution solutionFilter(Solution s) {
+        s.setIp(null);
+        s.getUser().setPassword(null);
+        s.getUser().setEmail(null);
+        s.getUser().setIntro(null);
+        Problem p = new Problem();
+        p.setId(s.getProblem().getId());
+        s.setProblem(p);
+        return s;
     }
 
     @GetMapping("/view/{id}")
@@ -84,13 +89,13 @@ public class StatusController {
         try {
             User user = (User) session.getAttribute("currentUser");
             if (solution != null && solution.getShare()) {
-                return solution;
+                return solutionFilter(solution);
             }
             if (user != null && Objects.equals(user.getId(), solution.getUser().getId())) {
-                return solution;
+                return solutionFilter(solution);
             }
             solution.setSource("This Source Code Is Not Shared!");
-            return solution;
+            return solutionFilter(solution);
         } catch (Exception e) {
             throw new NotFoundException();
         }
@@ -121,7 +126,14 @@ public class StatusController {
             if (userService.getUserById(user.getId()) != null && problem != null) {
                 List<Solution> solutions = solutionService.getProblemSubmitOfUser(user, problem);
 //                List<Solution>solutions = solutionService.getStatus(0,50).getContent();
-                return solutions.subList(0, Math.min(solutions.size(), 5));
+                solutions = solutions.subList(0, Math.min(solutions.size(), 5));
+                for (Solution s : solutions) {
+                    s.setUser(null);
+                    s.setProblem(null);
+                    s.setIp(null);
+                    s.setSource(null);
+                }
+                return solutions;
             }
         } catch (Exception e) {
         }

@@ -4,6 +4,14 @@ vue_history = new Vue({
         status: [],
         problem_id: pid
     },
+    methods: {
+        get_data() {
+            var that = this;
+            axios.get('/api/status/user/latest/submit/' + pid).then(function (res) {
+                that.status = res.data;
+            })
+        }
+    },
     created: function () {
         var that = this;
         axios.get('/api/status/user/latest/submit/' + pid).then(function (res) {
@@ -45,7 +53,8 @@ var prom = new Vue({
                 if (res.data != "success") {
                     alert(res.data);
                 } else {
-// scrollTo(0, 0);//x,y
+                    vue_history.get_data();
+                    scrollTo(0, 0);//x,y
                 }
             })
         }
