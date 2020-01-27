@@ -124,24 +124,19 @@
             },
             add_search_tag(event) {
                 ss = event.target.innerText.trim();
-                console.log(event.target);
                 if (this.search_tag.indexOf(ss) === -1)
                     this.search_tag.push(ss);
                 this.get_page(0);
             },
             remove_search_tag(event) {
                 ss = event.target.parentNode.innerText.trim();
-                console.log(event.target.parentNode);
                 if (this.search_tag.indexOf(ss) === -1) {
-                    console.log(ss);
                     return;
                 }
                 this.search_tag.remove(this.search_tag.indexOf(ss));
                 this.get_page(0);
             },
             search_problem: function () {
-                if (this.search().length === 0)
-                    return;
                 this.get_page(0);
             },
             get_page: function (to_page) {
@@ -149,7 +144,6 @@
                 if (to_page !== 0 && (to_page < 0 || to_page >= that.totpage))
                     return null;
                 url = "/api/problems?page=" + to_page + "&search=" + this.search();
-                console.log(url)
                 axios.get(url)
                     .then(function (response) {
                         response = response.data;

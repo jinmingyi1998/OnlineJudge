@@ -1,22 +1,17 @@
 spring:
   datasource:
-    username: jinmy
-    password: 1234
-    url: jdbc:mysql://localhost:3306/cslearn?serverTimezone=GMT%2B8&useUnicode=yes&characterEncoding=UTF-8
-  #    driver-class-name: com.mysql.jdbc.Driver
+    username: ${MYSQL_USER:-root}
+    password: ${MYSQL_PASSWORD:-1234}
+    url: jdbc:mysql://db:3306/oj?serverTimezone=GMT%2B8&useUnicode=yes&characterEncoding=UTF-8
+    driver-class-name: com.mysql.jdbc.Driver
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: false
-    open-in-view: false
-  #  mvc:
-  #    view:
-  #      suffix: .html
-  #  resources:
-  #    static-locations: classpath:/templates/,classpath:/static/
+    open-in-view: true
   thymeleaf:
     encoding: utf-8
-    cache: true
+    cache: false
     mode: HTML
     check-template: false
   config:
@@ -26,11 +21,12 @@ spring:
       max-file-size: 3050MB
       max-request-size: 3050MB
 
+logging:
+  file:
+    max-size: 50MB
+    path: /onlinejudge/log
+    max-history: 14
 
-#
-#logging:
-#  path: onlinejudge/log
-#
 onlinejudge:
   judgerhost:
     - http://localhost:12345/judge
@@ -75,9 +71,10 @@ onlinejudge:
     memory_limit_check_only: 0
     seccomp_rule: general
 
-
 server:
   tomcat:
     max-threads: 2000
-    max-connections: 20000
-    min-spare-threads: 30
+    max-connections: 2000
+  servlet:
+    session:
+      timeout: 350m

@@ -1,5 +1,6 @@
 package cn.edu.zjnu.learncs.controller;
 
+import cn.edu.zjnu.learncs.NotFoundException;
 import cn.edu.zjnu.learncs.entity.oj.Solution;
 import cn.edu.zjnu.learncs.service.RESTService;
 import cn.edu.zjnu.learncs.service.SolutionService;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 
 @Slf4j
@@ -31,6 +33,7 @@ public class MainController {
 
     @Data
     static class JudgeCallback {
+        @NotNull
         private Long submit_id;
         private String err;
         private String info;
@@ -57,45 +60,49 @@ public class MainController {
 
     @PostMapping("/judge/callback")
     public String judgeCallback(@RequestBody JudgeCallback callback) {
-        log.info(callback.toString());
-        Solution solution = solutionService.getSolutionById(callback.getSubmit_id());
-        if (solution == null) {
-            return "no this id";
-        }
-        if (callback.getErr() != null) {
-            if (callback.getErr().equals("CE")) {
-                solution.setResult("Compile Error");
-            } else {
+        try {
+            log.info(callback.toString());
+            Solution solution = solutionService.getSolutionById(callback.getSubmit_id());
+            if (solution == null) {
+                return "no this id";
+            }
+            if (callback.getErr() != null) {
+                if (callback.getErr().equals("CE")) {
+                    solution.setResult("Compile Error");
+                } else {
+                    solution.setResult("System Error");
+                }
+                solution.setInfo(callback.getInfo());
+                solutionService.updateSolutionResultInfo(solution);
+                return "success";
+            } else if (callback.getResults().size() == 0) {
                 solution.setResult("System Error");
+                solution.setInfo("No results");
+                solutionService.updateSolutionResultInfo(solution);
+                return "success";
             }
-            solution.setInfo(callback.getInfo());
-            solutionService.updateSolutionResultInfo(solution);
-            return "success";
-        } else if (callback.getResults().size() == 0) {
-            solution.setResult("System Error");
-            solution.setInfo("No results");
-            solutionService.updateSolutionResultInfo(solution);
-            return "success";
-        }
-        int cpu = 0;
-        int memory = 0;
-        int caseNumber = 0;
-        for (int i = 0; i < callback.getResults().size(); i++) {
-            caseNumber = i + 1;
-            JudgeCallback.RunMessage runMessage = callback.getResults().get(i);
-            solution.setResult(JudgeCallback.RunMessage.code[runMessage.getResult()]);
-            if (runMessage.getResult() > 3) {
-                cpu = memory = 0;
-                break;
+            int cpu = 0;
+            int memory = 0;
+            int caseNumber = 0;
+            for (int i = 0; i < callback.getResults().size(); i++) {
+                caseNumber = i + 1;
+                JudgeCallback.RunMessage runMessage = callback.getResults().get(i);
+                solution.setResult(JudgeCallback.RunMessage.code[runMessage.getResult()]);
+                if (runMessage.getResult() > 3) {
+                    cpu = memory = 0;
+                    break;
+                }
+                cpu = Math.max(cpu, runMessage.getCpu_time());
+                memory = Math.max(memory, runMessage.getMemory());
             }
-            cpu = Math.max(cpu, runMessage.getCpu_time());
-            memory = Math.max(memory, runMessage.getMemory());
+            solution.setCaseNumber(caseNumber);
+            solution.setTime(cpu);
+            solution.setMemory(memory);
+            solutionService.updateSolutionResultTimeMemory(solution);
+            return "success";
+        } catch (Exception e) {
+            throw new NotFoundException();
         }
-        solution.setCaseNumber(caseNumber);
-        solution.setTime(cpu);
-        solution.setMemory(memory);
-        solutionService.updateSolutionResultTimeMemory(solution);
-        return "success";
     }
 //    @GetMapping
 //    public String baidu(){

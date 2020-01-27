@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -104,6 +105,7 @@ public class ProblemController {
     }
 
     @GetMapping
+    @Transactional
     public Page<Problem> showProblemList(@RequestParam(value = "page", defaultValue = "0") int page,
                                          @RequestParam(value = "search", defaultValue = "") String search) {
         page = Math.max(page, 0);
@@ -115,12 +117,20 @@ public class ProblemController {
                 search = search.substring(0, spl);
                 String[] tagNames = tags.split("\\,");
                 List<Problem> _problems = problemService.searchActiveProblem(0, 1, search, true).getContent();
-                return problemService.getByTagName(page, PAGE_SIZE, Arrays.asList(tagNames), _problems);
+                problemPage = problemService.getByTagName(page, PAGE_SIZE, Arrays.asList(tagNames), _problems);
             } else {
-                return problemService.searchActiveProblem(page, PAGE_SIZE, search, false);
+                problemPage = problemService.searchActiveProblem(page, PAGE_SIZE, search, false);
             }
         } else {
             problemPage = problemService.getAllActiveProblems(page, PAGE_SIZE);
+        }
+        for (Problem p : problemPage.getContent()) {
+            p.setInput(null);
+            p.setOutput(null);
+            p.setHint(null);
+            p.setSource(null);
+            p.setSampleInput(null);
+            p.setSampleOutput(null);
         }
         return problemPage;
     }
@@ -158,7 +168,6 @@ public class ProblemController {
             return "Problem Not Exist";
         }
         //null检验完成
-
         Solution solution = solutionService.insertSolution(new Solution(user, problem, language, source, request.getRemoteAddr(), share));
         if (solution == null)
             return "submit failed";

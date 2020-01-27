@@ -93,9 +93,7 @@ public class ContestController {
     public String submitProblemInContest(@PathVariable("pid") Long pid,
                                          @PathVariable("cid") Long cid,
                                          HttpServletRequest request, @RequestBody ProblemController.SubmitCodeObject submitCodeObject) {
-
         log.info("Submit:" + Date.from(Instant.now()));
-
         String source = submitCodeObject.getSource();
         boolean share = submitCodeObject.isShare();
         String language = submitCodeObject.getLanguage();

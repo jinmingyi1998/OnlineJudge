@@ -1,5 +1,6 @@
 package cn.edu.zjnu.learncs.entity.oj;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
@@ -9,6 +10,7 @@ import java.util.List;
 @Slf4j
 @Data
 @Entity
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Problem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,7 +39,7 @@ public class Problem {
     private Boolean active = false;
     @Column(columnDefinition = "integer default 0")
     private Integer score;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<Tag> tags;
     @Column(columnDefinition = "integer default 0")
     private Integer submit = 0;
