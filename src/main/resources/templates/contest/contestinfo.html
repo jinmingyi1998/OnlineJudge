@@ -1,18 +1,8 @@
-<!--
-  ~ Copyright (c) 2019. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-  ~ Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
-  ~ Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
-  ~ Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
-  ~ Vestibulum commodo. Ut rhoncus gravida arcu.
-  -->
-
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <th:block th:insert="~{fragment/header :: header}"></th:block>
     <meta charset="UTF-8">
-    <title th:text="${contest.title}">Contests</title>
     <link rel="stylesheet" href="/editor/css/editormd.css">
     <script src="/editor/lib/marked.min.js"></script>
     <script src="/editor/lib/raphael.min.js"></script>
@@ -21,209 +11,129 @@
     <script src="/editor/lib/flowchart.min.js"></script>
     <script src="/editor/lib/jquery.flowchart.min.js"></script>
     <script src="/editor/editormd.js"></script>
+    <script src="/js/clipboard.min.js"></script>
     <link rel="stylesheet" href="/js/prettify/skins/sunburst.css">
+    <title></title>
+    <script src="/js/submit_button.js"></script>
+    <style>
+        .ui.fluid.container {
+            max-width: 85% !important;
+        }
+    </style>
 </head>
 <body>
-<style>
-    a.nav-link {
-        color: black;
-    }
-</style>
-<main class="" th:id="${contest.id}">
-    <div class="container-fluid">
-        <ul class="container-fluid nav nav-pills">
-            <li class="nav-item"><a class="nav-link" data-toggle="pill" href="#overview"
-                                    style="font-size: 1.3rem">总览</a></li>
-            <li class="nav-item"><a class="nav-link active" data-toggle="pill" href="#problem"
-                                    style="font-size: 1.3rem">题目</a></li>
-            <li class="nav-item"><a class="nav-link" data-toggle="pill" href="#status"
-                                    style="font-size: 1.3rem">提交记录</a></li>
-            <li class="nav-item"><a class="nav-link" data-toggle="pill" href="#rank" style="font-size: 1.3rem">排行榜</a>
-            </li>
-            <li class="nav-item"><a class="nav-link" data-toggle="pill" id="refreshComment" href="#comment"
-                                    style="font-size: 1.3rem">评论</a></li>
-        </ul>
+<main class="ui container fluid">
+    <div class="ui tabular menu ">
+        <div class="item">Problem</div>
+        <div class="item">Status</div>
+        <div class="item">Ranklist</div>
+        <div class="item">Overview</div>
     </div>
-    <div class="tab-content container-fluid" style="margin-top: 2rem">
-        <div class="tab-pane container-fluid fade" id="overview">
-            <div class="list-group container">
-                <li class="list-group-item"
-                    th:each="problem:${problems}" th:object="${problem}">
-                    <span th:text="*{tempId}">Problem id</span>&nbsp;<span th:text="*{tempTitle}">tempTitle</span>
-                    <!--<div class="float-right"><span class="text-success" th:text="*{accepted}">solve</span>/<span-->
-                    <!--th:text="*{submitted}">submit</span></div>-->
-                </li>
-            </div>
-        </div>
-        <div class="tab-pane container-fluid fade show active" id="problem">
-            <span id="problem-number" style="display: none" th:text="${contest.problems.size()}"></span>
-            <div class="nav nav-pills bg-light rounded p-2 justify-content-center">
-                <h3>选择题目:&nbsp;</h3>
-                <a class="nav-item nav-link change-problem ml-1 mr-1"
-                   data-toggle="pill" href="#problem"
-                   th:each="problem:${contest.problems}" th:id="${problem.tempId}"
-                   th:text="${problem.tempId}"></a>
-            </div>
-            <div id="problem-container" style="display:none;">
-                <div class="card bg-light">
-                    <div class="card-header">
-                        <h3 class="card-title" id="problem-title"></h3>
-                        <ul class="list-inline">
-                            <li class="list-inline-item"><i class="fa fa-clock-o"></i>&nbsp;时间限制 :<span
-                                    id="problem-time-limit"></span></li>
-                            <li class="list-inline-item"><i class="fa fa-database"></i>&nbsp;内存限制 : <span
-                                    id="problem-memory-limit"></span></li>
-                        </ul>
-                    </div>
-                    <div class="card-body">
-                        <h4 class="card-title">题目描述</h4>
-                        <div class="card-text md-problem" id="problem-description">
-                            <textarea style="display: none;"></textarea>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <h4 class="card-title">输入</h4>
-                        <div class="card-text md-problem" id="problem-input">
-                            <textarea style="display: none;"></textarea>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <h4 class="card-title">输出</h4>
-                        <div class="card-text md-problem" id="problem-output">
-                            <textarea style="display: none;"></textarea>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <h4 class="card-title">样例输入</h4>
-                        <pre class="card-text p-3" id="problem-sample-input"></pre>
-                    </div>
-                    <div class="card-body">
-                        <h4 class="card-title">样例输出</h4>
-                        <pre class="card-text p-3" id="problem-sample-output"></pre>
-                    </div>
-                    <div class="card-body">
-                        <h4 class="card-title">提示</h4>
-                        <div class="card-text md-problem" id="problem-hint">
-                            <textarea style="display: none;"></textarea>
-                        </div>
+    <div class="ui grid two column row">
+        <div class="ui four wide column">
+            <div class="ui segments">
+                <div class="ui padded blue segment">
+                    <div class="ui pointing vertical menu fluid">
+                        <div class="link item active">Pa <div class="ui left pointing label">2/4</div></div>
+                        <div class="link item">Pb <div class="ui left pointing label">3/8</div></div>
+                        <div class="link item">Pc<div class="ui left pointing label">3/8</div></div>
+                        <div class="link item">Pb<div class="ui left pointing label">3/8</div></div>
                     </div>
                 </div>
-                <div class="container-fluid text-center" style="margin-top: 20px">
-                    <form id="form">
-                        <div class="form-inline">
-                            <label for="language">语言 :</label>
-                            <select class="form-control" id="language" name="language">
-                                <option value="c">C</option>
-                                <option selected value="cpp">C++</option>
-                                <option value="java">Java</option>
-                                <option value="py2">Python2</option>
-                                <option value="py3">Python3</option>
-                            </select>
-                            <div class="form-check" style="margin-left: 1rem">
-                                <label class="form-check-label" for="share">分享代码&nbsp;</label>
-                                <input class="form-check-input" id="share" name="share" type="checkbox">
-                            </div>
-                        </div>
-                        <textarea class="form-control" cols="40" id="" name="source" rows="20"
-                                  style="resize: none;margin: 5px"></textarea>
-                        <div class="alert-warning alert" id="submit-msg" style="display: none"></div>
-                        <div class="progress" style="display: none">
-                            <div class="progress-bar progress-bar-striped bg-success progress-bar-animated" id="prog"
-                                 style="width:0%"></div>
-                        </div>
-                        <a class="btn btn-primary btn-lg text-center text-light" id="submit_btn">提交</a>
-                    </form>
-                </div>
             </div>
         </div>
-        <div class="container-fluid tab-pane fade" id="status">
-            <a class="fa fa-refresh btn btn-link text-primary" onclick="getStatusOfMe()"
-               style="font-size: 1.5rem;color: white"></a>
-            <table class="table-sm table-hover table-responsive-xl table-bordered table-light container-fluid"
-                   style="opacity: 0.8">
-                <thead class="thead-light text-center">
-                <tr>
-                    <th>Run ID</th>
-                    <th><i class="fa fa-user"></i>&nbsp;用户名</th>
-                    <th><i class="fa fa-question-circle-o"></i>&nbsp;题目</th>
-                    <th><i class="fa fa-check-circle"></i>&nbsp;结果</th>
-                    <th><i class="fa fa-clock-o"></i>&nbsp;用时(ms)</th>
-                    <th><i class="fa fa-database"></i>&nbsp;内存(KB)</th>
-                    <th><i class="fa fa-files-o"></i>&nbsp;代码长度</th>
-                    <th><i class="fa fa-keyboard-o"></i>&nbsp;语言</th>
-                    <th><i class="fa fa-calendar"></i>&nbsp;提交时间</th>
-                </tr>
-                </thead>
-                <tbody class="text-center" id="status-tbody">
-                <tr v-for="s in status" class="status_row">
-                    <td>{{s.id}}</td>
-                    <td>{{s.user.name}}</td>
-                    <td>{{s.problem.id}}</td>
-                    <td class="result view-code" v-bind:id="s.id"
-                        v-bind:class="{ 'text-success' : s.normalResult=='Accepted',
-                         'font-weight-bold' : s.normalResult=='Accepted','text-danger':s.normalResult!='Accepted' }">
-                        {{s.normalResult}}
-                    </td>
-                    <td>{{s.time}}</td>
-                    <td>{{s.memory}}</td>
-                    <td>{{s.length}}</td>
-                    <td class="view-code" :id="s.id"
-                        v-bind:class="{ 'text-success' : s.normalResult=='Accepted',
-                         'text-danger':s.normalResult!='Accepted' }">{{s.language}}
-                    </td>
-                    <td>{{s.normalSubmitTime}}</td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="container-fluid tab-pane fade" id="rank">
-            <a class="fa fa-refresh btn btn-link text-primary" onclick="getRankOfContest()"
-               style="font-size: 1.5rem;color: white"></a>
-            <table class="table-sm table-hover table-responsive-xl table-bordered table-light container-fluid"
-                   style="opacity: 0.8">
-                <thead class="thead-light text-center">
-                <tr>
-                    <th style="width: 10rem">用户</th>
-                    <th style="width: 5rem">总用时</th>
-                    <th style="width: 6rem">通过数</th>
-                    <th th:each="problem:${contest.problems}" th:text="${problem.tempId}"></th>
-                </tr>
-                </thead>
-                <tbody class="text-center" id="rank-tbody">
-                </tbody>
-            </table>
-        </div>
-        <div class="container-fluid tab-pane fade" id="comment">
-            <ul class="list-group" id="comments">
-                <li class="list-group-item">
-                    :key="comment.id" class="list-group-item" v-for="comment in comments">
-                    <a href="">{{comment.user.name}}</a>&nbsp; @ &nbsp;<span>{{comment.normalPostTime}}</span>
-                    <div class="md-comment">
-                        <textarea style="display: none;"></textarea>
+        <div class="ui container twelve wide column" id="vue-problem">
+            <div class="ui raised piled segments fluid" style="opacity: 0.8;background-color: white; padding: 1rem">
+                <div class="ui secondary center aligned segment" v-bind:class="{loading:!dataready}">
+                    <h1>{{problem.title}}</h1>
+                    <table class="ui center aligned table">
+                        <tr>
+                            <td><i class="fa fa-clock-o"></i>时间限制</td>
+                            <td>{{problem.timeLimit}}</td>
+                            <td><i class="fa fa-database"></i>空间限制</td>
+                            <td>{{problem.memoryLimit}}B</td>
+                            <td>来源</td>
+                            <td>{{problem.source}}</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="ui padded segment" v-bind:class="{loading:!dataready}">
+                    <h2 class="">题目描述</h2>
+                    <div class=" md-text">
+                        <textarea style="display: none" v-html="problem.description"></textarea>
                     </div>
+                </div>
+                <div class="ui segment" v-bind:class="{loading:!dataready}">
+                    <h2 class="">输入</h2>
+                    <div class=" md-text">
+                        <textarea style="display: none;" v-html="problem.input"></textarea>
+                    </div>
+                </div>
+                <div class="ui segment" v-bind:class="{loading:!dataready}">
+                    <h2 class="">输出</h2>
+                    <div class=" md-text">
+                        <textarea style="display: none;" v-html="problem.output"></textarea>
+                    </div>
+                </div>
+                <div class="ui segment" v-bind:class="{loading:!dataready}">
+                    <h2 class="">样例输入
+                        <button class="ui small button btn-copy"
+                                data-clipboard-target="#input-content" data-clipboard-action="copy">Copy
+                        </button>
+                    </h2>
 
-                </li>
-            </ul>
-            <div class="container mt-3">
-                <div class="alert alert-success">支持 <code>markdown</code></div>
-                <textarea name="post_comment" id="post_comment" cols="30" rows="5" class="form-control"></textarea>
-                <a class="btn text-light btn-primary justify-content-center" id="submit_comment"
-                   style="margin-top: 1rem">发送</a>
+                    <pre class="" id="input-content" v-html="problem.sampleInput"></pre>
+                </div>
+                <div class="ui segment" v-bind:class="{loading:!dataready}">
+                    <h2 class="">样例输出
+                        <button class="ui button small btn-copy"
+                                data-clipboard-target="#output-content" data-clipboard-action="copy">Copy
+                        </button>
+                    </h2>
+                    <pre class="" id="output-content" v-html="problem.sampleOutput"></pre>
+                </div>
+                <div class="ui tertiary segment" v-bind:class="{loading:!dataready}">
+                    <h2 class="">提示</h2>
+                    <div class="md-text">
+                        <textarea style="display: none;" v-html="problem.hint"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="ui container fluid" style="opacity: 0.8;background-color: white;padding: 1rem">
+                <form id="form" class="ui form">
+                    <div>
+                        <label for="language">语言 :</label>
+                        <select class="ui search dropdown" id="language" name="language" v-model="language">
+                            <option value="c">C</option>
+                            <option selected value="cpp">C++</option>
+                            <option value="java">Java</option>
+                            <option value="py2">Python2</option>
+                            <option value="py3">Python3</option>
+                        </select>
+                        <div class="ui checked  checkbox">
+                            <label for="share">分享代码</label>
+                            <input id="share" name="share" v-model="share" type="checkbox">
+                        </div>
+                    </div>
+                    <textarea class="field" cols="40" id="" name="source" rows="20" placeholder="your code..."
+                              style="resize: none;" v-model="code"></textarea>
+                    <submit-button></submit-button>
+                </form>
             </div>
         </div>
     </div>
+
 </main>
-<div class="modal fade" id="codeModal">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">#<span id="modal-id"></span>&nbsp;用户名：<abbr id="modal-username"></abbr>&nbsp;题目：<abbr
+<div class="ui large modal" id="codemodal">
+    <div class="">
+        <div class="" style="padding: 1rem;">
+            <div class="ui header">
+                <h4 class="">#<span id="modal-id"></span>&nbsp;用户名：<abbr id="modal-username"></abbr>&nbsp;题目：<abbr
                         id="modal-problem"></abbr></h4>
-                <button class="close" data-dismiss="modal" type="button">&times;</button>
             </div>
-            <div class="modal-body">
-                <table class="table table-light table-responsive-sm">
-                    <thead class="thead-light text-center">
+            <div class="scrolling content">
+                <table class="ui celled table">
+                    <thead class="center aligned">
                     <tr>
                         <th><i class="fa fa-check-circle"></i>结果</th>
                         <th><i class="fa fa-clock-o"></i>用时(ms)</th>
@@ -233,106 +143,42 @@
                         <th><i class="fa fa-calendar"></i>提交时间</th>
                     </tr>
                     </thead>
-                    <tbody class="text-center">
-                    <td id="modal-result"></td>
-                    <td id="modal-time"></td>
-                    <td id="modal-memory"></td>
-                    <td id="modal-length"></td>
-                    <td id="modal-language"></td>
-                    <td id="modal-submit-time"></td>
+                    <tbody class="text center aligned">
+                    <td id="modal-result">{{normalResult}}</td>
+                    <td id="modal-time">{{time}}</td>
+                    <td id="modal-memory">{{memory}}</td>
+                    <td id="modal-length">{{length}}</td>
+                    <td id="modal-language">{{normalLanguage}}</td>
+                    <td id="modal-submit-time">{{normalSubmitTime}}</td>
                     </tbody>
                 </table>
-                <button class="btn btn-sm share-code btn-danger" id="modal-share" th:if="${session.currentUser!=null}">
+                <button class="ui button red" id="modal-share">
                     Not Shared
                 </button>
-                <pre id="modal-ce" class="pre-scrollable"></pre>
-                <pre class="prettyprint pre-scrollable" id="source_code"></pre>
+                <pre id="modal-ce"></pre>
+                <pre class="prettyprint" id="source_code"></pre>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
+            <div class="actions">
+                <button class="ui black deny button"><i class="close icon"></i>Close</button>
             </div>
         </div>
     </div>
 </div>
+<script language="JavaScript" src="/js/StatusInModal.js"></script>
 <script>
-    var editor = editormd({
-        id: "editormd",
-        path: "/editor/lib/",
-        width: '100%',
-        height: 400,
-        tex: true,
-        flowChart: true,
-        sequenceDiagram: true,
-        previewCodeHighlight: true
+    $('.ui.checkbox').checkbox();
+    pid = location.pathname.split('/');
+    pid = pid[pid.length - 1];
+    var clipboard = new ClipboardJS('.btn-copy');
+    clipboard.on('success', function (e) {
+        e.clearSelection();
     });
-    var ve = new Vue({
-        el: "#status-tbody",
-        data: {
-            status: []
-        }
+    clipboard.on('error', function (e) {
+        console.error('Action:', e.action);
+        console.error('Trigger:', e.trigger);
     });
 </script>
+<script src="/js/showproblem.js"></script>
 <footer th:replace="~{fragment/footer :: footer}"></footer>
-<script src="/js/urlcontrol.js"></script>
-<script src="/js/contestinfo.js"></script>
-<script language="JavaScript" th:src="@{/js/StatusInModal.js}"></script>
-<script>
-    $(function () {
-        $("#submit_comment").click(function () {
-            tex = $("#post_comment").val();
-            if (tex.length > 5) {
-                $.post({
-                    url: "/oj/contest/api/" + $("main").attr("id") + "/comments/post",
-                    data: {post_comment: tex},
-                    success: function (res) {
-                        if (res == "success") {
-                            getComments();
-                        } else {
-                            alert(res);
-                        }
-                    }
-                });
-            }
-        });
-        $("#submit_btn").click(function () {
-            $("#submit_btn").attr("class", "btn btn-primary btn-lg text-center disabled");
-            $("#submit_btn").text("Submiting...");
-            $.post({
-                data: $("#form").serialize(),
-                url: "/oj/contest/" + $("main").attr("id") + "/submit/" + $("#submit_btn").attr("problem-id"),
-                cache: false,
-                dataType: 'text',
-                success: function (d) {
-                    var x = 0;
-                    $("#prog").width(0);
-                    $(".progress").show();
-                    setTimeout(function () {
-                        $("#prog").width("10%")
-                    }, 200);
-                    setTimeout(function () {
-                        $("#prog").width("50%")
-                    }, 800);
-                    setTimeout(function () {
-                        $("#prog").width("90%")
-                    }, 1600);
-                    setTimeout(function () {
-                        $("#prog").width("100%")
-                    }, 2000);
-                    setTimeout(function () {
-                        if (d == "success") {
-                            scrollTo(0, 0);
-                        } else {
-                            $("#submit-msg").text(d);
-                            $("#submit-msg").show();
-                        }
-                        $(".progress").hide();
-                        $("#submit_btn").attr("class", "btn btn-primary btn-lg text-center");
-                        $("#submit_btn").text("Submit");
-                    }, 2000);
-                }
-            });
-        });
-    });
-</script>
 </body>
 </html>

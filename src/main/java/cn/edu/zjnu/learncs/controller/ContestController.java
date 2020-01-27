@@ -29,7 +29,7 @@ class ContestViewController {
         return "contest/contests";
     }
 
-    @RequestMapping(value = "/{id}")
+    @GetMapping("/{id}")
     public String showContest(@PathVariable(value = "id") Long id) {
         return "contest/contestinfo";
     }
