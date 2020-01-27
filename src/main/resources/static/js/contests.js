@@ -15,13 +15,13 @@ cont = new Vue({
     },
     methods: {
         search_contest() {
-            this.change_page(0);
+            this.get_page(0);
         },
         get_page(to_page) {
             this.ready = false;
             var that = this;
             url = '/api/contest?page=' + to_page + '&search=' + this.search_string;
-            axios.get('/api/contest')
+            axios.get(url)
                 .then(function (response) {
                     response = response.data
                     that.contests = response.content;
