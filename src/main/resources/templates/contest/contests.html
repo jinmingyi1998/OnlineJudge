@@ -4,77 +4,41 @@
     <th:block th:insert="~{fragment/header :: header}"></th:block>
     <meta charset="UTF-8">
     <title>训练&比赛</title>
-    <script src="/js/urlcontrol.js"></script>
     <style>
-        a {
-            text-decoration: none;
+        .ui.fluid.container {
+            max-width: 85% !important;
         }
     </style>
-    <script th:inline="javascript">
-        query.page = [[${contests.number}]];
-        query.maxpage = [[${contests.totalPages}]]
-    </script>
-    <script>
-        if (typeof (query.page) == "undefined") {
-            query.page = 0;
-        }
-        if (typeof (query.title) == "undefined") {
-            query.title = "";
-        }
-        $(function () {
-            for (var i = Math.max(0, parseInt(query.page) - 5); i < Math.min(parseInt(query.page) + 4, query.maxpage); i++) {
-                if (i == query.page)
-                    $("#Next").before("<li class=\"page-item active\" ><a class=\"page-link turnpage\"  page='" + i + "'>" + (parseInt(i) + 1) + "</a></li>");
-                else
-                    $("#Next").before("<li class=\"page-item\" ><a class=\"page-link turnpage\"  page='" + i + "'>" + (parseInt(i) + 1) + "</a></li>");
-            }
-            $(".turnpage").click(function () {
-                var act = $(this).attr("page");
-                if (act == "next-page") {
-                    query.page++;
-                } else if (act == "last-page") {
-                    query.page--;
-                } else {
-                    query.page = parseInt(act);
-                }
-                url = location.pathname + "?title=" + query.title + "&page=" + query.page;
-                location.href = url;
-            });
-            $("#search-btn").click(function () {
-                var act = $("#search-title").val();
-                query.title = act;
-                url = location.pathname + "?title=" + query.title + "&page=" + query.page;
-                location.href = url;
-            });
-        });
-
-    </script>
+    <script src="/js/pagination.js"></script>
 </head>
 <body>
-<div class="container-fluid" height="100%" width="100%">
-    <div class="form-inline mt-3">
-        <label for="search-title" style="font-size: 1.5rem">查找比赛:&nbsp;</label>
-        <input id="search-title" type="text" class="form-control">&nbsp;
-        <a class="btn btn-light" id="search-btn">查找</a></div>
-    <ul class="list-group" style="margin-top: 1rem;margin-bottom: 1rem;">
-        <li class="list-group-item card" th:each="contest:${contests}" th:object="${contest}">
-            <h3><a class="text-center" th:href="'/oj/contest/'+*{id}" th:text="*{id}+' '+*{title}"></a></h3>
-            <ul class="list-inline">
-                <li class="list-inline-item text-muted" th:text="'开始时间:'+*{normalStartTime}">开始</li>
-                <li class="text-muted list-inline-item" th:text="'结束时间:'+*{normalEndTime}">结束时间</li>
-                <li class="text-muted list-inline-item" th:text="*{runStatu}">已结束</li>
-                <li class="text-muted list-inline-item" th:switch="*{privilege}">
-                    <span th:case="private" class="badge badge-danger">私有</span>
-                    <span th:case="public" class="badge badge-success">公共</span>
-                    <span th:case="*" class="badge badge-warning">群租</span>
-                </li>
-            </ul>
-        </li>
-    </ul>
-    <ul class="pagination justify-content-center">
-        <li class="page-item"><a class="page-link turnpage" page="last-page">上一页</a></li>
-        <li class="page-item" id="Next"><a class="page-link turnpage" page="next-page">下一页</a></li>
-    </ul>
+<div class="ui container fluid">
+    <div class="ui container" id="contest-list">
+        <form class="ui icon input" v-on:submit.prevent="search_contest()">
+            <input type="text" v-model="search_string" placeholder="搜索比赛">
+            <i class="search link icon" v-on:click="search_problem()"></i>
+        </form>
+    </div>
+    <div class="ui animated huge selection vertically celled list segment" :class="{loading:!ready}">
+        <a class="ui link item" target="_blank" v-for="c in contests" :href="'/contests/'+c.id">
+            <div class="ui header">Title</div>
+            <div class="meta">{{p.description.substring(0,35)}}</div>
+        </a>
+    </div>
+    <div class="ui center aligned pagination menu">
+        <pagination content='<i class="angle double left icon"></i>' v-on:change_page="get_page"
+                    v-bind:to_page="0"></pagination>
+        <pagination :class="{disabled:number == 0}" content="<i class='angle left icon'></i>"
+                    v-on:change_page="get_page" v-bind:to_page="number-1"></pagination>
+        <div v-for="n in npage">
+            <pagination :class="{active:number == n}" v-bind:content="n+1" v-on:change_page="get_page"
+                        v-bind:to_page="n"></pagination>
+        </div>
+        <pagination :class="{disabled:number == (totpage-1)}" content='<i class="angle  right icon"></i>'
+                    v-on:change_page="get_page" v-bind:to_page="number+1"></pagination>
+        <pagination content='<i class="angle double right icon"></i>' v-on:change_page="get_page"
+                    v-bind:to_page="totpage-1"></pagination>
+    </div>
 </div>
 <footer th:replace="~{fragment/footer :: footer}"></footer>
 </body>
