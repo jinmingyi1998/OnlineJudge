@@ -138,14 +138,14 @@ public class SolutionService {
     public Page<Solution> getSolutionsOfUserInContest(int page, int size, User u, Contest c) {
         return solutionRepository.findAllByContestAndUser(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")), c, u);
     }
-
+    public List<Solution> getSolutionsInContest(Contest contest) {
+        return solutionRepository.findAllByContestOrderByIdDesc(contest);
+    }
 /*
 
 
 
-    public List<Solution> getSolutionsInContest(Contest contest) {
-        return solutionRepository.findAllByContestOrderByIdAsc(contest);
-    }
+
 
     public void addSubmit(Solution solution) {
         try {

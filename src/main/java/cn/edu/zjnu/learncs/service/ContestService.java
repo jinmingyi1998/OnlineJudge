@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +21,6 @@ import java.util.Optional;
 @Transactional
 @Service
 public class ContestService {
-    private final int PAGE_SIZE = 30;
     @Autowired
     ContestRepository contestRepository;
     @Autowired
@@ -30,10 +30,11 @@ public class ContestService {
     @Autowired
     CommentRepository commentRepository;
 
-    public Page<Contest> getContestPage(int page, String title) {
+    public Page<Contest> getContestPage(int page, int size, String title) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "startTime"));
         if (title.length() == 0)
-            return contestRepository.findAll(PageRequest.of(page, PAGE_SIZE, Sort.by(Sort.Direction.DESC, "startTime")));
-        return contestRepository.findByTitleContains(PageRequest.of(page, PAGE_SIZE, Sort.by(Sort.Direction.DESC, "startTime")), "%" + title + "%");
+            return contestRepository.findAll(pageable);
+        return contestRepository.findByTitleContains(pageable, title);
     }
 
     public Contest insertContest(Contest contest) {
@@ -42,12 +43,29 @@ public class ContestService {
 
     @Transactional
     public Contest getContestById(Long id) {
-        Optional<Contest> contest = contestRepository.findById(id);
-        if (contest.isPresent()) {// initialize the contest
-            //contest.get().setSolutions(solutionService.getSolutionsInContest(contest.get()));
-            contest.get().setProblems(contestProblemRepository.findAllByContest(contest.get()));
-            return contest.get();
-        } else return null;
+        return getContestById(id, false);
+    }
+
+    @Transactional
+    public Contest getContestById(Long id, boolean isAllFields) {
+        if (isAllFields) {
+            try {
+                return fulfillContest(contestRepository.findById(id).get());
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        return contestRepository.findById(id).orElse(null);
+    }
+
+    private Contest fulfillContest(Contest contest) {
+        try {
+            contest.setProblems(contestProblemRepository.findAllByContest(contest));
+            contest.setSolutions(solutionService.getSolutionsInContest(contest));
+            return contest;
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public List<Comment> getCommentsOfContest(Contest c) {

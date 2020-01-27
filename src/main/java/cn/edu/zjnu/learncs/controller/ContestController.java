@@ -25,14 +25,8 @@ import java.util.Objects;
 @RequestMapping("/contest")
 class ContestViewController {
     @GetMapping
-    public String contestPage(@RequestParam(value = "page", defaultValue = "0") int page,
-                              @RequestParam(value = "title", defaultValue = "") String title) {
-//        ModelAndView m = new ModelAndView("contest/contests");
+    public String contestPage() {
         return "contest/contests";
-//        page = Math.max(0, page);
-//        Page<Contest> contests = contestService.getContestPage(page, title);
-//        m.addObject("contests", contests);
-//        return m;
     }
 
     @RequestMapping(value = "/{id}")
@@ -71,6 +65,7 @@ class ContestViewController {
 
 @Slf4j
 @RestController
+@CrossOrigin
 @RequestMapping("/api/contest")
 public class ContestController {
     @Autowired
@@ -88,6 +83,77 @@ public class ContestController {
     @Autowired
     ContestProblemRepository contestProblemRepository;
     private static final int PAGE_SIZE = 30;
+
+    @GetMapping
+    public Page<Contest> showContests(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "search", defaultValue = "") String search) {
+        Page<Contest> currentPage = contestService.getContestPage(page, PAGE_SIZE, search);
+        for (Contest c : currentPage.getContent()) {
+            c.setProblems(null);
+            c.setSolutions(null);
+            c.setContestComments(null);
+            c.setPassword(null);
+            c.setCreator(null);
+            c.setFreezeRank(null);
+            c.setCreateTime(null);
+        }
+        return currentPage;
+    }
+
+    public Boolean checkPassword(Contest contest, String password) {
+        if (contest.getPassword().equals(password)) {
+            session.setAttribute("contest" + contest.getId(), contest);
+            return true;
+        }
+        return false;
+    }
+
+    @GetMapping("/{cid}")
+    public Contest getContestDetail(@PathVariable("cid") Long cid) {
+        Contest c = contestService.getContestById(cid, false);
+        if (c == null)
+            throw new NotFoundException();
+        Contest scontest = (Contest) session.getAttribute("contest" + c.getId());
+        if (scontest == null || scontest.getId() != c.getId()) {
+            if (c.getPassword().length() > 0) {
+                c.setProblems(null);
+                c.setSolutions(null);
+                c.setContestComments(null);
+                c.setCreator(null);
+                c.setFreezeRank(null);
+                c.setCreateTime(null);
+                c.setPassword("password");
+                return c;
+            }else {
+                session.setAttribute("contest" + c.getId(), c);
+            }
+        }
+        try {
+            c = contestService.getContestById(cid, true);
+            c.setSolutions(null);
+            c.setCreator(null);
+            c.setCreateTime(null);
+            c.setPassword(null);
+            c.setFreezeRank(null);
+            c.setCreateTime(null);
+            for(ContestProblem cp:c.getProblems()){
+                Problem p=cp.getProblem();
+                p.setId(null);
+                p.setAccepted(null);
+                p.setSubmit(null);
+                p.setAccepted(null);
+                p.setTags(null);
+                p.setTitle(null);
+                p.setScore(null);
+                p.setSubmit(null);
+                p.setSource(null);
+            }
+        } catch (Exception e) {
+            throw new NotFoundException();
+        }
+        return c;
+    }
 
     @PostMapping("/{cid}/submit/{pid}")
     public String submitProblemInContest(@PathVariable("pid") Long pid,
@@ -153,7 +219,8 @@ public class ContestController {
     }
 
     @PostMapping("/{cid}/view/{id}")
-    public Solution restfulShowSourceCodeInContest(@PathVariable(value = "cid") Long cid, @PathVariable(value = "id") Long id) {
+    public Solution restfulShowSourceCodeInContest(@PathVariable(value = "cid") Long
+                                                           cid, @PathVariable(value = "id") Long id) {
         try {
             @NotNull Solution solution = solutionService.getSolutionById(id);
             @NotNull Contest contest = contestService.getContestById(cid);
@@ -202,13 +269,7 @@ public class ContestController {
         throw new NotFoundException();
     }
 
-    public Boolean checkPassword(Contest contest, String password) {
-        if (contest.getPassword().equals(password)) {
-            session.setAttribute("contest" + contest.getId(), contest);
-            return true;
-        }
-        return false;
-    }
+
     /*@PostMapping("/background/edit/{cid}")
     public String insertContestAction(@PathVariable Long cid,
                                       @RequestParam(value = "title") String title,

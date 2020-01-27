@@ -73,5 +73,7 @@ public interface SolutionRepository extends JpaRepository<Solution, Long> {
     //   Page<Solution> findAllByUserAndProblemAndResult( Pageable pageable, User user, Problem problem, String result);
 
     Page<Solution> findAllByContestAndUser(Pageable pageable, Contest contest, User user);
+
+    List<Solution> findAllByContestOrderByIdDesc(Contest contest);
 }
 

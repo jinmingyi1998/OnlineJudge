@@ -1,6 +1,7 @@
 package cn.edu.zjnu.learncs.entity.oj;
 
 import cn.edu.zjnu.learncs.entity.User;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -15,6 +16,7 @@ import java.util.List;
 
 @Data
 @Entity
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Contest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,9 +26,9 @@ public class Contest {
     @Column(length = 255)
     private String description;
     @Column(nullable = false, columnDefinition = "varchar(20) default 'public'")
-    private String privilege;
+    private String privilege = "public";
     @Column(length = 200)
-    private String password;
+    private String password = "";
     @Column(nullable = false)
     private Instant startTime;
     @Column(nullable = false)
@@ -35,16 +37,16 @@ public class Contest {
     private User creator;
     @Column(nullable = false)
     private Instant createTime;
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "contest")
+    @OneToMany(mappedBy = "contest")
     private List<Comment> contestComments;
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "contest")
+    @OneToMany(mappedBy = "contest")
     private List<ContestProblem> problems;
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "contest")
+    @OneToMany(mappedBy = "contest")
     private List<Solution> solutions;
     @Column(nullable = false, columnDefinition = "varchar(20) default 'acm'")
-    private String pattern;
+    private String pattern = "acm";
     @Column(nullable = false)
-    private Boolean freezeRank;
+    private Boolean freezeRank = true;
 
     public Boolean isEnded() {
         return Instant.now().compareTo(endTime) > 0;
