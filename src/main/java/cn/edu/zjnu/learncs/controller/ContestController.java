@@ -8,7 +8,6 @@ import cn.edu.zjnu.learncs.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,10 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Controller
@@ -33,6 +29,11 @@ class ContestViewController {
     @GetMapping("/{id}")
     public String showContest(@PathVariable(value = "id") Long id) {
         return "contest/contestinfo";
+    }
+
+    @GetMapping("/status/{id}")
+    public String showContestStatus(@PathVariable(value = "id") Long id) {
+        return "contest/conteststatus";
     }
 
 
@@ -190,7 +191,7 @@ public class ContestController {
             Solution solution = new Solution(user, problem, language, source, request.getRemoteAddr(), share);
             solution.setContest(contest);
             solution = solutionService.insertSolution(solution);
-            assert solution.getContest()!=null;
+            assert solution.getContest() != null;
             restService.submitCode(solution);
             return "success";
         } catch (Exception e) {
@@ -242,18 +243,27 @@ public class ContestController {
     }
 
     @GetMapping("/status/{cid}")
-    public Page<Solution> getUserSolutions(@PathVariable("cid") Long cid, @Param(value = "page") int page) {
+    public Page<Solution> getUserSolutions(@PathVariable("cid") Long cid,
+                                           @RequestParam(value = "page",defaultValue = "0") int page) {
         try {
             @NotNull Contest contest = contestService.getContestById(cid);
             @NotNull User user = (User) session.getAttribute("currentUser");
+//            User user = userService.getUserById(5l); // test
             @NotNull Page<Solution> solutions = solutionService.getSolutionsOfUserInContest(page, PAGE_SIZE, user, contest);
+            Map<Long, ContestProblem> cpmap = new HashMap<>();
+            for (ContestProblem cp : contest.getProblems()) {
+                cpmap.put(cp.getProblem().getId(), cp);
+            }
             for (Solution s : solutions.getContent()) {
-                for (ContestProblem cp : contest.getProblems()) {
-                    if (cp.getProblem().getId() == s.getProblem().getId()) {
-                        s.getProblem().setId(cp.getTempId());
-                        break;
-                    }
-                }
+                s.setSource(null);
+                s.setIp(null);
+                s.getUser().setEmail(null);
+                s.getUser().setPassword(null);
+                s.getUser().setIntro(null);
+                Problem tp = Problem.jsonReturnProblemFactory();
+                tp.setId(cpmap.get(s.getProblem().getId()).getTempId());
+                s.setProblem(tp);
+                s.setContest(null);
             }
             return solutions;
         } catch (Exception e) {
