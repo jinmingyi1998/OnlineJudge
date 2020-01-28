@@ -16,29 +16,29 @@ public class Problem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(length = 50, unique = true, nullable = false)
-    private String title;
+    private String title = "";
     @Column(columnDefinition = "LONGTEXT", nullable = false)
-    private String description;
+    private String description = "";
     @Column(columnDefinition = "LONGTEXT")
-    private String input;
+    private String input = "";
     @Column(columnDefinition = "LONGTEXT")
-    private String output;
+    private String output = "";
     @Column(columnDefinition = "LONGTEXT")
-    private String sampleInput;
+    private String sampleInput = "";
     @Column(columnDefinition = "LONGTEXT")
-    private String sampleOutput;
+    private String sampleOutput = "";
     @Column(columnDefinition = "LONGTEXT")
-    private String hint;
+    private String hint = "";
     @Column(columnDefinition = "LONGTEXT")
-    private String source;
+    private String source = "";
     @Column(nullable = false, columnDefinition = "int default 1000")
-    private Integer timeLimit;
+    private Integer timeLimit = 1;
     @Column(nullable = false, columnDefinition = "int default 65536")
-    private Integer memoryLimit;
+    private Integer memoryLimit = 1;
     @Column(nullable = false)
     private Boolean active = false;
     @Column(columnDefinition = "integer default 0")
-    private Integer score;
+    private Integer score = 0;
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Tag> tags;
     @Column(columnDefinition = "integer default 0")
@@ -108,4 +108,45 @@ public class Problem {
     public int hashCode() {
         return getId().hashCode();
     }
+
+    public String getTitle() {
+        return title == null ? "" : title;
+    }
+
+    public String getDescription() {
+        return description == null ? "" : description;
+    }
+
+    public String getInput() {
+        return input == null ? "" : input;
+    }
+
+    public String getOutput() {
+        return output == null ? "" : output;
+    }
+
+    public String getSampleInput() {
+        return sampleInput == null ? "" : sampleInput;
+    }
+
+    public String getSampleOutput() {
+        return sampleOutput == null ? "" : sampleOutput;
+    }
+
+    public String getHint() {
+        return hint == null ? "" : hint;
+    }
+
+    public String getSource() {
+        return source == null ? "" : source;
+    }
+
+    public Integer getTimeLimit() {
+        return timeLimit == null ? 1 : timeLimit;
+    }
+
+    public Integer getMemoryLimit() {
+        return memoryLimit == null ? 1 : memoryLimit;
+    }
+
 }
