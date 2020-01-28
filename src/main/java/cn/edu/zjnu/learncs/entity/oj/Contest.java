@@ -1,7 +1,9 @@
 package cn.edu.zjnu.learncs.entity.oj;
 
 import cn.edu.zjnu.learncs.entity.User;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -17,6 +19,7 @@ import java.util.List;
 @Data
 @Entity
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Contest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,6 +51,9 @@ public class Contest {
     @Column(nullable = false)
     private Boolean freezeRank = true;
 
+    /**
+     * @return true if contest is ended, false otherwise.
+     */
     public Boolean isEnded() {
         return Instant.now().compareTo(endTime) > 0;
     }
