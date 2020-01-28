@@ -4,20 +4,10 @@
     <th:block th:insert="~{fragment/header :: header}"></th:block>
     <meta charset="UTF-8">
     <title>提交列表</title>
-    <style>
-        i {
-            margin-right: 1rem;
-        }
-    </style>
     <script language="JavaScript" src="/js/StatusInModal.js"></script>
+    <script src="/js/pagination.js"></script>
 </head>
 <body>
-<script>
-    var pagination = Vue.component('pagination', {
-        props: ['to_page', 'content'],
-        template: `<a class="link item" v-html="content" v-on:click="$emit('change_page',to_page)"></a>`,
-    });
-</script>
 <div class="ui container" height="100%" id="vue-solutions">
     <form class="ui form" v-on:submit.prevent="search()">
         <div class=" fields">
@@ -71,17 +61,17 @@
         </tbody>
     </table>
     <div class="ui pagination menu">
-        <pagination content='<i class="angle double left icon"></i>' v-on:change_page="get_page"
+        <pagination :class="{disabled:first}" content='<i class="angle double left icon"></i>' v-on:change_page="get_page"
                     v-bind:to_page="0"></pagination>
-        <pagination :class="{disabled:number == 0}" content="<i class='angle left icon'></i>"
+        <pagination :class="{disabled:first}" content="<i class='angle left icon'></i>"
                     v-on:change_page="get_page" v-bind:to_page="number-1"></pagination>
         <div v-for="n in npage">
             <pagination :class="{active:number == n}" v-bind:content="n+1" v-on:change_page="get_page"
                         v-bind:to_page="n"></pagination>
         </div>
-        <pagination :class="{disabled:number == (totalPages-1)}" content='<i class="angle  right icon"></i>'
+        <pagination :class="{disabled:last}" content='<i class="angle  right icon"></i>'
                     v-on:change_page="get_page" v-bind:to_page="number+1"></pagination>
-        <pagination content='<i class="angle double right icon"></i>' v-on:change_page="get_page"
+        <pagination :class="{disabled:last}" content='<i class="angle double right icon"></i>' v-on:change_page="get_page"
                     v-bind:to_page="totalPages-1"></pagination>
     </div>
 </div>
@@ -184,6 +174,7 @@
         },
         methods: {
             get_page(page) {
+                if(page>=this.totalPages||page<0)return;
                 var that = this;
                 url = "/api/status?page=" + page + "&user=" + that.searchUser + "&pid=" + that.searchProblem + "&AC=" + that.searchAC;
                 axios.get(url).then(function (res) {
