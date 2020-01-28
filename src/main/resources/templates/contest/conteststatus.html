@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragment/header :: header}"></th:block>
+    <meta charset="UTF-8">
+    <title>提交列表</title>
+    <script language="JavaScript" src="/js/StatusInModal.js"></script>
+    <script src="/js/pagination.js"></script>
+    <style>
+        .ui.fluid.container {
+            max-width: 85% !important;
+        }
+    </style>
+</head>
+<body>
+<main class="ui fluid container" height="100%" id="vue-solutions">
+    <div class="ui tabular menu ">
+        <a :href="'/contest/'+contest.id" class="item">Problem</a>
+        <div class="item active">Status</div>
+        <a :href="'ranklist/'+contest.id" target="_blank" class="item">Ranklist</a>
+        <a :href="'comment/'+contest.id" target="_blank" class="item">Comment</a>
+    </div>
+    <table class="ui padded celled selectable striped orange table"
+           style="opacity: 0.8;margin:1rem">
+        <thead class="thead-light text-center">
+        <tr>
+            <th>Run ID</th>
+            <th><i class="fa fa-user"></i>用户名</th>
+            <th><i class="fa fa-question-circle-o"></i>题目</th>
+            <th><i class="fa fa-check-circle"></i>结果</th>
+            <th><i class="fa fa-clock-o"></i>用时(ms)</th>
+            <th><i class="fa fa-database"></i>内存(KB)</th>
+            <th><i class="fa fa-files-o"></i>代码长度</th>
+            <th><i class="fa fa-keyboard-o"></i>语言</th>
+            <th><i class="fa fa-calendar"></i>提交时间</th>
+        </tr>
+        </thead>
+        <tbody class="text-center">
+        <tr v-for="solution in solutions" v-bind:key="solution.id">
+            <td>{{solution.id}}</td>
+            <td>{{solution.user.username}}</td>
+            <td><a v-bind:href="'/problems/'+solution.problem.id">{{solution.problem.id}}</a></td>
+            <td class="view-code" v-bind:id="solution.id" v-bind:class="{
+            positive:solution.result=='Accepted',
+            warning:solution.result=='Pending',
+            error:solution.result!='Accepted'&&solution.result!='Pending'
+            }">{{solution.normalResult}}
+            </td>
+            <td>{{solution.time}}</td>
+            <td>{{parseInt(solution.memory/1024)}}</td>
+            <td>{{solution.length}}</td>
+            <td><a class="view-code link item" v-bind:id="solution.id">{{solution.normalLanguage}}</a></td>
+            <td>{{solution.normalSubmitTime}}</td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="ui pagination menu">
+        <pagination :class="{disabled:first}" content='<i class="angle double left icon"></i>'
+                    v-on:change_page="get_page"
+                    v-bind:to_page="0"></pagination>
+        <pagination :class="{disabled:first}" content="<i class='angle left icon'></i>"
+                    v-on:change_page="get_page" v-bind:to_page="number-1"></pagination>
+        <div v-for="n in npage">
+            <pagination :class="{active:number == n}" v-bind:content="n+1" v-on:change_page="get_page"
+                        v-bind:to_page="n"></pagination>
+        </div>
+        <pagination :class="{disabled:last}" content='<i class="angle  right icon"></i>'
+                    v-on:change_page="get_page" v-bind:to_page="number+1"></pagination>
+        <pagination :class="{disabled:last}" content='<i class="angle double right icon"></i>'
+                    v-on:change_page="get_page" v-bind:to_page="totalPages-1"></pagination>
+    </div>
+</main>
+<div class="ui large modal" id="codemodal">
+    <div class="">
+        <div class="" style="padding: 1rem;">
+            <div class="ui header">
+                <h4 class="">#<span id="modal-id"></span>&nbsp;用户名：<abbr id="modal-username"></abbr>&nbsp;题目：<abbr
+                        id="modal-problem"></abbr></h4>
+            </div>
+            <div class="scrolling content">
+                <table class="ui celled table">
+                    <thead class="center aligned">
+                    <tr>
+                        <th><i class="fa fa-check-circle"></i>结果</th>
+                        <th><i class="fa fa-clock-o"></i>用时(ms)</th>
+                        <th><i class="fa fa-database"></i>内存(Byte)</th>
+                        <th><i class="fa fa-files-o"></i>代码长度</th>
+                        <th><i class="fa fa-keyboard-o"></i>语言</th>
+                        <th><i class="fa fa-calendar"></i>提交时间</th>
+                    </tr>
+                    </thead>
+                    <tbody class="text center aligned">
+                    <td id="modal-result">{{normalResult}}</td>
+                    <td id="modal-time">{{time}}</td>
+                    <td id="modal-memory">{{memory}}</td>
+                    <td id="modal-length">{{length}}</td>
+                    <td id="modal-language">{{normalLanguage}}</td>
+                    <td id="modal-submit-time">{{normalSubmitTime}}</td>
+                    </tbody>
+                </table>
+                <button class="ui button red" id="modal-share">
+                    Not Shared
+                </button>
+                <pre id="modal-ce"></pre>
+                <pre class="prettyprint" id="source_code"></pre>
+            </div>
+            <div class="actions">
+                <button class="ui black deny button"><i class="close icon"></i>Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var cid = location.pathname.split('/');
+    cid = cid[cid.length - 1];
+    vue_solu = new Vue({
+        el: "#vue-solutions",
+        data: {
+            contest: {
+                id: cid
+            },
+            solutions: [],
+            totalElements: 0,
+            totalPages: 0,
+            last: true,
+            number: 0,
+            size: 30,
+            numberOfElements: 0,
+            first: true,
+            empty: true,
+            npage: []
+        },
+        created: function () {
+            var that = this;
+            url = '/api/contest/status/' + cid;
+            axios.get(url).then(function (res) {
+                res = res.data;
+                that.solutions = res.content;
+                that.totalPages = res.totalPages;
+                that.totalElements = res.totalElements;
+                that.last = res.last;
+                that.number = res.number;
+                that.size = res.size;
+                that.first = res.first;
+                that.numberOfElements = res.numberOfElements;
+                that.empty = res.empty;
+                that.npage = [];
+                for (var i = Math.max(0, that.number - 3); i < Math.min(that.totalPages, that.number + 3); i++) {
+                    that.npage.push(i)
+                }
+            })
+        },
+        methods: {
+            get_page(page) {
+                if (page >= this.totalPages || page < 0) return;
+                var that = this;
+                url = "/api/contest/status/" + cid + "?page=" + page;
+                axios.get(url).then(function (res) {
+                    res = res.data;
+                    that.solutions = res.content;
+                    that.totalPages = res.totalPages;
+                    that.totalElements = res.totalElements;
+                    that.last = res.last;
+                    that.number = res.number;
+                    that.size = res.size;
+                    that.first = res.first;
+                    that.numberOfElements = res.numberOfElements;
+                    that.empyt = res.empty;
+                    that.npage = [];
+                    for (var i = Math.max(0, that.number - 3); i < Math.min(that.totalPages, that.number + 3); i++) {
+                        that.npage.push(i)
+                    }
+                })
+            }
+        }
+    })
+</script>
+<footer th:replace="~{fragment/footer :: footer}"></footer>
+</body>
+</html>
