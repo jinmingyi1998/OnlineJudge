@@ -19,6 +19,7 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
 @Controller
@@ -101,22 +102,17 @@ public class ContestController {
         return currentPage;
     }
 
-    public Boolean checkPassword(Contest contest, String password) {
-        if (contest.getPassword().equals(password)) {
-            session.setAttribute("contest" + contest.getId(), contest);
-            return true;
-        }
-        return false;
-    }
-
     @GetMapping("/{cid}")
-    public Contest getContestDetail(@PathVariable("cid") Long cid) {
+    public Contest getContestDetail(@PathVariable("cid") Long cid,
+                                    @RequestParam(value = "password", defaultValue = "") String password) {
         Contest c = contestService.getContestById(cid, false);
         if (c == null)
             throw new NotFoundException();
         Contest scontest = (Contest) session.getAttribute("contest" + c.getId());
         if (scontest == null || scontest.getId() != c.getId()) {
-            if (c.getPassword().length() > 0) {
+            if (c.getPassword().length() > 0 &&
+                    c.getPrivilege().equals("private") &&
+                    !c.getPassword().equals(password)) {
                 c.setProblems(null);
                 c.setSolutions(null);
                 c.setContestComments(null);
@@ -125,7 +121,7 @@ public class ContestController {
                 c.setCreateTime(null);
                 c.setPassword("password");
                 return c;
-            }else {
+            } else {
                 session.setAttribute("contest" + c.getId(), c);
             }
         }
@@ -137,8 +133,8 @@ public class ContestController {
             c.setPassword(null);
             c.setFreezeRank(null);
             c.setCreateTime(null);
-            for(ContestProblem cp:c.getProblems()){
-                Problem p=cp.getProblem();
+            for (ContestProblem cp : c.getProblems()) {
+                Problem p = cp.getProblem();
                 p.setId(null);
                 p.setAccepted(null);
                 p.setSubmit(null);
@@ -158,7 +154,8 @@ public class ContestController {
     @PostMapping("/{cid}/submit/{pid}")
     public String submitProblemInContest(@PathVariable("pid") Long pid,
                                          @PathVariable("cid") Long cid,
-                                         HttpServletRequest request, @RequestBody ProblemController.SubmitCodeObject submitCodeObject) {
+                                         HttpServletRequest request,
+                                         @RequestBody ProblemController.SubmitCodeObject submitCodeObject) {
         log.info("Submit:" + Date.from(Instant.now()));
         String source = submitCodeObject.getSource();
         boolean share = submitCodeObject.isShare();
@@ -178,14 +175,22 @@ public class ContestController {
         }
         try {
             Contest contest = contestService.getContestById(cid);
-            if (contest.isEnded())
-                return "The contest has ended!";
-            Problem problem = contestProblemRepository.findByContestAndTempId(contest, pid).get().getProblem();
-            if (problem == null) {
+            Contest scontest = (Contest) session.getAttribute("contest" + cid);
+            if (scontest == null || scontest.getId() != contest.getId()) {
+                return "Need attendance!";
+            }
+            if (contest.isEnded()) {
+                return "The contest id ended!";
+            }
+            ContestProblem cproblem = contestProblemRepository.findByContestAndTempId(contest, pid).orElse(null);
+            if (cproblem == null) {
                 return "Problem Not Exist";
             }
+            Problem problem = cproblem.getProblem();
             Solution solution = new Solution(user, problem, language, source, request.getRemoteAddr(), share);
+            solution.setContest(contest);
             solution = solutionService.insertSolution(solution);
+            assert solution.getContest()!=null;
             restService.submitCode(solution);
             return "success";
         } catch (Exception e) {

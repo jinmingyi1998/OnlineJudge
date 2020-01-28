@@ -18,7 +18,7 @@
             <i class="search link icon" v-on:click="search_contest()"></i>
         </form>
     <div class="ui animated huge selection vertically celled list segment" :class="{loading:!ready}">
-        <a class="ui link item" target="_blank" v-for="c in contests" :href="'/contests/'+c.id">
+        <a class="ui link item" target="_blank" v-for="c in contests" :href="'/contest/'+c.id">
             <div class="ui relaxed header" v-html="c.title"></div>
             <div class="ui relaxed meta">{{c.description.substring(0,35)}}</div>
             <div class="ui small ribbon label" :class="{blue:c.privilege=='public',orange:c.privilege=='group'}"
