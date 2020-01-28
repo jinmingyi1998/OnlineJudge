@@ -53,18 +53,16 @@
                 </a>
             </div>
             <div class="ui center aligned pagination menu">
-                <pagination content='<i class="angle double left icon"></i>' v-on:change_page="get_page"
-                            v-bind:to_page="0"></pagination>
-                <pagination :class="{disabled:number == 0}" content="<i class='angle left icon'></i>"
+                <pagination :class="{disabled:first}" content='<i class="angle double left icon"></i>'
+                            v-on:change_page="get_page" v-bind:to_page="0"></pagination>
+                <pagination :class="{disabled:first}" content="<i class='angle left icon'></i>"
                             v-on:change_page="get_page" v-bind:to_page="number-1"></pagination>
-                <div v-for="n in npage">
-                    <pagination :class="{active:number == n}" v-bind:content="n+1" v-on:change_page="get_page"
-                                v-bind:to_page="n"></pagination>
-                </div>
-                <pagination :class="{disabled:number == (totpage-1)}" content='<i class="angle  right icon"></i>'
+                <pagination v-for="n in npage" :class="{active:number == n}" v-bind:content="n+1"
+                            v-on:change_page="get_page" v-bind:to_page="n"></pagination>
+                <pagination :class="{disabled:last}" content='<i class="angle  right icon"></i>'
                             v-on:change_page="get_page" v-bind:to_page="number+1"></pagination>
-                <pagination content='<i class="angle double right icon"></i>' v-on:change_page="get_page"
-                            v-bind:to_page="totpage-1"></pagination>
+                <pagination :class="{disabled:last}" content='<i class="angle double right icon"></i>'
+                            v-on:change_page="get_page" v-bind:to_page="totpage-1"></pagination>
             </div>
         </div>
         <div class="ui four wide column">
