@@ -12,7 +12,7 @@ import javax.validation.constraints.Size;
 @Entity
 @Slf4j
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class User {
+public class User implements Cloneable{
 
     public User() {
         this.username = "";
@@ -58,7 +58,6 @@ public class User {
     @Size(max = 250)
     private String intro;
 
-    @Override
     public User clone() throws CloneNotSupportedException {
         return (User) super.clone();
     }

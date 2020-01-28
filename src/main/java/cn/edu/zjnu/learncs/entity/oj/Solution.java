@@ -1,8 +1,10 @@
 package cn.edu.zjnu.learncs.entity.oj;
 
 import cn.edu.zjnu.learncs.entity.User;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 
@@ -14,8 +16,9 @@ import java.time.Instant;
 @Data
 @Log4j2
 @Entity
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Solution {
+public class Solution implements Cloneable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -98,5 +101,12 @@ public class Solution {
 
     public String getNormalSubmitTime() {
         return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date.from(submitTime));
+    }
+    public Solution clone() throws CloneNotSupportedException{
+        Solution s = (Solution) super.clone();
+        s.setProblem(problem.clone());
+        s.setUser(user.clone());
+        s.setContest(contest.clone());
+        return s;
     }
 }
