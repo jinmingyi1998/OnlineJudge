@@ -127,7 +127,7 @@
                     </div>
                     <textarea class="field" cols="40" id="" name="source" rows="20" placeholder="your code..."
                               style="resize: none;" v-model="code"></textarea>
-                    <submit-button></submit-button>
+                    <submit-button v-on:submit="submit"></submit-button>
                 </form>
             </div>
         </div>
