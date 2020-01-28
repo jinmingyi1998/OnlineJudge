@@ -119,10 +119,11 @@
                     password: this.password,  // 参数 lastName
                 })
                     .then(function (response) {
-                        $('form').form('reset')
-                        console.log(response);
+                        $('form').form('reset');
                         if (response.data == "success") {
                             location.href = "/"
+                        } else {
+                            alert(response.data)
                         }
                         setTimeout(function () {
                             that.ready = true;
