@@ -60,13 +60,6 @@ public class User {
 
     @Override
     public User clone() throws CloneNotSupportedException {
-        User newUser = new User();
-        newUser.setId(id);
-        newUser.setUsername(username);
-        newUser.setName(name);
-        newUser.setPassword(password);
-        newUser.setEmail(email);
-        newUser.setIntro(intro);
-        return newUser;
+        return (User) super.clone();
     }
 }
