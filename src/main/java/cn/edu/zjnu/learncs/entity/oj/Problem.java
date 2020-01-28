@@ -149,4 +149,46 @@ public class Problem {
         return memoryLimit == null ? 1 : memoryLimit;
     }
 
+
+    public Problem clone() throws CloneNotSupportedException {
+        Problem p = (Problem) super.clone();
+        return p;
+    }
+
+    public static JsonReturnProblem jsonReturnProblemFactory(){
+        return new JsonReturnProblem();
+    }
+
+}
+@JsonInclude(JsonInclude.Include.NON_NULL)
+class JsonReturnProblem extends Problem{
+    @Override
+    public List<Tag> getTags() {
+        return null;
+    }
+
+    @Override
+    public Boolean getActive() {
+        return null;
+    }
+
+    @Override
+    public Integer getScore() {
+        return null;
+    }
+
+    @Override
+    public Integer getSubmit() {
+        return null;
+    }
+
+    @Override
+    public Integer getAccepted() {
+        return null;
+    }
+
+    @Override
+    public String getRatio() {
+        return null;
+    }
 }
