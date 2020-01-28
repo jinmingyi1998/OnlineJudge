@@ -2,6 +2,7 @@ package cn.edu.zjnu.learncs.controller;
 
 import cn.edu.zjnu.learncs.NotFoundException;
 import cn.edu.zjnu.learncs.entity.User;
+import cn.edu.zjnu.learncs.entity.oj.Contest;
 import cn.edu.zjnu.learncs.entity.oj.Problem;
 import cn.edu.zjnu.learncs.entity.oj.Solution;
 import cn.edu.zjnu.learncs.service.ProblemService;
@@ -65,6 +66,7 @@ public class StatusController {
                 solutionService.getStatus(page, PAGE_SIZE) :
                 solutionService.getStatus(user, problem, AC, page, PAGE_SIZE);
         for (Solution s : page_return.getContent()) {
+            s.setUser(s.getUser().clone());
             s.setSource(null);
             s.setInfo(null);
             s = solutionFilter(s);
@@ -72,14 +74,26 @@ public class StatusController {
         return page_return;
     }
 
-    public Solution solutionFilter(Solution s) {
+    public static Solution solutionFilter(Solution s) {
+        if(s.getContest()!=null && !s.getContest().isEnded()){
+            s.getUser().setId(0l);
+            s.getUser().setName("contest user");
+            s.getUser().setUsername("contest user");
+            s.getProblem().setId(0l);
+            s.setTime(0);
+            s.setMemory(0);
+            s.setLength(0);
+            s.setInfo("");
+            s.setShare(false);
+        }
         s.setIp(null);
         s.getUser().setPassword(null);
         s.getUser().setEmail(null);
         s.getUser().setIntro(null);
-        Problem p = new Problem();
+        Problem p = Problem.jsonReturnProblemFactory();
         p.setId(s.getProblem().getId());
         s.setProblem(p);
+        s.setContest(null);
         return s;
     }
 
@@ -132,6 +146,7 @@ public class StatusController {
                     s.setProblem(null);
                     s.setIp(null);
                     s.setSource(null);
+                    s.setContest(null);
                 }
                 return solutions;
             }
