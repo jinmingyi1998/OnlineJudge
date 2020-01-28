@@ -172,7 +172,9 @@ public class ProblemController {
         if (solution == null)
             return "submit failed";
         try {
-            return restService.submitCode(solution) == null ? "judge failed" : "success";
+//            return restService.submitCode(solution) == null ? "judge failed" : "success";
+            restService.submitCode(solution);
+            return "success";
         } catch (Exception e) {
             return "Internal error";
         }
