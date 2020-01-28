@@ -27,8 +27,8 @@
         <div class="ui tabular menu ">
             <div class="item active">Problem</div>
             <a :href="'status/'+contest.id" target="_blank" class="item">Status</a>
-            <a :href="'ranklist/'+contest.id" class="item">Ranklist</a>
-            <a :href="'comment/'+contest.id" class="item">Comment</a>
+            <a :href="'ranklist/'+contest.id" target="_blank" class="item">Ranklist</a>
+            <a :href="'comment/'+contest.id" target="_blank" class="item">Comment</a>
         </div>
         <div class="ui grid two column row">
             <div class="ui four wide column">
@@ -126,7 +126,7 @@
     </div>
     <form class="ui input" v-if="!attend" v-on:submit.prevent="check_password()">
         <label for="cpw" class="ui right pointing red basic label">输入比赛密码</label>
-        <input type="text" id="cpw" v-model="password" placeholder="密码">
+        <input type="password" id="cpw" v-model="password" placeholder="密码">
         <submit-button v-on:submit="check_password"></submit-button>
     </form>
 </main>
@@ -198,6 +198,7 @@
         },
         methods: {
             change_problem(id) {
+                if (id ===this.pid)return;
                 this.pid = id;
                 this.dataready = false;
                 for (var i = 0; i < this.contest.problems.length; i++) {
