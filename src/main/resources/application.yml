@@ -2,7 +2,7 @@ spring:
   datasource:
     username: ${MYSQL_USER:-root}
     password: ${MYSQL_PASSWORD:-1234}
-    url: jdbc:mysql://db:3306/oj?serverTimezone=GMT%2B8&useUnicode=yes&characterEncoding=UTF-8
+    url: jdbc:mysql://${MYSQL_URL}?serverTimezone=GMT%2B8&useUnicode=yes&characterEncoding=UTF-8
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
