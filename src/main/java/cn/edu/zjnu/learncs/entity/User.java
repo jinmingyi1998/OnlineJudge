@@ -58,4 +58,15 @@ public class User {
     @Size(max = 250)
     private String intro;
 
+    @Override
+    public User clone() throws CloneNotSupportedException {
+        User newUser = new User();
+        newUser.setId(id);
+        newUser.setUsername(username);
+        newUser.setName(name);
+        newUser.setPassword(password);
+        newUser.setEmail(email);
+        newUser.setIntro(intro);
+        return newUser;
+    }
 }
