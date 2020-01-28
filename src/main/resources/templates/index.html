@@ -1,11 +1,3 @@
-<!--
-  ~ Copyright (c) 2019. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-  ~ Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
-  ~ Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
-  ~ Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
-  ~ Vestibulum commodo. Ut rhoncus gravida arcu.
-  -->
-
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -14,28 +6,20 @@
     <title>Home</title>
 </head>
 <body>
-<main class="" height="100%" width="100%">
-    <!--<div class="jumbotron container" style="opacity: 0.8;">-->
-    <!--<h1 class="display-3">在线评测系统</h1>-->
-    <!--<h2>Online Judge System</h2>-->
-    <!--<blockquote class="blockquote">-->
-    <!--<p>使用Chrome或火狐浏览器体验更佳</p>-->
-    <!--</blockquote>-->
-    <!--</div>-->
-    <div class="container-fluid">
-        <img class="img-fluid rounded" src="/images/oj_homepage1.jpg" alt="home1">
-    </div>
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-4 text-center">
-                <a href="/oj/problems" class=" text-center fa fa-pencil-square"
-                   style="font-size: 6rem;color: #335bac;margin: 1rem"><h3>刷题</h3></a></div>
-            <div class="col-4 text-center">
-                <a href="/oj/contest" class=" text-center fa fa-lightbulb-o"
-                   style="font-size: 6rem;color: #d35400;margin: 1rem"><h3>比赛</h3></a></div>
-            <div class="col-4 text-center">
-                <a href="/" class=" text-center fa fa-book" style="font-size: 6rem;color: #982e22;margin: 1rem"><h3>
-                    学习</h3></a></div>
+<main class="ui fluid container" height="100%" width="100%">
+    <div class="ui segment">
+        <div class="ui three column grid">
+            <div class="column text container center aligned">
+                <a href="/problems"><i class="ui blue link cloud icon massive"></i>
+                    <h3>刷题</h3></a></div>
+            <div class="column text container center aligned">
+                <a href="/contest"><i
+                        class="ui orange link lightbulb outline icon massive"></i>
+                    <h3>比赛</h3></a></div>
+            <div class="column text container center aligned">
+                <a href="/">
+                    <i class="ui link massive book red icon"></i>
+                    <h3>学习</h3></a></div>
         </div>
     </div>
     <div class="container-fluid">
