@@ -106,10 +106,11 @@ public class ContestController {
         if (c == null)
             throw new NotFoundException();
         Contest scontest = (Contest) session.getAttribute("contest" + c.getId());
-        if (scontest == null || scontest.getId() != c.getId()) {
-            if (c.getPassword().length() > 0 &&
-                    c.getPrivilege().equals("private") &&
-                    !c.getPassword().equals(password)) {
+        if (scontest == null || scontest.getId() != c.getId()||!c.isStarted()) {
+            if (!c.isStarted()||
+                (c.getPassword().length() > 0 &&
+                        c.getPrivilege().equals("private") &&
+                        !c.getPassword().equals(password))) {
                 c.setProblems(null);
                 c.setSolutions(null);
                 c.setContestComments(null);
@@ -176,8 +177,8 @@ public class ContestController {
             if (scontest == null || scontest.getId() != contest.getId()) {
                 return "Need attendance!";
             }
-            if (contest.isEnded()) {
-                return "The contest id ended!";
+            if (contest.isEnded()||!contest.isStarted()) {
+                return "The contest is not!";
             }
             ContestProblem cproblem = contestProblemRepository.findByContestAndTempId(contest, pid).orElse(null);
             if (cproblem == null) {
@@ -199,6 +200,8 @@ public class ContestController {
     public String postComments(@RequestParam("post_comment") String text, @PathVariable(value = "cid") Long cid) {
         try {
             @NotNull Contest contest = contestService.getContestById(cid);
+            if (!contest.isStarted()||contest.isEnded())
+                throw new NotFoundException();
             User user = (User) session.getAttribute("currentUser");
             Comment comment = new Comment(user, text, contest);
             comment = contestService.postComment(comment);
@@ -213,11 +216,13 @@ public class ContestController {
     public List<Comment> getCommentsOfContest(@PathVariable Long cid) {
         try {
             @NotNull Contest contest = contestService.getContestById(cid);
+            if (!contest.isStarted()||contest.isEnded())
+                throw new NotFoundException();
             List<Comment> contestComments = contestService.getCommentsOfContest(contest);
             return contestComments;
         } catch (Exception e) {
+            throw new NotFoundException();
         }
-        return null;
     }
 
     @PostMapping("/{cid}/view/{id}")
@@ -243,6 +248,8 @@ public class ContestController {
                                            @RequestParam(value = "page", defaultValue = "0") int page) {
         try {
             @NotNull Contest contest = contestService.getContestById(cid);
+            if (!contest.isStarted())
+                throw new NotFoundException();
             @NotNull User user = (User) session.getAttribute("currentUser");
 //            User user = userService.getUserById(5l); // test
             @NotNull Page<Solution> solutions = solutionService.getSolutionsOfUserInContest(page, PAGE_SIZE, user, contest);
