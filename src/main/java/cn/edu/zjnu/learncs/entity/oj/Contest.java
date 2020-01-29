@@ -20,7 +20,7 @@ import java.util.List;
 @Entity
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class Contest implements Cloneable{
+public class Contest implements Cloneable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -56,6 +56,10 @@ public class Contest implements Cloneable{
      */
     public Boolean isEnded() {
         return Instant.now().compareTo(endTime) > 0;
+    }
+
+    public Boolean isStarted() {
+        return Instant.now().compareTo(startTime) > 0;
     }
 
     public String getRunStatu() {
@@ -135,7 +139,8 @@ public class Contest implements Cloneable{
                 ", freezeRank=" + freezeRank +
                 '}';
     }
-    public Contest clone()throws CloneNotSupportedException{
+
+    public Contest clone() throws CloneNotSupportedException {
         Contest c = (Contest) super.clone();
         c.setCreator(creator.clone());
         return c;
