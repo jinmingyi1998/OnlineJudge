@@ -14,12 +14,7 @@
 </head>
 <body>
 <main class="ui fluid container" height="100%" id="vue-rank">
-    <div class="ui tabular menu ">
-        <a :href="'/contest/'+contest.id" class="item">Problem</a>
-        <a :href="'status/'+contest.id" class="item">Status</a>
-        <div class="active item">Ranklist</div>
-        <a :href="'comment/'+contest.id" class="item">Comment</a>
-    </div>
+    <header-tab loc="ranklist" v-bind:cid="contest.id"></header-tab>
     <table class="ui selectable striped small compact single line celled table">
         <thead class="header">
         <tr class="single line">
