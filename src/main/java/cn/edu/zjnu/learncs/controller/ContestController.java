@@ -37,6 +37,11 @@ class ContestViewController {
         return "contest/conteststatus";
     }
 
+    @GetMapping("/ranklist/{id}")
+    public String showContestRanklist(@PathVariable(value = "id")Long id){
+        return "contest/contestrank";
+    }
+
 
 //    @GetMapping("/background/{cid}")
 //    public ModelAndView backgroundOfContest(@PathVariable Long cid) {
