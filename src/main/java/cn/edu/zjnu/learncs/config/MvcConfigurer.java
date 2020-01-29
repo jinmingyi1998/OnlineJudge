@@ -1,5 +1,6 @@
 package cn.edu.zjnu.learncs.config;
 
+import cn.edu.zjnu.learncs.interceptor.ContestInterceptor;
 import cn.edu.zjnu.learncs.interceptor.SessionHandlerInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -15,5 +16,6 @@ public class MvcConfigurer implements WebMvcConfigurer {
         List<String> stringList = new ArrayList<>();
         stringList.add("/oj/admin/**");
         registry.addInterceptor(new SessionHandlerInterceptor()).addPathPatterns(stringList);
+//        registry.addInterceptor(new ContestInterceptor()).addPathPatterns("/contest/*/**").excludePathPatterns("/contest/*");
     }
 }
