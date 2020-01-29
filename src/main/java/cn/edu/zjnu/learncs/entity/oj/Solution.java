@@ -88,7 +88,7 @@ public class Solution implements Cloneable{
         this.share = share;
         length = source.length();
         submitTime = Instant.now();
-        result = "Pending";
+        result = PENDING;
         memory = 0;
         time = 0;
         info = "";
@@ -96,7 +96,7 @@ public class Solution implements Cloneable{
     }
 
     public String getNormalResult() {
-        if (result.equals("Accepted")) return result;
+        if (result.equals(Solution.AC)) return result;
         return result + " on case " + caseNumber;
     }
 
