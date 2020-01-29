@@ -190,7 +190,7 @@ public class ContestController {
         }
     }
 
-    @PostMapping("/{cid}/comments/post")
+    @PostMapping("/comments/post/{cid}")
     public String postComments(@RequestParam("post_comment") String text, @PathVariable(value = "cid") Long cid) {
         try {
             @NotNull Contest contest = contestService.getContestById(cid);
@@ -204,7 +204,7 @@ public class ContestController {
         return "failed";
     }
 
-    @GetMapping("{cid}/comments")
+    @GetMapping("/comments/{cid}")
     public List<Comment> getCommentsOfContest(@PathVariable Long cid) {
         try {
             @NotNull Contest contest = contestService.getContestById(cid);
