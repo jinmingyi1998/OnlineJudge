@@ -27,7 +27,7 @@ class ContestViewController {
         return "contest/contests";
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/problem/{id}")
     public String showContest(@PathVariable(value = "id") Long id) {
         return "contest/contestinfo";
     }
