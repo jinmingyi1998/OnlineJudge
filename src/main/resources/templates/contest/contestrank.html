@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragment/header :: header}"></th:block>
+    <meta charset="UTF-8">
+    <title>提交列表</title>
+    <script language="JavaScript" src="/js/StatusInModal.js"></script>
+    <script src="/js/pagination.js"></script>
+    <style>
+        .ui.fluid.container {
+            max-width: 85% !important;
+        }
+    </style>
+</head>
+<body>
+<main class="ui fluid container" height="100%" id="vue-rank">
+    <div class="ui tabular menu ">
+        <a :href="'/contest/'+contest.id" class="item">Problem</a>
+        <a :href="'status/'+contest.id" class="item">Status</a>
+        <div class="active item">Ranklist</div>
+        <a :href="'comment/'+contest.id" class="item">Comment</a>
+    </div>
+    <table class="ui selectable striped small compact single line celled table">
+        <thead class="header">
+        <tr class="single line">
+            <th class="one wide"><i class="ui trophy icon"></i>Rank</th>
+            <th class="one wide"><i class="ui user icon"></i>Name</th>
+            <th class="one wide">Score</th>
+            <div class="thirteen wide">
+            <th v-for="n in rank.problemsNumber" v-html="n"></th>
+            </div>
+        </tr>
+        </thead>
+        <tbody class="ui content">
+        <tr v-for="r in rank.rows">
+            <td>
+                <div class="ui mini statistic"
+                     :class="{red:r.order==1,
+                      yellow:r.level==0&&r.order!=1,
+                      grey:r.level==1,
+                      brown:r.level==2}">
+                    <div class="value" v-html="r.order"></div>
+                    <div class="label">RANK</div>
+                </div>
+            </td>
+            <td v-html="r.user.name"></td>
+            <td v-html="r.score"></td>
+            <td v-for="b in r.boxes">
+                <div v-if="b.submit>0"
+                     :class="{green:b.accepted&&!b.first,red:!b.accepted,teal:b.first}">
+                    {{b.time}}<br>({{b.submit}})
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+<script>
+    var cid = location.pathname.split('/');
+    cid = cid[cid.length - 1];
+    vue_rank = new Vue({
+        el: "#vue-rank",
+        data: {
+            rank: {},
+            contest: {id: cid}
+        },
+        created: function () {
+            var that = this;
+            url = '/api/contest/ranklist/' + cid;
+            axios.get(url).then(function (res) {
+                that.rank = res.data
+            })
+        }
+    })
+</script>
+<footer th:replace="~{fragment/footer :: footer}"></footer>
+</body>
+</html>
