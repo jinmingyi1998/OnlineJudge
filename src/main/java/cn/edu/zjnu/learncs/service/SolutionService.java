@@ -20,9 +20,9 @@ import java.util.List;
 @Slf4j
 @Service
 public class SolutionService {
-    public static final String[] STATUS = {"Accepted", "Wrong Answer", "Compile Error",
-            "Time Limit Exceed", "Memory Limit Exceed",
-            "Runtime Error", "System Error"};
+    public static final String[] STATUS = {Solution.AC, Solution.WA, Solution.CE,
+            Solution.TLE, Solution.MLE,
+            Solution.RE, Solution.SE};
 
     @Autowired
     SolutionRepository solutionRepository;
