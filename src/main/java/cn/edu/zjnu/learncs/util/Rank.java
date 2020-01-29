@@ -39,9 +39,6 @@ public class Rank {
         return rows;
     }
 
-    public Rank() {
-    }
-
     public Rank(Contest c) {
         init(c);
     }
@@ -120,6 +117,7 @@ public class Rank {
             box.update(solution);
             if (solution.getResult().equals(Solution.AC)) {
                 score+=box.getTime();
+                score+=(box.getSubmit()-1)*20;
             }
             return this;
         }
@@ -150,7 +148,7 @@ public class Rank {
                 return this;
             submit += 1;
             if (s.getResult().equals(s.AC)) {
-                time += Duration.between(s.getContest().getStartTime(), s.getSubmitTime()).toMinutes();
+                time = Duration.between(s.getContest().getStartTime(), s.getSubmitTime()).toMinutes();
                 accepted = true;
                 if(!getProblemHasAc().get(pid-1)){
                     first=true;

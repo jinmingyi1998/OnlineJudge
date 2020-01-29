@@ -5,6 +5,7 @@ import cn.edu.zjnu.learncs.entity.User;
 import cn.edu.zjnu.learncs.entity.oj.*;
 import cn.edu.zjnu.learncs.repo.ContestProblemRepository;
 import cn.edu.zjnu.learncs.service.*;
+import cn.edu.zjnu.learncs.util.Rank;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -35,21 +36,6 @@ class ContestViewController {
     public String showContestStatus(@PathVariable(value = "id") Long id) {
         return "contest/conteststatus";
     }
-
-
-//    @GetMapping("/api/rank/{cid}")
-//    public Rank getRankOfContest(@PathVariable Long cid) {
-//        try {
-//            @NotNull Contest contest = contestService.getContestById(cid);
-//            @NotNull Rank rank = new Rank(contest);
-//            @NotNull List<Solution> solutions = solutionService.getSolutionsInContest(contest);
-//            rank.init(solutions);
-//            return rank;
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        throw new NotFoundException();
-//    }
 
 
 //    @GetMapping("/background/{cid}")
@@ -244,7 +230,7 @@ public class ContestController {
 
     @GetMapping("/status/{cid}")
     public Page<Solution> getUserSolutions(@PathVariable("cid") Long cid,
-                                           @RequestParam(value = "page",defaultValue = "0") int page) {
+                                           @RequestParam(value = "page", defaultValue = "0") int page) {
         try {
             @NotNull Contest contest = contestService.getContestById(cid);
             @NotNull User user = (User) session.getAttribute("currentUser");
@@ -284,6 +270,21 @@ public class ContestController {
         throw new NotFoundException();
     }
 
+    @GetMapping("/ranklist/{cid}")
+    public Rank getRankOfContest(@PathVariable Long cid) {
+        try {
+            @NotNull Contest contest = contestService.getContestById(cid);
+            @NotNull Rank rank = new Rank(contest);
+            @NotNull List<Solution> solutions = solutionService.getSolutionsInContest(contest);
+            for (Solution s : solutions) {
+                rank.update(s);
+            }
+            return rank;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        throw new NotFoundException();
+    }
 
     /*@PostMapping("/background/edit/{cid}")
     public String insertContestAction(@PathVariable Long cid,
