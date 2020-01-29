@@ -11,7 +11,7 @@ spring:
     open-in-view: true
   thymeleaf:
     encoding: utf-8
-    cache: false
+    cache: true
     mode: HTML
     check-template: false
   config:
