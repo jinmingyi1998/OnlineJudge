@@ -19,6 +19,23 @@ import java.time.Instant;
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Solution implements Cloneable{
+    @JsonIgnore
+    public static final String AC="Accepted";
+    @JsonIgnore
+    public static final String WA="Wrong Answer";
+    @JsonIgnore
+    public static final String PENDING="Pending";
+    @JsonIgnore
+    public static final String TLE="Time Limit Exceeded";
+    @JsonIgnore
+    public static final String MLE="Memory Limit Exceeded";
+    @JsonIgnore
+    public static final String RE="Runtime Error";
+    @JsonIgnore
+    public static final String CE="Compile Error";
+    @JsonIgnore
+    public static final String SE="System Error";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -47,7 +64,7 @@ public class Solution implements Cloneable{
     private Integer memory;
     @Column(nullable = false, columnDefinition = "int default 0")
     private Integer length;
-    @Column(nullable = false, columnDefinition = "varchar(50) default 'WA'", length = 50)
+    @Column(nullable = false, columnDefinition = "varchar(50) default 'Wrong Answer'", length = 50)
     private String result;
     @Column
     private Boolean share;
