@@ -38,8 +38,13 @@ class ContestViewController {
     }
 
     @GetMapping("/ranklist/{id}")
-    public String showContestRanklist(@PathVariable(value = "id")Long id){
+    public String showContestRanklist(@PathVariable(value = "id") Long id) {
         return "contest/contestrank";
+    }
+
+    @GetMapping("/{id}")
+    public String contestGate(@PathVariable(value = "id") Long id) {
+        return "contest/contestgate";
     }
 
 
