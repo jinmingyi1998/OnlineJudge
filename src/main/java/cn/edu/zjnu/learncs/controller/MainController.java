@@ -42,12 +42,12 @@ public class MainController {
 
         @Data
         static class RunMessage {
-            public static final String[] code = new String[]{"Accepted",
-                    "Time Limit Exceeded",
-                    "Time Limit Exceeded",
-                    "Memory Limit Exceeded",
-                    "Runtime Error",
-                    "System Error"};
+            public static final String[] code = new String[]{Solution.AC,
+                    Solution.TLE,
+                    Solution.TLE,
+                    Solution.MLE,
+                    Solution.RE,
+                    Solution.SE};
             private int cpu_time;
             private int real_time;
             private int memory;
@@ -68,15 +68,15 @@ public class MainController {
             }
             if (callback.getErr() != null) {
                 if (callback.getErr().equals("CE")) {
-                    solution.setResult("Compile Error");
+                    solution.setResult(Solution.CE);
                 } else {
-                    solution.setResult("System Error");
+                    solution.setResult(Solution.SE);
                 }
                 solution.setInfo(callback.getInfo());
                 solutionService.updateSolutionResultInfo(solution);
                 return "success";
             } else if (callback.getResults().size() == 0) {
-                solution.setResult("System Error");
+                solution.setResult(Solution.SE);
                 solution.setInfo("No results");
                 solutionService.updateSolutionResultInfo(solution);
                 return "success";
