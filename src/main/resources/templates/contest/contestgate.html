@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragment/header :: header}"></th:block>
+    <meta charset="UTF-8">
+    <title>Contest</title>
+    <style>
+        .ui.fluid.container {
+            max-width: 85% !important;
+        }
+    </style>
+</head>
+<body>
+<main class="ui container fluid" id="contest-content">
+    <div class="segment">
+        <div class="header">Waiting...</div>
+
+    </div>
+</main>
+<script>
+    var cid = location.pathname.split('/');
+    cid = cid[cid.length - 1];
+    var cont = new Vue({
+        el: "#contest-content",
+        data: {
+            begin:false,
+            contest: {}
+        },
+        created() {
+            var that = this;
+            that.dataready = false;
+            // this.attend=true;
+            axios.get('/api/contest/' + cid)
+                .then(function (response) {
+                    that.contest = response.data;
+                    that.begin = that.contest.started;
+                    if (that.begin){
+                        location.href='/contest/problem/'+that.contest.id;
+                    }
+                });
+        }
+    });
+</script>
+<script src="/js/contestinfo.js"></script>
+<script src="/js/contesttab.js"></script>
+<footer th:replace="~{fragment/footer :: footer}"></footer>
+</body>
+</html>
