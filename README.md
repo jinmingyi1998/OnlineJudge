@@ -11,8 +11,23 @@
 - jdk8
 
 ## 部署：
+### 代码部署:
 打包成jar包，运行即可，配置文件目录应与jar包在一个目录下，配置文件为 yml
-#### 例如：
+### docker (RECOMMENDED):
+```
+export DOCKER_IMG=registry.cn-hangzhou.aliyuncs.com/jinmingyi/onlinejudge #或者jinmingyi1998/onlinejudge
+docker pull $DOCKER_IMG
+docker run -d --name onlinejudge \
+    -p $PORT:8080 \ 
+    -v $LOG:/onlinejudge/log \
+    -v $CONFIG:/config \
+    -e MYSQL_USER=$MYSQL_USER \
+    -e MYSQL_PASSWORD=$MYSQL_PASSWORD \
+    -e MYSQL_URL=db:3306/oj \
+    -e JUDGER_SERVICE=http://judgerserver:12345/judge \
+    $DOCKER_IMG
+```
+#### config例如：
 ```yaml
 spring:
   datasource:
