@@ -2,6 +2,7 @@ package cn.edu.zjnu.learncs.controller;
 
 import cn.edu.zjnu.learncs.NotFoundException;
 import cn.edu.zjnu.learncs.entity.oj.Solution;
+import cn.edu.zjnu.learncs.service.JudgeService;
 import cn.edu.zjnu.learncs.service.RESTService;
 import cn.edu.zjnu.learncs.service.SolutionService;
 import lombok.Data;
@@ -18,7 +19,7 @@ import java.util.ArrayList;
 @RestController
 public class MainController {
     @Autowired
-    private RESTService restService;
+    private JudgeService judgeService;
 
     @Autowired
     private SolutionService solutionService;
@@ -26,8 +27,6 @@ public class MainController {
     @GetMapping("/")
     public ModelAndView home() {
         ModelAndView m = new ModelAndView("index");
-//        String res = restService.postJson("", "http://www.baidu.com");
-//        System.out.println(res);
         return m;
     }
 
@@ -38,7 +37,6 @@ public class MainController {
         private String err;
         private String info;
         private ArrayList<RunMessage> results;
-
 
         @Data
         static class RunMessage {
@@ -98,16 +96,10 @@ public class MainController {
             solution.setCaseNumber(caseNumber);
             solution.setTime(cpu);
             solution.setMemory(memory);
-            solutionService.updateSolutionResultTimeMemory(solution);
+            judgeService.update(solution);
             return "success";
         } catch (Exception e) {
             throw new NotFoundException();
         }
     }
-//    @GetMapping
-//    public String baidu(){
-//        String res = restService.postJson("{\"userName\":\"test\",\"password\":\"123456\"}", "http://10.65.163.65:5050/code_artisan_war/home/login");
-//        return res;
-//    }
-
 }

@@ -5,10 +5,7 @@ import cn.edu.zjnu.learncs.entity.User;
 import cn.edu.zjnu.learncs.entity.oj.Problem;
 import cn.edu.zjnu.learncs.entity.oj.Solution;
 import cn.edu.zjnu.learncs.entity.oj.Tag;
-import cn.edu.zjnu.learncs.service.ProblemService;
-import cn.edu.zjnu.learncs.service.RESTService;
-import cn.edu.zjnu.learncs.service.SolutionService;
-import cn.edu.zjnu.learncs.service.UserService;
+import cn.edu.zjnu.learncs.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -51,7 +48,7 @@ public class ProblemController {
     @Autowired
     UserService userService;
     @Autowired
-    RESTService restService;
+    JudgeService judgeService;
     @Autowired
     SolutionService solutionService;
 
@@ -173,7 +170,7 @@ public class ProblemController {
             return "submit failed";
         try {
 //            return restService.submitCode(solution) == null ? "judge failed" : "success";
-            restService.submitCode(solution);
+            judgeService.submitCode(solution);
             return "success";
         } catch (Exception e) {
             return "Internal error";

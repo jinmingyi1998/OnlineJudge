@@ -64,7 +64,7 @@ public class ContestController {
     @Autowired
     ContestService contestService;
     @Autowired
-    RESTService restService;
+    JudgeService judgeService;
     @Autowired
     ContestProblemRepository contestProblemRepository;
     private static final int PAGE_SIZE = 30;
@@ -176,7 +176,7 @@ public class ContestController {
             solution.setContest(contest);
             solution = solutionService.insertSolution(solution);
             assert solution.getContest() != null;
-            restService.submitCode(solution);
+            judgeService.submitCode(solution);
             return "success";
         } catch (Exception e) {
             throw new NotFoundException();
