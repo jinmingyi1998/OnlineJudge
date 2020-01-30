@@ -3,19 +3,20 @@ services:
   db:
    image: mariadb:10.2.8
    ports:
-   - 13306:3306
+     - 3306:3306
    environment:
     - MYSQL_ROOT_PASSWORD=1234
     - MYSQL_DATABASE=oj
-    - MYSQL_USER=jinmy
-    - MYSQL_PASSWORD=1234
+    - MYSQL_USER=user # optional
+    - MYSQL_PASSWORD=1234 # optional
    volumes:
-     - /d/mysql:/var/lib/mysql
+     - /mysql:/var/lib/mysql  # data storage path
+     - /mariadb.conf.d:/etc/mysql/mariadb.conf.d  # config file. set encoding : utf8mb4_bin
 
   judgerserver:
    image: registry.cn-hangzhou.aliyuncs.com/jinmingyi/judgerserver
    volumes:
-    - /d/ojdata:/ojdata
+     - /ojdata:/ojdata # problem test data path
    ports:
      - 12345:12345
    environment:
@@ -28,6 +29,8 @@ services:
     - db
    ports:
      - 80:8080
+   volumes:
+     - /onlinejudge:/onlinejudge # log files
    environment:
    - MYSQL_USER=jinmy
    - MYSQL_PASSWORD=1234
