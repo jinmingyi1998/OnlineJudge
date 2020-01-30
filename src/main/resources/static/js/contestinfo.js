@@ -53,7 +53,7 @@ var cont = new Vue({
     },
     methods: {
         change_problem(id) {
-            if (id ===this.pid)return;
+            if (id === this.pid) return;
             this.pid = id;
             this.dataready = false;
             for (var i = 0; i < this.contest.problems.length; i++) {
@@ -79,7 +79,7 @@ var cont = new Vue({
         },
         submit() {
             var that = this;
-            axios.post('/api/contest/' + cid + '/submit/' + this.pid, {
+            axios.post('/api/contest/submit/' + this.pid + "/" + cid, {
                 language: that.language,
                 source: that.code,
                 share: that.share
