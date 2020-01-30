@@ -23,8 +23,6 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {
     List<Problem> findProblemsByActiveAndId(Boolean active, Long id);
 
 
-    //    @Query("select p from Problem p where p.title like %:title% and p.active = :active")
-//    List<Problem> getProblemsByActiveAndTitle(@Param("active") Boolean active, @Param("title") String name);
     List<Problem> findAllByActiveAndTitleContaining(Boolean active, String title);
 
     Page<Problem> findProblemsByActiveAndTagsInAndIdIn(Pageable pageable, Boolean active, List<Tag> tags, List<Long> ids);

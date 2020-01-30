@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Slf4j
-@Transactional
 @Service
 public class ContestService {
     @Autowired
@@ -40,7 +39,7 @@ public class ContestService {
         return contestRepository.save(contest);
     }
 
-    @Transactional
+
     public Contest getContestById(Long id) {
         return getContestById(id, false);
     }

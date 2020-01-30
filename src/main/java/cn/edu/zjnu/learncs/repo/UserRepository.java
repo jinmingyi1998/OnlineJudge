@@ -22,9 +22,4 @@ public interface UserRepository extends JpaRepository<User,Long>  {
     Optional<User> findByUsername(String username);
 
     Optional<User> findByUsernameAndPassword(String username, String password);
-
-//    @Transactional
-//    @Modifying
-//    @Query(value = "UPDATE user set ",nativeQuery = true)
-//    void updateScore(Long uid,Integer score);
 }
