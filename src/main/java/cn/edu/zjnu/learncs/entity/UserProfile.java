@@ -8,6 +8,17 @@ import java.io.Serializable;
 @Data
 @Entity
 public class UserProfile implements Serializable {
+    public UserProfile() {
+        score = 0;
+        accepted = 0;
+        submitted = 0;
+    }
+
+    public UserProfile(User u) {
+        user = u;
+        new UserProfile();
+    }
+
     @Id
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     User user;
