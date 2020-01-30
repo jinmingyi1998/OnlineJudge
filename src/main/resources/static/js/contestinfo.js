@@ -27,6 +27,25 @@ function render_md() {
     });
 }
 
+var code_editor;
+$(function () {
+    code_editor = editormd("code-editor", {
+        width: "100%",
+        gfm: true,
+        height: 500,
+        watch: false,
+        toolbar: false,
+        codeFold: true,
+        searchReplace: true,
+        autoFocus: false,
+        placeholder: "Enjoy coding!",
+        editorTheme: "tomorrow-night-bright",
+        previewTheme: "dark",
+        theam: "dark",
+        mode: "clike",
+        path: '/editor/lib/',
+    });
+});
 var cont = new Vue({
     el: "#contest-content",
     data: {
@@ -52,6 +71,15 @@ var cont = new Vue({
         code: ""
     },
     methods: {
+        change_lang() {
+            if (this.language === "java") {
+                code_editor.setCodeMirrorOption("mode", "clike");
+            } else if (this.language.indexOf("py") === 0) {
+                code_editor.setCodeMirrorOption("mode", "python");
+            } else if (this.language.indexOf("c") === 0) {
+                code_editor.setCodeMirrorOption("mode", "clike");
+            }
+        },
         change_problem(id) {
             if (id === this.pid) return;
             this.pid = id;
@@ -78,6 +106,7 @@ var cont = new Vue({
             this.dataready = true;
         },
         submit() {
+            this.code = code_editor.getMarkdown();
             var that = this;
             axios.post('/api/contest/submit/' + this.pid + "/" + cid, {
                 language: that.language,
