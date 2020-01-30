@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragment/header :: header}"></th:block>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/editor/css/editormd.css">
+    <script src="/editor/lib/marked.min.js"></script>
+    <script src="/editor/lib/raphael.min.js"></script>
+    <script src="/editor/lib/underscore.min.js"></script>
+    <script src="/editor/lib/sequence-diagram.min.js"></script>
+    <script src="/editor/lib/flowchart.min.js"></script>
+    <script src="/editor/lib/jquery.flowchart.min.js"></script>
+    <script src="/editor/editormd.js"></script>
+    <link rel="stylesheet" href="/js/prettify/skins/sunburst.css">
+    <title>Q&A</title>
+    <script language="JavaScript" src="/js/StatusInModal.js"></script>
+    <script src="/js/pagination.js"></script>
+    <style>
+        .ui.fluid.container {
+            max-width: 85% !important;
+        }
+    </style>
+    <script src="/js/comment-component.js"></script>
+</head>
+<body>
+<main class="ui fluid container" height="100%" id="vue-comment">
+    <header-tab loc="comment" v-bind:cid="contest.id"></header-tab>
+    <div class="ui segment">
+        <comment-group v-bind:comments="comments" v-bind:level="0"></comment-group>
+        <form class="ui reply form">
+            <div class="field" id="comment-editor">
+                <textarea style="display: none"></textarea>
+            </div>
+            <div class="ui primary submit labeled icon button" v-on:click="post_comment()">
+                <i class="icon edit"></i> Add Reply
+            </div>
+        </form>
+    </div>
+</main>
+<script src="/js/contestcomment.js"></script>
+<script src="/js/contesttab.js"></script>
+<footer th:replace="~{fragment/footer :: footer}"></footer>
+</body>
+</html>
