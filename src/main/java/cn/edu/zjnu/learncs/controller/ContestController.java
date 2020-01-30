@@ -46,19 +46,6 @@ class ContestViewController {
     public String contestGate(@PathVariable(value = "id") Long id) {
         return "contest/contestgate";
     }
-
-
-//    @GetMapping("/background/{cid}")
-//    public ModelAndView backgroundOfContest(@PathVariable Long cid) {
-//        try {
-//            ModelAndView m = new ModelAndView("contest/background");
-//            Contest contest = contestService.getContestById(cid);
-//            m.addObject("contest", contest);
-//            return m;
-//        } catch (Exception e) {
-//        }
-//        throw new NotFoundException();
-//    }
 }
 
 @Slf4j
@@ -106,11 +93,11 @@ public class ContestController {
         if (c == null)
             throw new NotFoundException();
         Contest scontest = (Contest) session.getAttribute("contest" + c.getId());
-        if (scontest == null || scontest.getId() != c.getId()||!c.isStarted()) {
-            if (!c.isStarted()||
-                (c.getPassword().length() > 0 &&
-                        c.getPrivilege().equals("private") &&
-                        !c.getPassword().equals(password))) {
+        if (scontest == null || scontest.getId() != c.getId() || !c.isStarted()) {
+            if (!c.isStarted() ||
+                    (c.getPassword().length() > 0 &&
+                            c.getPrivilege().equals("private") &&
+                            !c.getPassword().equals(password))) {
                 c.setProblems(null);
                 c.setSolutions(null);
                 c.setContestComments(null);
@@ -177,7 +164,7 @@ public class ContestController {
             if (scontest == null || scontest.getId() != contest.getId()) {
                 return "Need attendance!";
             }
-            if (contest.isEnded()||!contest.isStarted()) {
+            if (contest.isEnded() || !contest.isStarted()) {
                 return "The contest is not!";
             }
             ContestProblem cproblem = contestProblemRepository.findByContestAndTempId(contest, pid).orElse(null);
@@ -200,7 +187,7 @@ public class ContestController {
     public String postComments(@RequestParam("post_comment") String text, @PathVariable(value = "cid") Long cid) {
         try {
             @NotNull Contest contest = contestService.getContestById(cid);
-            if (!contest.isStarted()||contest.isEnded())
+            if (!contest.isStarted() || contest.isEnded())
                 throw new NotFoundException();
             User user = (User) session.getAttribute("currentUser");
             Comment comment = new Comment(user, text, contest);
@@ -216,7 +203,7 @@ public class ContestController {
     public List<Comment> getCommentsOfContest(@PathVariable Long cid) {
         try {
             @NotNull Contest contest = contestService.getContestById(cid);
-            if (!contest.isStarted()||contest.isEnded())
+            if (!contest.isStarted() || contest.isEnded())
                 throw new NotFoundException();
             List<Comment> contestComments = contestService.getCommentsOfContest(contest);
             return contestComments;
