@@ -149,7 +149,7 @@ public class ContestController {
         return c;
     }
 
-    @PostMapping("/{cid}/submit/{pid}")
+    @PostMapping("/submit/{pid}/{cid}")
     public String submitProblemInContest(@PathVariable("pid") Long pid,
                                          @PathVariable("cid") Long cid,
                                          HttpServletRequest request,
@@ -225,24 +225,6 @@ public class ContestController {
         }
     }
 
-    @PostMapping("/{cid}/view/{id}")
-    public Solution restfulShowSourceCodeInContest(@PathVariable(value = "cid") Long
-                                                           cid, @PathVariable(value = "id") Long id) {
-        try {
-            @NotNull Solution solution = solutionService.getSolutionById(id);
-            @NotNull Contest contest = contestService.getContestById(cid);
-            User user = (User) session.getAttribute("currentUser");
-            if (user != null && Objects.equals(user.getId(), solution.getUser().getId())) {
-                return solution;
-            }
-            if (contest.isEnded() && solution.getShare()) {
-                return solution;
-            }
-        } catch (Exception e) {
-        }
-        throw new NotFoundException();
-    }
-
     @GetMapping("/status/{cid}")
     public Page<Solution> getUserSolutions(@PathVariable("cid") Long cid,
                                            @RequestParam(value = "page", defaultValue = "0") int page) {
@@ -269,19 +251,6 @@ public class ContestController {
                 s.setContest(null);
             }
             return solutions;
-        } catch (Exception e) {
-        }
-        throw new NotFoundException();
-    }
-
-    @GetMapping("/{cid}/problem/{pid}")
-    public Problem getProblemByContestTempId(@PathVariable(value = "cid") Long cid,
-                                             @PathVariable("pid") Long pid) {
-        try {
-            @NotNull Contest contest = contestService.getContestById(cid);
-            @NotNull Problem problem = contestProblemRepository.findByContestAndTempId(contest, pid).get().getProblem();
-            assert problem != null;
-            return problem;
         } catch (Exception e) {
         }
         throw new NotFoundException();
