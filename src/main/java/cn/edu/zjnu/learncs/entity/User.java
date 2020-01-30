@@ -12,7 +12,7 @@ import javax.validation.constraints.Size;
 @Entity
 @Slf4j
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class User implements Cloneable,Comparable{
+public class User implements Cloneable, Comparable {
 
     public User() {
         this.username = "";
@@ -58,6 +58,9 @@ public class User implements Cloneable,Comparable{
     @Size(max = 250)
     private String intro;
 
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
+    private UserProfile userProfile;
+
     public User clone() throws CloneNotSupportedException {
         return (User) super.clone();
     }
@@ -79,6 +82,6 @@ public class User implements Cloneable,Comparable{
 
     @Override
     public int compareTo(Object o) {
-        return getId().compareTo(((User)o).getId());
+        return getId().compareTo(((User) o).getId());
     }
 }
