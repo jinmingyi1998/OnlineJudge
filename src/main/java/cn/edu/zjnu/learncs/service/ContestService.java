@@ -69,7 +69,7 @@ public class ContestService {
     }
 
     public List<Comment> getCommentsOfContest(Contest c) {
-        List<Comment> comments = commentRepository.findAllByContest(c);
+        List<Comment> comments = commentRepository.findAllByContestOrderByPostTimeDesc(c);
         return comments;
     }
 
