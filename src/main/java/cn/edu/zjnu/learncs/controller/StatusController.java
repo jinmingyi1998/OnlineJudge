@@ -1,6 +1,7 @@
 package cn.edu.zjnu.learncs.controller;
 
 import cn.edu.zjnu.learncs.NotFoundException;
+import cn.edu.zjnu.learncs.config.Config;
 import cn.edu.zjnu.learncs.entity.User;
 import cn.edu.zjnu.learncs.entity.oj.Contest;
 import cn.edu.zjnu.learncs.entity.oj.Problem;
@@ -37,6 +38,8 @@ class StatusViewController {
 @RequestMapping("/api/status")
 public class StatusController {
     private final int PAGE_SIZE = 50;
+    @Autowired
+    Config config;
 
     @Autowired
     SolutionService solutionService;
@@ -101,11 +104,14 @@ public class StatusController {
     public Solution restfulShowSourceCode(@PathVariable(value = "id") Long id) {
         Solution solution = solutionService.getSolutionById(id);
         try {
+            assert solution != null;
             User user = (User) session.getAttribute("currentUser");
-            if (solution != null && solution.getShare()) {
+            if (user != null && user.getId() == solution.getUser().getId()) {
+                // This submit belongs to this user.
                 return solutionFilter(solution);
             }
-            if (user != null && Objects.equals(user.getId(), solution.getUser().getId())) {
+            if (user.getUserProfile().getScore() > config.getLeastScoreToSeeOthersCode() && solution.getShare()) {
+                // This submit is shared
                 return solutionFilter(solution);
             }
             solution.setSource("This Source Code Is Not Shared!");
