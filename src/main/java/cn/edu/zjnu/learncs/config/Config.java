@@ -19,6 +19,8 @@ public class Config {
 //    private String judgerDir;
 //    private String uid;
 //    private String gid;
+    //TODO score should be a threshold which can be set by admin
+    private Integer leastScoreToSeeOthersCode = 1000;
     private ArrayList<String> judgerhost;
     private LanguageConfig c;
     private LanguageConfig cpp;
