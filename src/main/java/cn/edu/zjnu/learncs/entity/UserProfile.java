@@ -30,4 +30,14 @@ public class UserProfile implements Serializable {
     private Integer accepted = 0;
     @Column(nullable = false, columnDefinition = "INT default 0")
     private Integer submitted = 0;
+
+    @Override
+    public String toString() {
+        return "UserProfile{" +
+                "id=" + id +
+                ", score=" + score +
+                ", accepted=" + accepted +
+                ", submitted=" + submitted +
+                '}';
+    }
 }

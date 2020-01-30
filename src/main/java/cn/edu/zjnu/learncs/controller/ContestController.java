@@ -3,9 +3,11 @@ package cn.edu.zjnu.learncs.controller;
 import cn.edu.zjnu.learncs.NotFoundException;
 import cn.edu.zjnu.learncs.entity.User;
 import cn.edu.zjnu.learncs.entity.oj.*;
+import cn.edu.zjnu.learncs.repo.CommentRepository;
 import cn.edu.zjnu.learncs.repo.ContestProblemRepository;
 import cn.edu.zjnu.learncs.service.*;
 import cn.edu.zjnu.learncs.util.Rank;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -40,6 +42,11 @@ class ContestViewController {
     @GetMapping("/ranklist/{id}")
     public String showContestRanklist(@PathVariable(value = "id") Long id) {
         return "contest/contestrank";
+    }
+
+    @GetMapping("/comment/{id}")
+    public String showContestComment(@PathVariable(value = "id") Long id) {
+        return "contest/contestcomment";
     }
 
     @GetMapping("/{id}")
@@ -182,14 +189,33 @@ public class ContestController {
         }
     }
 
+    @Data
+    static class CommentPost {
+        String rtext = "";
+        Long rid = 0L;
+
+        public Long getRid() {
+            return rid == null ? 0L : rid;
+        }
+
+        public CommentPost() {
+        }
+    }
+
+    @Autowired
+    CommentRepository commentRepository;
+
     @PostMapping("/comments/post/{cid}")
-    public String postComments(@RequestParam("post_comment") String text, @PathVariable(value = "cid") Long cid) {
+    public String postComments(@PathVariable(value = "cid") Long cid, @RequestBody CommentPost commentPost) {
         try {
+            if (commentPost.rtext.length() < 4) return "too short";
+            User user = (User) session.getAttribute("currentUser");
+            if (user == null) return "need login";
+            Comment father = commentRepository.findById(commentPost.getRid()).orElse(null);
             @NotNull Contest contest = contestService.getContestById(cid);
             if (!contest.isStarted() || contest.isEnded())
                 throw new NotFoundException();
-            User user = (User) session.getAttribute("currentUser");
-            Comment comment = new Comment(user, text, contest);
+            Comment comment = new Comment(user, commentPost.rtext, contest, father);
             comment = contestService.postComment(comment);
             return "success";
         } catch (Exception e) {
@@ -209,10 +235,10 @@ public class ContestController {
     @GetMapping("/comments/{cid}")
     public List<Comment> getCommentsOfContest(@PathVariable Long cid) {
         try {
-            @NotNull Contest contest = contestService.getContestById(cid, true);
+            @NotNull Contest contest = contestService.getContestById(cid, false);
             if (!contest.isStarted())
                 throw new NotFoundException();
-            List<Comment> contestComments = contest.getContestComments();//contestService.getCommentsOfContest(contest);
+            List<Comment> contestComments = contestService.getCommentsOfContest(contest);
             for (Comment c : contestComments) {
                 c = commentFilter(c);
             }
