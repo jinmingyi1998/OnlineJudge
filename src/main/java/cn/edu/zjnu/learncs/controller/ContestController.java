@@ -198,13 +198,24 @@ public class ContestController {
         return "failed";
     }
 
+    private Comment commentFilter(Comment comment) {
+        comment.getUser().setPassword(null);
+        comment.getUser().setEmail(null);
+        comment.getUser().setIntro(null);
+        comment.getUser().setUserProfile(null);
+        return comment;
+    }
+
     @GetMapping("/comments/{cid}")
     public List<Comment> getCommentsOfContest(@PathVariable Long cid) {
         try {
-            @NotNull Contest contest = contestService.getContestById(cid);
-            if (!contest.isStarted() || contest.isEnded())
+            @NotNull Contest contest = contestService.getContestById(cid, true);
+            if (!contest.isStarted())
                 throw new NotFoundException();
-            List<Comment> contestComments = contestService.getCommentsOfContest(contest);
+            List<Comment> contestComments = contest.getContestComments();//contestService.getCommentsOfContest(contest);
+            for (Comment c : contestComments) {
+                c = commentFilter(c);
+            }
             return contestComments;
         } catch (Exception e) {
             throw new NotFoundException();
