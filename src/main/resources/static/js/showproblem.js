@@ -1,3 +1,22 @@
+var code_editor;
+$(function () {
+    code_editor = editormd("code-editor", {
+        width: "100%",
+        gfm: true,
+        height: 500,
+        watch: false,
+        toolbar: false,
+        codeFold: true,
+        searchReplace: true,
+        autoFocus: false,
+        placeholder: "Enjoy coding!",
+        editorTheme: "tomorrow-night-bright",
+        previewTheme: "dark",
+        theam: "dark",
+        mode: "clike",
+        path: '/editor/lib/',
+    });
+});
 vue_history = new Vue({
     el: "#vue-history",
     data: {
@@ -42,7 +61,17 @@ var prom = new Vue({
         dataready: false
     },
     methods: {
+        change_lang() {
+            if (this.language === "java") {
+                code_editor.setCodeMirrorOption("mode", "clike");
+            } else if (this.language.indexOf("py") === 0) {
+                code_editor.setCodeMirrorOption("mode", "python");
+            } else if (this.language.indexOf("c") === 0) {
+                code_editor.setCodeMirrorOption("mode", "clike");
+            }
+        },
         submit: function () {
+            this.code = code_editor.getMarkdown();
             var that = this;
             axios.post('/api/problems/submit/' + pid, {
                 language: that.language,
@@ -86,7 +115,7 @@ var prom = new Vue({
                         taskList: false,   // Github Flavored Markdown task lists
                         flowChart: true,
                         sequenceDiagram: true,
-                        previewCodeHighlight: true
+                        previewCodeHighlight: true,
                     });
                     $(this).attr("id", "");
                 });

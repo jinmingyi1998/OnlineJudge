@@ -113,7 +113,8 @@
                 <form id="form" class="ui form">
                     <div>
                         <label for="language">语言 :</label>
-                        <select class="ui search dropdown" id="language" name="language" v-model="language">
+                        <select class="ui search dropdown" id="language" name="language" v-model="language"
+                                v-on:change="change_lang()">
                             <option value="c">C</option>
                             <option selected value="cpp">C++</option>
                             <option value="java">Java</option>
@@ -125,8 +126,11 @@
                             <input id="share" name="share" v-model="share" type="checkbox">
                         </div>
                     </div>
-                    <textarea class="field" cols="40" id="" name="source" rows="20" placeholder="your code..."
-                              style="resize: none;" v-model="code"></textarea>
+                    <!--                    <textarea class="field" cols="40" id="" name="source" rows="20" placeholder="your code..."-->
+                    <!--                              style="resize: none;" v-model="code"></textarea>-->
+                    <div id="code-editor">
+                        <textarea style="display:none;"></textarea>
+                    </div>
                     <submit-button v-on:submit="submit"></submit-button>
                 </form>
             </div>
