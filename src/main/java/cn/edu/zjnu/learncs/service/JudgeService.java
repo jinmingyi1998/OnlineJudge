@@ -1,6 +1,8 @@
 package cn.edu.zjnu.learncs.service;
 
 import cn.edu.zjnu.learncs.config.Config;
+import cn.edu.zjnu.learncs.entity.oj.Contest;
+import cn.edu.zjnu.learncs.entity.oj.ContestProblem;
 import cn.edu.zjnu.learncs.entity.oj.Solution;
 import cn.edu.zjnu.learncs.repo.ContestProblemRepository;
 import cn.edu.zjnu.learncs.repo.ProblemRepository;
@@ -9,7 +11,9 @@ import com.alibaba.fastjson.JSON;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -117,12 +121,22 @@ public class JudgeService {
         return restService.postJson(jsonString, host);
     }
 
+    @Transactional
     public void update(Solution solution) {
         solutionService.updateSolutionResultTimeMemory(solution);
         userProfileRepository.updateUserSubmitted(solution.getUser().getUserProfile().getId(), 1);
         problemRepository.updateSubmittedNumber(solution.getProblem().getId(), 1);
         if (solution.getContest() != null) {
-
+            Contest contest = contestService.getContestById(solution.getContest().getId(), true);
+            for (ContestProblem cp : contest.getProblems()) {
+                if (cp.getProblem().getId().equals(solution.getProblem().getId())) {
+                    contestProblemRepository.updateSubmittedNumber(cp.getId(), 1);
+                    if (solution.getResult().equals(Solution.AC)) {
+                        contestProblemRepository.updateAcceptedNumber(cp.getId(), 1);
+                    }
+                    break;
+                }
+            }
         }
         if (solution.getResult().equals(Solution.AC)) {
             List<Solution> solutions = solutionService.getProblemSubmitOfUser(solution.getUser(), solution.getProblem());
