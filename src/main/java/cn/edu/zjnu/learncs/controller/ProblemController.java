@@ -56,7 +56,7 @@ public class ProblemController {
         if (session.getAttribute("last_submit") != null) {
             Instant instant = (Instant) session.getAttribute("last_submit");
             if (Instant.now().minusSeconds(10).compareTo(instant) < 0) {
-                return "Don't submit within 10 seconds";
+                return "Don't submitted within 10 seconds";
             } else if (source.length() > 20000) {
                 return "Source code too long";
             } else if (source.length() < 2) {
@@ -167,7 +167,7 @@ public class ProblemController {
         //null检验完成
         Solution solution = solutionService.insertSolution(new Solution(user, problem, language, source, request.getRemoteAddr(), share));
         if (solution == null)
-            return "submit failed";
+            return "submitted failed";
         try {
 //            return restService.submitCode(solution) == null ? "judge failed" : "success";
             judgeService.submitCode(solution);

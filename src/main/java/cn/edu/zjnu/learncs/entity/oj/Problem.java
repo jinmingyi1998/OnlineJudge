@@ -42,7 +42,7 @@ public class Problem implements Cloneable{
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Tag> tags;
     @Column(columnDefinition = "integer default 0")
-    private Integer submit = 0;
+    private Integer submitted = 0;
     @Column(columnDefinition = "integer default 0")
     private Integer accepted = 0;
 
@@ -61,7 +61,7 @@ public class Problem implements Cloneable{
         this.timeLimit = timeLimit;
         this.memoryLimit = memoryLimit;
         accepted = 0;
-        submit = 0;
+        submitted = 0;
         active = false;
         this.score = score;
     }
@@ -81,15 +81,15 @@ public class Problem implements Cloneable{
                 ", timeLimit=" + timeLimit +
                 ", memoryLimit=" + memoryLimit +
                 ", active=" + active +
-                ", submit=" + submit +
+                ", submitted=" + submitted +
                 ", accepted=" + accepted +
                 '}';
     }
 
     public String getRatio() {
         try {
-            if (this.submit == 0) return "0%";
-            double ratio = this.accepted * 1.0 / this.submit * 100.0;
+            if (this.submitted == 0) return "0%";
+            double ratio = this.accepted * 1.0 / this.submitted * 100.0;
             return String.format("%.2f%%", ratio);
         } catch (Exception e) {
             return null;
@@ -178,7 +178,7 @@ class JsonReturnProblem extends Problem{
     }
 
     @Override
-    public Integer getSubmit() {
+    public Integer getSubmitted() {
         return null;
     }
 

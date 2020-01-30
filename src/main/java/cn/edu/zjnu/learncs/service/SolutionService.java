@@ -152,8 +152,8 @@ public class SolutionService {
         try {
             @NotNull User user = solution.getUser();
             @NotNull Problem problem = solution.getProblem();
-            user.setSubmit(user.getSubmit() + 1);
-            problem.setSubmit(problem.getSubmit() + 1);
+            user.setSubmitted(user.getSubmitted() + 1);
+            problem.setSubmitted(problem.getSubmitted() + 1);
             userService.saveOrUpdateUser(user);
             problemService.updateProblem(problem);
             @NotNull Contest contest = solution.getContest();

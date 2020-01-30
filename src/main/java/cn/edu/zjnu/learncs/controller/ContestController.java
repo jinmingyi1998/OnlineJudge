@@ -122,7 +122,7 @@ public class ContestController {
                 Problem p = cp.getProblem();
                 p.setId(null);
                 p.setAccepted(null);
-                p.setSubmit(null);
+                p.setSubmitted(null);
                 p.setAccepted(null);
                 p.setTags(null);
                 p.setTitle(null);
