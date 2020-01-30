@@ -93,6 +93,7 @@ public class StatusController {
         s.getUser().setPassword(null);
         s.getUser().setEmail(null);
         s.getUser().setIntro(null);
+        s.getUser().setUserProfile(null);
         Problem p = Problem.jsonReturnProblemFactory();
         p.setId(s.getProblem().getId());
         s.setProblem(p);

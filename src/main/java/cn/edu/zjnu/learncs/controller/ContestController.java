@@ -231,6 +231,7 @@ public class ContestController {
                 s.getUser().setEmail(null);
                 s.getUser().setPassword(null);
                 s.getUser().setIntro(null);
+                s.getUser().setUserProfile(null);
                 Problem tp = Problem.jsonReturnProblemFactory();
                 tp.setId(cpmap.get(s.getProblem().getId()).getTempId());
                 s.setProblem(tp);
