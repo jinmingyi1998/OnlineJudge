@@ -15,7 +15,7 @@ spring:
     mode: HTML
     check-template: false
   config:
-    additional-location: onlinejudge
+    additional-location: /config
   servlet:
     multipart:
       max-file-size: 3050MB
@@ -39,7 +39,7 @@ logging:
 
 onlinejudge:
   judgerhost:
-    - http://localhost:12345/judge
+    - ${JUDGER_SERVICE}
   #    - http://localhost:8001/judge
   #    - http://localhost:8002/judge
   #    - http://localhost:8003/judge
