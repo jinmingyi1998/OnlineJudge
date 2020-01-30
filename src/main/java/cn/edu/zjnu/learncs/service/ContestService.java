@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Transactional
@@ -74,7 +73,6 @@ public class ContestService {
     }
 
     public Comment postComment(Comment Comment) {
-        log.info(Comment.toString());
         return commentRepository.save(Comment);
     }
 
