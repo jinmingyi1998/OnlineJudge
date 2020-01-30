@@ -1,6 +1,7 @@
 package cn.edu.zjnu.learncs.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -8,6 +9,7 @@ import java.io.Serializable;
 
 @Data
 @Entity
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserProfile implements Serializable {
     public UserProfile() {
         score = 0;
