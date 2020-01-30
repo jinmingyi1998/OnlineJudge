@@ -2,12 +2,19 @@ package cn.edu.zjnu.learncs.service;
 
 import cn.edu.zjnu.learncs.config.Config;
 import cn.edu.zjnu.learncs.entity.oj.Solution;
+import cn.edu.zjnu.learncs.repo.ContestProblemRepository;
+import cn.edu.zjnu.learncs.repo.ProblemRepository;
+import cn.edu.zjnu.learncs.repo.UserProfileRepository;
 import com.alibaba.fastjson.JSON;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Slf4j
+@Service
 public class JudgeService {
     @Data
     public static class SubmitCode {
@@ -53,9 +60,19 @@ public class JudgeService {
     }
 
     @Autowired
-    Config config;
+    private Config config;
     @Autowired
-    RESTService restService;
+    private RESTService restService;
+    @Autowired
+    private SolutionService solutionService;
+    @Autowired
+    private UserProfileRepository userProfileRepository;
+    @Autowired
+    private ProblemRepository problemRepository;
+    @Autowired
+    private ContestProblemRepository contestProblemRepository;
+    @Autowired
+    private ContestService contestService;
 
     public String submitCode(Solution solution) throws Exception {
         String host = config.getJudgerhost().get(solution.getId().intValue() % config.getJudgerhost().size());
@@ -98,5 +115,29 @@ public class JudgeService {
         log.info(language.toString());
         String jsonString = JSON.toJSONString(submitCode);
         return restService.postJson(jsonString, host);
+    }
+
+    public void update(Solution solution) {
+        solutionService.updateSolutionResultTimeMemory(solution);
+        userProfileRepository.updateUserSubmitted(solution.getUser().getUserProfile().getId(), 1);
+        problemRepository.updateSubmittedNumber(solution.getProblem().getId(), 1);
+        if (solution.getContest() != null) {
+
+        }
+        if (solution.getResult().equals(Solution.AC)) {
+            List<Solution> solutions = solutionService.getProblemSubmitOfUser(solution.getUser(), solution.getProblem());
+            boolean hasAc = false;
+            for (Solution s : solutions) {
+                if (s.getId().equals(solution.getId())) continue;
+                if (s.getResult().equals(Solution.AC)) {
+                    hasAc = true;
+                }
+            }
+            if (!hasAc) {
+                userProfileRepository.updateUserScore(solution.getUser().getUserProfile().getId(), solution.getProblem().getScore());
+                userProfileRepository.updateUserAccepted(solution.getUser().getUserProfile().getId(), 1);
+                problemRepository.updateAcceptedNumber(solution.getProblem().getId(), 1);
+            }
+        }
     }
 }

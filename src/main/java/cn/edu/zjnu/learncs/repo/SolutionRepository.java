@@ -53,6 +53,8 @@ public interface SolutionRepository extends JpaRepository<Solution, Long> {
 
     Page<Solution> findAllByUserAndProblem(Pageable pageable, User user, Problem problem);
 
+    List<Solution> findAllByUserAndProblemOrderByIdDesc(User user, Problem problem);
+
     @Transactional
     @Modifying
     @Query(value = "update solution set solution.result=:re , solution.time=:ti, solution.memory=:me where solution.id=:id", nativeQuery = true)

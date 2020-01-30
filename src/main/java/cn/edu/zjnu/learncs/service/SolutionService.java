@@ -102,7 +102,7 @@ public class SolutionService {
         return solutionPage;
     }*/
     public List<Solution> getProblemSubmitOfUser(User user, Problem problem) {
-        return solutionRepository.findAllByUserAndProblem(PageRequest.of(0, 50, Sort.by(Sort.Direction.DESC, "id")), user, problem).getContent();
+        return solutionRepository.findAllByUserAndProblemOrderByIdDesc(user, problem);
     }
 
     /**
@@ -138,6 +138,7 @@ public class SolutionService {
     public Page<Solution> getSolutionsOfUserInContest(int page, int size, User u, Contest c) {
         return solutionRepository.findAllByContestAndUser(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")), c, u);
     }
+
     public List<Solution> getSolutionsInContest(Contest contest) {
         return solutionRepository.findAllByContestOrderByIdDesc(contest);
     }

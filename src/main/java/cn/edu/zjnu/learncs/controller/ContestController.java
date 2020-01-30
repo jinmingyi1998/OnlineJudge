@@ -127,7 +127,6 @@ public class ContestController {
                 p.setTags(null);
                 p.setTitle(null);
                 p.setScore(null);
-                p.setSubmit(null);
                 p.setSource(null);
             }
         } catch (Exception e) {
