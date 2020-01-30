@@ -45,16 +45,16 @@ public class User implements Cloneable,Comparable{
     @Size(min = 6, max = 30)
     private String password;
 
-    @Column(nullable = false, length = 30)
+    @Column(nullable = false, columnDefinition = "VARCHAR(250) default ''")
     @NotEmpty
     @Size(min = 1, max = 30)
     private String name;
 
-    @Column(length = 200)
+    @Column(nullable = false, columnDefinition = "VARCHAR(250) default ''")
     @Size(min = 4, max = 200)
     private String email;
 
-    @Column(length = 255)
+    @Column(nullable = false, columnDefinition = "VARCHAR(250) default ''")
     @Size(max = 250)
     private String intro;
 
