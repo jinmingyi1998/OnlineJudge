@@ -1,6 +1,7 @@
 package cn.edu.zjnu.acm.controller;
 
 import cn.edu.zjnu.acm.entity.oj.Team;
+import cn.edu.zjnu.acm.entity.oj.Teammate;
 import cn.edu.zjnu.acm.service.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,12 +21,18 @@ public class TeamController {
     @GetMapping
     public Page<Team> teamPage(@RequestParam(value = "page", defaultValue = "0") int page) {
         page = Math.max(0, page);
-        Page<Team> return_page = teamService.getAll(page,PAGE_SIZE);
-        for (Team t :return_page.getContent()) {
+        Page<Team> return_page = teamService.getAll(page, PAGE_SIZE);
+        for (Team t : return_page.getContent()) {
             t.getCreator().setPassword(null);
             t.getCreator().setEmail(null);
             t.getCreator().setIntro(null);
             t.clearLazyRoles();
+            t = teamService.fillTeamTeammate(t);
+            for (Teammate tm : t.getTeammates()) {
+                tm.getUser().setPassword(null);
+                tm.getUser().setIntro(null);
+                tm.getUser().setEmail(null);
+            }
         }
         return return_page;
     }

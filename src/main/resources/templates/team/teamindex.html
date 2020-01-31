@@ -1,11 +1,3 @@
-<!--
-  ~ Copyright (c) 2019. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-  ~ Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
-  ~ Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
-  ~ Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
-  ~ Vestibulum commodo. Ut rhoncus gravida arcu.
-  -->
-
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -14,27 +6,72 @@
     <title>Teams</title>
 </head>
 <body>
-<main class="container-fluid" height="100%" width="100%">
 
-    <div class="ml-5 mr-5">
-        <div class="list-inline">
-            <!--            <h3 class=" list-inline-item">我的群组</h3>-->
-            <img src="/images/mygroup.png" alt="" style="height: 3rem">
-            <a class="btn btn-primary list-inline-item" href="/oj/team/search">添加群组</a>
-        </div>
-        <div class="row">
-            <div class="p-1 col-sm-3">
-                <div class="card" th:each="team:${teams}">
-                    <div class="card-body ">
-                        <h3 class="card-title font-weight-bold">
-                            <a th:href="'/oj/team/'+${team.id}" th:text="${team.name}"></a></h3>
-                        <p class="card-text" th:text="${team.introduction}"></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<main class="ui fluid container" id="vue-team">
+    <table class="ui selectable blue table" >
+        <thead>
+        <tr>
+            <th>Number</th>
+            <th>Team</th>
+            <th>创建人</th>
+            <th>创建时间</th>
+            <th>加入方式</th>
+            <th>人数</th>
+            <th> </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="vt in vteams">
+            <td>{{vt.id}}</td>
+            <td>{{vt.name}}</td>
+            <td>{{vt.creator.name}}</td>
+            <td>{{vt.normalCreateTime}}</td>
+            <td>{{vt.attend}}</td>
+            <td>{{vt.teammates.length}}</td>
+        </tr>
+        </tbody>
+    </table>
+
+
 </main>
 <footer th:replace="~{fragment/footer :: footer}"></footer>
 </body>
+<script>
+    vue_team = new Vue({
+        el: "#vue-team",
+        data: {
+            vteams: [{
+                id: 0, name: "", creator: {name: ""}, normalCreateTime: "", attend: "public",teammates:[]
+            }],
+            totalElements: 0,
+            totalPages: 0,
+            last: true,
+            number: 0,
+            size: 50,
+            numberOfElements: 0,
+            first: true,
+            empty: true,
+            npage: []
+        },
+        created() {
+            var that = this;
+            axios.get('/api/team').then(function (res) {
+                res = res.data;
+                that.vteams = res.content;
+                that.totalPages = res.totalPages;
+                that.totalElements = res.totalElements;
+                that.last = res.last;
+                that.number = res.number;
+                that.size = res.size;
+                that.first = res.first;
+                that.numberOfElements = res.numberOfElements;
+                that.empyt = res.empty;
+                that.npage = [];
+                for (var i = Math.max(0, that.number - 3); i < Math.min(that.totalPages, that.number + 3); i++) {
+                    that.npage.push(i)
+                }
+            });
+        }
+    });
+</script>
 </html>
