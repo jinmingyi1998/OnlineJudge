@@ -27,13 +27,16 @@ function render_md() {
         });
     });
 }
+
 var cont = new Vue({
     el: "#contest-content",
     data: {
         password: "",
         attend: false,
         dataready: false,
-        contest: {},
+        contest: {
+            problems: []
+        },
         pid: 1,
         problem: {
             problem: {
@@ -130,8 +133,10 @@ var cont = new Vue({
                 that.contest = response.data;
                 if (that.contest.password != "password") {
                     that.attend = true;
-                    that.problem = that.contest.problems[0]
-                    that.pid = that.problem.tempId;
+                    if (that.contest.problems.length > 0) {
+                        that.problem = that.contest.problems[0];
+                        that.pid = that.problem.tempId;
+                    }
                     render_md();
                     $('title').text(that.contest.title);
                     that.dataready = true;
