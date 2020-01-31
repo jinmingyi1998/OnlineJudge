@@ -33,14 +33,14 @@ $(function () {
     });
     $("#modal-share").click(function () {
         $.post({
-            url: "/oj/status/share/" + $("#modal-id").text(),
+            url: "/api/status/share/" + $("#modal-id").text(),
             success: function (data) {
                 if (data == true) {
                     $("#modal-share").text("Sharing");
-                    $("#modal-share").attr("class", "btn btn-sm btn-success");
+                    $("#modal-share").attr("class", "ui button green");
                 } else {
                     $("#modal-share").text("Not Shared");
-                    $("#modal-share").attr("class", "btn btn-sm btn-danger");
+                    $("#modal-share").attr("class", "ui button red");
                 }
             }
         });
