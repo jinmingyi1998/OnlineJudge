@@ -25,21 +25,18 @@ public class Rank {
         List<RankRow> rows = new ArrayList<>(rowMap.values());
         Collections.sort(rows);
         if (rows.size() > 0) {
-            int cnt = 0;
-
+            int cnt = 1;
             for (int i = 0; i < rows.size(); i++) {
                 if (rows.get(i).getUser().getName().contains("*")) {
                     rows.get(i).setOrder(-1);
                     continue;
                 }
-                if (cnt == 0 || rows.get(i).getScore() < rows.get(i - 1).getScore())
-                    cnt += 1;
-                rows.get(i).setOrder(cnt);
+                rows.get(i).setOrder(cnt++);
             }
             for (int i = 0; i < rows.size(); i++) {
-                if(rows.get(i).getOrder()==-1){
+                if (rows.get(i).getOrder() == -1) {
                     rows.get(i).setLevel(6);
-                }else if (rows.get(i).getOrder() <= Math.ceil(cnt * 0.1)) {
+                } else if (rows.get(i).getOrder() <= Math.ceil(cnt * 0.1)) {
                     rows.get(i).setLevel(0);
                 } else if (rows.get(i).getOrder() <= Math.ceil(cnt * 0.3)) {
                     rows.get(i).setLevel(1);
@@ -103,9 +100,10 @@ public class Rank {
     class RankRow implements Comparable {
         private Integer level;
         private User user;
-        private Long score = 0l;
+        private Long penalty = 0L;
         private ArrayList<RankBox> boxes;
         private Integer order = null;
+        private Integer solved = 0;
 
         public RankRow(int problemNumber, User user) throws CloneNotSupportedException {
             this.user = user.clone();
@@ -118,7 +116,7 @@ public class Rank {
                 boxes.add(new RankBox(i + 1));
             }
             order = null;
-            score = 0l;
+            penalty = 0L;
         }
 
         public Integer getOrder() {
@@ -135,15 +133,19 @@ public class Rank {
             }
             box.update(solution);
             if (solution.getResult().equals(Solution.AC)) {
-                score += box.getTime();
-                score += (box.getSubmit() - 1) * 20;
+                penalty += box.getTime();
+                penalty += (box.getSubmit() - 1) * 20;
+                solved += 1;
             }
             return this;
         }
 
         @Override
         public int compareTo(Object o) {
-            return getScore().compareTo(((RankRow) o).getScore()) * -1;
+            RankRow r = (RankRow) o;
+            if (getSolved().compareTo(r.getSolved()) == 0)
+                return getPenalty().compareTo(r.getPenalty());
+            return getSolved().compareTo(r.getSolved()) * -1;
         }
     }
 
@@ -172,7 +174,7 @@ public class Rank {
                 accepted = true;
                 if (!getProblemHasAc().get(pid - 1)) {
                     first = true;
-                    getProblemHasAc().set(pid - 1, false);
+                    getProblemHasAc().set(pid - 1, true);
                 }
             } else {
                 time += 20;

@@ -76,7 +76,7 @@ public class StatusController {
     }
 
     public static Solution solutionFilter(Solution s) {
-        if(s.getContest()!=null && !s.getContest().isEnded()){
+        if (s.getContest() != null && !s.getContest().isEnded()) {
             s.getUser().setId(0l);
             s.getUser().setName("contest user");
             s.getUser().setUsername("contest user");
@@ -105,13 +105,15 @@ public class StatusController {
         try {
             assert solution != null;
             User user = (User) session.getAttribute("currentUser");
-            if (user != null && user.getId() == solution.getUser().getId()) {
-                // This submit belongs to this user.
-                return solutionFilter(solution);
-            }
-            if (user.getUserProfile().getScore() > config.getLeastScoreToSeeOthersCode() && solution.getShare()) {
-                // This submit is shared
-                return solutionFilter(solution);
+            if (user != null) {
+                if (user.getId() == solution.getUser().getId()) {
+                    // This submit belongs to this user.
+                    return solutionFilter(solution);
+                }
+                if (user.getUserProfile().getScore() > config.getLeastScoreToSeeOthersCode() && solution.getShare()) {
+                    // This submit is shared
+                    return solutionFilter(solution);
+                }
             }
             solution.setSource("This Source Code Is Not Shared!");
             return solutionFilter(solution);
@@ -126,7 +128,7 @@ public class StatusController {
             User user = (User) session.getAttribute("currentUser");
             if (userService.getUserById(user.getId()) != null) {
                 Solution solution = solutionService.getSolutionById(id);
-                if (solution.getUser().equals(user)) {
+                if (solution.getUser().getId().equals(user.getId())) {
                     solution.setShare(!solution.getShare());
                     solutionService.updateSolutionShare(solution);
                     return solution.getShare();

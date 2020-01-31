@@ -18,7 +18,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Controller
@@ -74,6 +77,8 @@ public class ContestController {
     JudgeService judgeService;
     @Autowired
     ContestProblemRepository contestProblemRepository;
+    @Autowired
+    TeamService teamService;
     private static final int PAGE_SIZE = 30;
 
     @GetMapping
@@ -82,6 +87,7 @@ public class ContestController {
             @RequestParam(value = "search", defaultValue = "") String search) {
         Page<Contest> currentPage = contestService.getContestPage(page, PAGE_SIZE, search);
         for (Contest c : currentPage.getContent()) {
+            c.clearLazyRoles();
             c.setProblems(null);
             c.setSolutions(null);
             c.setContestComments(null);
@@ -89,6 +95,8 @@ public class ContestController {
             c.setCreator(null);
             c.setFreezeRank(null);
             c.setCreateTime(null);
+            c.getTeam().setCreator(null);
+            c.getTeam().clearLazyRoles();
         }
         return currentPage;
     }
@@ -102,9 +110,10 @@ public class ContestController {
         Contest scontest = (Contest) session.getAttribute("contest" + c.getId());
         if (scontest == null || scontest.getId() != c.getId() || !c.isStarted()) {
             if (!c.isStarted() ||
-                    (c.getPassword().length() > 0 &&
+                    (c.getPassword() != null && c.getPassword().length() > 0 &&
                             c.getPrivilege().equals("private") &&
                             !c.getPassword().equals(password))) {
+                c.clearLazyRoles();
                 c.setProblems(null);
                 c.setSolutions(null);
                 c.setContestComments(null);
@@ -125,6 +134,8 @@ public class ContestController {
             c.setPassword(null);
             c.setFreezeRank(null);
             c.setCreateTime(null);
+            c.setContestComments(null);
+            c.setTeam(null);
             for (ContestProblem cp : c.getProblems()) {
                 Problem p = cp.getProblem();
                 p.setId(null);
@@ -136,6 +147,7 @@ public class ContestController {
                 p.setScore(null);
                 p.setSource(null);
             }
+            c.getProblems().sort( (a,b)-> (int) (a.getTempId()-b.getTempId()));
         } catch (Exception e) {
             throw new NotFoundException();
         }
@@ -252,7 +264,7 @@ public class ContestController {
     public Page<Solution> getUserSolutions(@PathVariable("cid") Long cid,
                                            @RequestParam(value = "page", defaultValue = "0") int page) {
         try {
-            @NotNull Contest contest = contestService.getContestById(cid);
+            @NotNull Contest contest = contestService.getContestById(cid, true);
             if (!contest.isStarted())
                 throw new NotFoundException();
             @NotNull User user = (User) session.getAttribute("currentUser");
@@ -283,11 +295,12 @@ public class ContestController {
     @GetMapping("/ranklist/{cid}")
     public Rank getRankOfContest(@PathVariable Long cid) {
         try {
-            @NotNull Contest contest = contestService.getContestById(cid);
+            @NotNull Contest contest = contestService.getContestById(cid, true);
+            contest.setTeam(null);
             @NotNull Rank rank = new Rank(contest);
             @NotNull List<Solution> solutions = solutionService.getSolutionsInContest(contest);
-            for (Solution s : solutions) {
-                rank.update(s);
+            for (int i = solutions.size() - 1; i >= 0; i--) {
+                rank.update(solutions.get(i));
             }
             return rank;
         } catch (Exception e) {

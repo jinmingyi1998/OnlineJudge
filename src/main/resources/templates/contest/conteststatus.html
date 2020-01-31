@@ -34,7 +34,7 @@
         <tr v-for="solution in solutions" v-bind:key="solution.id">
             <td>{{solution.id}}</td>
             <td>{{solution.user.username}}</td>
-            <td><a v-bind:href="'/problems/'+solution.problem.id">{{solution.problem.id}}</a></td>
+            <td>{{solution.problem.id}}</td>
             <td class="view-code" v-bind:id="solution.id" v-bind:class="{
             positive:solution.result=='Accepted',
             warning:solution.result=='Pending',

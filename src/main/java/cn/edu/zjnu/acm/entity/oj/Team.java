@@ -5,6 +5,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -12,21 +15,31 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Team {
     //不能叫Group  会让sql误会
-    public static final String PUBLIC ="public";
-    public static final String PRIVATE ="private";
+    public static final String PUBLIC = "public";
+    public static final String PRIVATE = "private";
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
     @Column(nullable = false, unique = true, columnDefinition = "varchar(100) default ''")
-    String name;
+    private String name;
     @Column(nullable = false, columnDefinition = "LONGTEXT default ''")
-    String description;
+    private String description;
     @OneToMany(mappedBy = "team")
-    List<Teammate> teammates;
+    private List<Teammate> teammates;
     @ManyToOne(optional = false)
-    User creator;
+    private User creator;
     @OneToMany(fetch = FetchType.LAZY)
-    List<Contest> contests;
+    private List<Contest> contests;
     @Column(nullable = false, columnDefinition = "varchar(50) default 'public'")
-    String attend=PUBLIC;
+    private String attend = PUBLIC;
+    @Column(nullable = false)
+    private Instant createTime;
+
+    public String getNormalCreateTime() {
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm").format(Date.from(createTime));
+    }
+    public void clearLazyRoles(){
+        setTeammates(null);
+        setContests(null);
+    }
 }

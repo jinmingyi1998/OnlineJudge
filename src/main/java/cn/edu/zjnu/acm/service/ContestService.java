@@ -60,6 +60,7 @@ public class ContestService {
         try {
             contest.setProblems(contestProblemRepository.findAllByContest(contest));
             contest.setSolutions(solutionService.getSolutionsInContest(contest));
+            contest.setContestComments(commentRepository.findAllByContestOrderByPostTimeDesc(contest));
             return contest;
         } catch (Exception e) {
             return null;

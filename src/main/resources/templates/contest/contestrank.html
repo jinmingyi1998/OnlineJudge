@@ -20,9 +20,10 @@
         <tr class="single line">
             <th class="one wide"><i class="ui trophy icon"></i>Rank</th>
             <th class="one wide"><i class="ui user icon"></i>Name</th>
-            <th class="one wide">Score</th>
+            <th class="one wide"><i class="ui check icon"></i>Solved</th>
+            <th class="one wide">Penalty</th>
             <div class="thirteen wide">
-            <th v-for="n in rank.problemsNumber" v-html="n"></th>
+                <th v-for="n in rank.problemsNumber" v-html="n"></th>
             </div>
         </tr>
         </thead>
@@ -39,11 +40,13 @@
                 </div>
             </td>
             <td v-html="r.user.name"></td>
-            <td v-html="r.score"></td>
+            <td v-html="r.solved"></td>
+            <td v-html="r.penalty"></td>
             <td v-for="b in r.boxes">
-                <div v-if="b.submit>0"
+                <div v-if="b.submit>0" class="ui horizontal label"
                      :class="{green:b.accepted&&!b.first,red:!b.accepted,teal:b.first}">
-                    {{b.time}}<br>({{b.submit}})
+                    {{b.time}}
+                    <div class="detail">({{b.submit}})</div>
                 </div>
             </td>
         </tr>
