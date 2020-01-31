@@ -12,6 +12,8 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Team {
     //不能叫Group  会让sql误会
+    public static final String PUBLIC ="public";
+    public static final String PRIVATE ="private";
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
@@ -23,6 +25,8 @@ public class Team {
     List<Teammate> teammates;
     @ManyToOne(optional = false)
     User creator;
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY)
     List<Contest> contests;
+    @Column(nullable = false, columnDefinition = "varchar(50) default 'public'")
+    String attend=PUBLIC;
 }
