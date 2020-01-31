@@ -21,22 +21,26 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Contest implements Cloneable {
+    public static final String PUBLIC = "public";
+    public static final String GROUP = "group";
+    public static final String PRIVATE = "private";
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false)
+    // TODO check contest title unique when creating
+    @Column(nullable = false, unique = true)
     private String title;
-    @Column(length = 255)
+    @Column(nullable = false, columnDefinition = "LONGTEXT default ''")
     private String description;
     @Column(nullable = false, columnDefinition = "varchar(20) default 'public'")
-    private String privilege = "public";
+    private String privilege = PUBLIC;
     @Column(length = 200)
     private String password = "";
     @Column(nullable = false)
     private Instant startTime;
     @Column(nullable = false)
     private Instant endTime;
-    @ManyToOne
+    @ManyToOne(optional = false)
     private User creator;
     @Column(nullable = false)
     private Instant createTime;
@@ -50,6 +54,29 @@ public class Contest implements Cloneable {
     private String pattern = "acm";
     @Column(nullable = false)
     private Boolean freezeRank = true;
+    @ManyToOne
+    private Team team;
+
+
+    public Contest(String title, String description, String privilege, String password, Instant startTime,
+                   Instant endTime, Instant createTime,
+                   List<ContestProblem> contestProblems,
+                   List<Comment> contestComments) {
+        this.title = title;
+        this.description = description;
+        this.privilege = privilege;
+        this.password = password;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.createTime = createTime;
+        this.pattern = "acm";
+        this.freezeRank = false;
+        this.problems = contestProblems;
+        this.contestComments = contestComments;
+    }
+
+    public Contest() {
+    }
 
     /**
      * @return true if contest is ended, false otherwise.
@@ -76,23 +103,6 @@ public class Contest implements Cloneable {
         return (minutes / 60) + ":" + (minutes % 60);
     }
 
-    public Contest(String title, String description, String privilege, String password, Instant startTime,
-                   Instant endTime, Instant createTime,
-                   List<ContestProblem> contestProblems,
-                   List<Comment> contestComments) {
-        this.title = title;
-        this.description = description;
-        this.privilege = privilege;
-        this.password = password;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.createTime = createTime;
-        this.pattern = "acm";
-        this.freezeRank = false;
-        this.problems = contestProblems;
-        this.contestComments = contestComments;
-    }
-
     public String getNormalStartTime() {
         return new SimpleDateFormat("yyyy-MM-dd HH:mm").format(Date.from(startTime));
     }
@@ -115,9 +125,6 @@ public class Contest implements Cloneable {
         System.out.println(ps);
         Duration duration = Duration.parse(ps);
         this.endTime = this.startTime.plus(duration);
-    }
-
-    public Contest() {
     }
 
     @Override

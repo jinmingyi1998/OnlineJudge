@@ -27,11 +27,22 @@ public class Comment implements Comparable {
     private Instant postTime;
     @ManyToOne(optional = false)
     private User user;
-    @Column(columnDefinition = "LONGTEXT")
+    @Column(nullable = false, columnDefinition = "LONGTEXT")
     private String text;
     @JsonIgnore
-    @ManyToOne
+    @ManyToOne(optional = false)
     private Contest contest;
+
+    public Comment(User user, String text, Contest contest, Comment father) {
+        this.user = user;
+        this.text = text;
+        this.contest = contest;
+        this.father = father;
+        postTime = Instant.now();
+    }
+
+    public Comment() {
+    }
 
     public Long getFatherId() {
         return father == null ? null : father.getId();
@@ -46,17 +57,6 @@ public class Comment implements Comparable {
                 ", user=" + user +
                 ", text='" + text + '\'' +
                 '}';
-    }
-
-    public Comment(User user, String text, Contest contest, Comment father) {
-        this.user = user;
-        this.text = text;
-        this.contest = contest;
-        this.father = father;
-        postTime = Instant.now();
-    }
-
-    public Comment() {
     }
 
     @JsonManagedReference

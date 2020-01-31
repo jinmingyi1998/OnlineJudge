@@ -13,18 +13,18 @@ public class ContestProblem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne
+    @ManyToOne(optional = false)
     private Problem problem;
     @JsonIgnore
-    @ManyToOne
+    @ManyToOne(optional = false)
     private Contest contest;
-    @Column
+    @Column(nullable = false)
     private Long tempId;
-    @Column
+    @Column(nullable = false)
     private String tempTitle;
-    @Column(columnDefinition = "integer default 0")
+    @Column(nullable = false, columnDefinition = "integer default 0")
     private Integer submitted;
-    @Column(columnDefinition = "integer default 0")
+    @Column(nullable = false, columnDefinition = "integer default 0")
     private Integer accepted;
 
     public ContestProblem(Problem problem, Contest contest, Long tempId, String tempTitle) {

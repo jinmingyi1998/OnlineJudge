@@ -11,11 +11,6 @@ import java.io.Serializable;
 @Entity
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserProfile implements Serializable {
-    public UserProfile() {
-        score = 0;
-        accepted = 0;
-        submitted = 0;
-    }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,13 +18,17 @@ public class UserProfile implements Serializable {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
     @Column(nullable = false, columnDefinition = "INT default 0")
     private Integer score = 0;
     @Column(nullable = false, columnDefinition = "INT default 0")
     private Integer accepted = 0;
     @Column(nullable = false, columnDefinition = "INT default 0")
     private Integer submitted = 0;
+    public UserProfile() {
+        score = 0;
+        accepted = 0;
+        submitted = 0;
+    }
 
     @Override
     public String toString() {

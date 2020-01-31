@@ -14,6 +14,30 @@ import javax.validation.constraints.Size;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class User implements Cloneable, Comparable {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Column(nullable = false, unique = true, updatable = false, length = 30)
+    @NotEmpty
+    @Size(min = 6, max = 30)
+    private String username;
+    @Column(nullable = false, length = 30)
+    @NotEmpty
+    @Size(min = 6, max = 30)
+    private String password;
+    @Column(nullable = false, columnDefinition = "VARCHAR(250) default ''")
+    @NotEmpty
+    @Size(min = 1, max = 30)
+    private String name;
+    @Column(nullable = false, columnDefinition = "VARCHAR(250) default ''")
+    @Size(min = 4, max = 200)
+    private String email;
+    @Column(nullable = false, columnDefinition = "VARCHAR(250) default ''")
+    @Size(max = 250)
+    private String intro;
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
+    private UserProfile userProfile;
+
     public User() {
         this.username = "";
         this.password = "";
@@ -22,7 +46,6 @@ public class User implements Cloneable, Comparable {
         this.intro = "";
     }
 
-
     public User(@NotEmpty @Size(min = 6, max = 30) String username, @NotEmpty @Size(min = 6, max = 30) String password, @NotEmpty @Size(min = 1, max = 30) String name, @Size(min = 4, max = 200) String email, @Size(max = 250) String intro) {
         this.username = username;
         this.password = password;
@@ -30,36 +53,6 @@ public class User implements Cloneable, Comparable {
         this.email = email;
         this.intro = intro;
     }
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(nullable = false, unique = true, updatable = false, length = 30)
-    @NotEmpty
-    @Size(min = 6, max = 30)
-    private String username;
-
-    @Column(nullable = false, length = 30)
-    @NotEmpty
-    @Size(min = 6, max = 30)
-    private String password;
-
-    @Column(nullable = false, columnDefinition = "VARCHAR(250) default ''")
-    @NotEmpty
-    @Size(min = 1, max = 30)
-    private String name;
-
-    @Column(nullable = false, columnDefinition = "VARCHAR(250) default ''")
-    @Size(min = 4, max = 200)
-    private String email;
-
-    @Column(nullable = false, columnDefinition = "VARCHAR(250) default ''")
-    @Size(max = 250)
-    private String intro;
-
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
-    private UserProfile userProfile;
 
     public User clone() throws CloneNotSupportedException {
         return (User) super.clone();

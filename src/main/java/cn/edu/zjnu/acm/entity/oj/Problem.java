@@ -11,31 +11,31 @@ import java.util.List;
 @Data
 @Entity
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Problem implements Cloneable{
+public class Problem implements Cloneable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(length = 50, unique = true, nullable = false)
     private String title = "";
-    @Column(columnDefinition = "LONGTEXT", nullable = false)
+    @Column(nullable = false, columnDefinition = "LONGTEXT default ''")
     private String description = "";
-    @Column(columnDefinition = "LONGTEXT")
+    @Column(nullable = false, columnDefinition = "LONGTEXT default ''")
     private String input = "";
-    @Column(columnDefinition = "LONGTEXT")
+    @Column(nullable = false, columnDefinition = "LONGTEXT default ''")
     private String output = "";
-    @Column(columnDefinition = "LONGTEXT")
+    @Column(nullable = false, columnDefinition = "LONGTEXT default ''")
     private String sampleInput = "";
-    @Column(columnDefinition = "LONGTEXT")
+    @Column(nullable = false, columnDefinition = "LONGTEXT default ''")
     private String sampleOutput = "";
-    @Column(columnDefinition = "LONGTEXT")
+    @Column(nullable = false, columnDefinition = "LONGTEXT default ''")
     private String hint = "";
-    @Column(columnDefinition = "LONGTEXT")
+    @Column(nullable = false, columnDefinition = "LONGTEXT default ''")
     private String source = "";
     @Column(nullable = false, columnDefinition = "int default 1000")
     private Integer timeLimit = 1;
     @Column(nullable = false, columnDefinition = "int default 65536")
     private Integer memoryLimit = 1;
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "bit(1) default 0")
     private Boolean active = false;
     @Column(columnDefinition = "integer default 0")
     private Integer score = 0;
@@ -64,6 +64,10 @@ public class Problem implements Cloneable{
         submitted = 0;
         active = false;
         this.score = score;
+    }
+
+    public static JsonReturnProblem jsonReturnProblemFactory() {
+        return new JsonReturnProblem();
     }
 
     @Override
@@ -149,19 +153,15 @@ public class Problem implements Cloneable{
         return memoryLimit == null ? 1 : memoryLimit;
     }
 
-
     public Problem clone() throws CloneNotSupportedException {
         Problem p = (Problem) super.clone();
         return p;
     }
 
-    public static JsonReturnProblem jsonReturnProblemFactory(){
-        return new JsonReturnProblem();
-    }
-
 }
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
-class JsonReturnProblem extends Problem{
+class JsonReturnProblem extends Problem {
     @Override
     public List<Tag> getTags() {
         return null;

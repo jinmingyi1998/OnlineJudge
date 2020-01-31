@@ -18,30 +18,30 @@ import java.time.Instant;
 @Entity
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Solution implements Cloneable{
+public class Solution implements Cloneable {
     @JsonIgnore
-    public static final String AC="Accepted";
+    public static final String AC = "Accepted";
     @JsonIgnore
-    public static final String WA="Wrong Answer";
+    public static final String WA = "Wrong Answer";
     @JsonIgnore
-    public static final String PENDING="Pending";
+    public static final String PENDING = "Pending";
     @JsonIgnore
-    public static final String TLE="Time Limit Exceeded";
+    public static final String TLE = "Time Limit Exceeded";
     @JsonIgnore
-    public static final String MLE="Memory Limit Exceeded";
+    public static final String MLE = "Memory Limit Exceeded";
     @JsonIgnore
-    public static final String RE="Runtime Error";
+    public static final String RE = "Runtime Error";
     @JsonIgnore
-    public static final String CE="Compile Error";
+    public static final String CE = "Compile Error";
     @JsonIgnore
-    public static final String SE="System Error";
+    public static final String SE = "System Error";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne
+    @ManyToOne(optional = false)
     private User user;
-    @ManyToOne
+    @ManyToOne(optional = false)
     private Problem problem;
     /**
      * C: c
@@ -50,7 +50,7 @@ public class Solution implements Cloneable{
      * Python2: py2
      * Python3: py3
      */
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "varchar(40) default 'c'")
     private String language;
     @Column(nullable = false, columnDefinition = "LONGTEXT")
     private String source;
@@ -65,12 +65,12 @@ public class Solution implements Cloneable{
     @Column(nullable = false, columnDefinition = "int default 0")
     private Integer length;
     @Column(nullable = false, columnDefinition = "varchar(50) default 'Wrong Answer'", length = 50)
-    private String result;
-    @Column
+    private String result = WA;
+    @Column(nullable = false, columnDefinition = "bit(1) default 0")
     private Boolean share;
     @Column(nullable = false, columnDefinition = "LONGTEXT default ''")
     private String info;
-    @Column
+    @Column(nullable = false, columnDefinition = "int default 0")
     private Integer caseNumber = 0;
     @JsonIgnore
     @ManyToOne
@@ -119,7 +119,8 @@ public class Solution implements Cloneable{
     public String getNormalSubmitTime() {
         return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date.from(submitTime));
     }
-    public Solution clone() throws CloneNotSupportedException{
+
+    public Solution clone() throws CloneNotSupportedException {
         Solution s = (Solution) super.clone();
         s.setProblem(problem.clone());
         s.setUser(user.clone());
