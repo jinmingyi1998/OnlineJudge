@@ -1,3 +1,4 @@
+var code_editor;
 function render_md() {
     $(function () {
         $(".md-text").each(function () {
@@ -26,26 +27,6 @@ function render_md() {
         });
     });
 }
-
-var code_editor;
-$(function () {
-    code_editor = editormd("code-editor", {
-        width: "100%",
-        gfm: true,
-        height: 500,
-        watch: false,
-        toolbar: false,
-        codeFold: true,
-        searchReplace: true,
-        autoFocus: false,
-        placeholder: "Enjoy coding!",
-        editorTheme: "tomorrow-night-bright",
-        previewTheme: "dark",
-        theam: "dark",
-        mode: "clike",
-        path: '/editor/lib/',
-    });
-});
 var cont = new Vue({
     el: "#contest-content",
     data: {
@@ -154,6 +135,24 @@ var cont = new Vue({
                     render_md();
                     $('title').text(that.contest.title);
                     that.dataready = true;
+                    $(function () {
+                        code_editor = editormd("code-editor", {
+                            width: "100%",
+                            height: 500,
+                            watch: false,
+                            toolbar: false,
+                            codeFold: true,
+                            searchReplace: true,
+                            autoFocus: false,
+                            value:"",
+                            placeholder: "Enjoy coding!",
+                            editorTheme: "tomorrow-night-bright",
+                            previewTheme: "dark",
+                            theam: "dark",
+                            mode: "clike",
+                            path: '/editor/lib/',
+                        });
+                    });
                 } else {
                     that.attend = false;
                 }
