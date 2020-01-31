@@ -8,7 +8,7 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: false
-    open-in-view: true
+    open-in-view: false
   thymeleaf:
     encoding: utf-8
     cache: false
