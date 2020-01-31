@@ -52,11 +52,10 @@ public class Contest implements Cloneable {
     private List<Solution> solutions;
     @Column(nullable = false, columnDefinition = "varchar(20) default 'acm'")
     private String pattern = "acm";
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "bit(1) default 1")
     private Boolean freezeRank = true;
     @ManyToOne
     private Team team;
-
 
     public Contest(String title, String description, String privilege, String password, Instant startTime,
                    Instant endTime, Instant createTime,
