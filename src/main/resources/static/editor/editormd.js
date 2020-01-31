@@ -1965,15 +1965,14 @@
         
         save : function() {
             
-            var _this            = this;
-            var state            = this.state;
-            var settings         = this.settings;
-
-            if (timer === null && !(!settings.watch && state.preview))
+            if (timer === null)
             {
                 return this;
             }
             
+            var _this            = this;
+            var state            = this.state;
+            var settings         = this.settings;
             var cm               = this.cm;            
             var cmValue          = cm.getValue();
             var previewContainer = this.previewContainer;
