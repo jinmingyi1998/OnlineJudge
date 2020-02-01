@@ -72,7 +72,7 @@
                 Log-in to your account
             </div>
         </h2>
-        <form class="ui form" @submit.prevent="userlogin" onsubmit="return false">
+        <form class="ui form" @submit.prevent="userlogin" onsubmit="return false" v-on:keyup.enter="userlogin">
             <div class="ui stacked segment">
                 <div class="field">
                     <div class="ui left icon input">
