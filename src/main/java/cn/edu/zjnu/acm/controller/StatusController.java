@@ -80,6 +80,8 @@ public class StatusController {
             s.getUser().setId(0l);
             s.getUser().setName("contest user");
             s.getUser().setUsername("contest user");
+            s.setLanguage("c");
+            s.setCaseNumber(0);
             s.getProblem().setId(0l);
             s.setTime(0);
             s.setMemory(0);
