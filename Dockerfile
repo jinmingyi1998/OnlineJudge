@@ -2,11 +2,14 @@ FROM openjdk:8-jdk-alpine
 
 MAINTAINER Mingyi Jin
 
-COPY src /onlinejudge/src
-COPY gradle /onlinejudge/gradle
-COPY gradlew /onlinejudge
-COPY settings.gradle /onlinejudge
-COPY build.gradle /onlinejudge
-WORKDIR /onlinejudge
-RUN chmod 755 gradlew && ./gradlew classes
-CMD ./gradlew bootRun
+WORKDIR /app
+COPY src .
+COPY gradle .
+COPY gradlew .
+COPY settings.gradle .
+COPY build.gradle .
+RUN chmod 755 gradlew && ./gradlew bootJar
+RUN cp build/libs/acm-0.0.1-SNAPSHOT.jar /
+RUN rm -rf *
+RUN mv /acm-0.0.1-SNAPSHOT.jar .
+CMD java -jar acm-0.0.1-SNAPSHOT.jar
