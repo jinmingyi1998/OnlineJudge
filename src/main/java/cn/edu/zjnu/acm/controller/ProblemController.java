@@ -148,15 +148,9 @@ public class ProblemController {
         String _temp = checkSubmitFrequncy(session, source);
         if (_temp != null)
             return _temp;
-        @NotNull User user;
-        try {
-            user = (User) session.getAttribute("currentUser");
-            if (userService.getUserById(user.getId()) == null) {// user doesn't login
-                log.debug("User not exist");
-                return "Please Login";
-            }
-        } catch (Exception e) {
-            return "Please Login";
+        User user = (User) session.getAttribute("currentUser");
+        if (user == null || userService.getUserById(user.getId()) == null) {
+            throw new NeedLoginException();
         }
         Problem problem = problemService.getActiveProblemById(id);
         if (problem == null) {

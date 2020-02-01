@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
@@ -17,24 +18,31 @@ public class User implements Cloneable, Comparable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(nullable = false, unique = true, updatable = false, length = 30)
     @NotEmpty
-    @Size(min = 6, max = 30)
+    @Size(min = 6, max = 35)
     private String username;
+
     @Column(nullable = false, length = 30)
     @NotEmpty
-    @Size(min = 6, max = 30)
+    @Size(min = 6, max = 35)
     private String password;
+
     @Column(nullable = false, columnDefinition = "VARCHAR(250) default ''")
     @NotEmpty
     @Size(min = 1, max = 30)
     private String name;
+
     @Column(nullable = false, columnDefinition = "VARCHAR(250) default ''")
     @Size(min = 4, max = 200)
+    @Email
     private String email;
+
     @Column(nullable = false, columnDefinition = "VARCHAR(250) default ''")
     @Size(max = 250)
     private String intro;
+
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
     private UserProfile userProfile;
 

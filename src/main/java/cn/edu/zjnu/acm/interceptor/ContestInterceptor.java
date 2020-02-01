@@ -1,5 +1,6 @@
 package cn.edu.zjnu.acm.interceptor;
 
+import cn.edu.zjnu.acm.exception.NeedLoginException;
 import cn.edu.zjnu.acm.exception.NotFoundException;
 import cn.edu.zjnu.acm.entity.oj.Contest;
 import cn.edu.zjnu.acm.service.ContestService;
@@ -11,6 +12,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 @Slf4j
 @ComponentScan
@@ -20,6 +22,9 @@ public class ContestInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        HttpSession session = request.getSession();
+        if (session.getAttribute("currentUser")==null)
+            throw new NeedLoginException();
         String url = request.getRequestURL().toString();
         String[] sp = url.split("/");
         if (sp.length <= 3) return true;
@@ -30,7 +35,7 @@ public class ContestInterceptor implements HandlerInterceptor {
             throw new NotFoundException();
         }
         Contest contest = contestService.getContestById(cid, false);
-        if (contest.isStarted())
+        if (contest.isStarted()&&session.getAttribute("contest"+contest.getId())!=null)
             return true;
         else throw new NotFoundException();
     }

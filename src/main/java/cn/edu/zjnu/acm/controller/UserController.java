@@ -29,9 +29,9 @@ public class UserController {
             User t_user = userService.registerUser(user);
             if (t_user != null)
                 return "success";
-            else return "false";
-        } catch (Exception e) {
-            return e.getMessage();
+            else return "用户名已存在 user already existed";
+        } catch (ConstraintViolationException e) {
+            return "format error 格式错误";
         }
     }
 
@@ -53,7 +53,7 @@ public class UserController {
         if (t_user != null) {
             session.setMaxInactiveInterval(6 * 60 * 60);
             session.setAttribute("currentUser", t_user);
-            session.setAttribute("loginTime", new Date());
+            session.setAttribute("loginTime", Instant.now());
             return "success";
         }
         return "用户名或密码错误。";
