@@ -29,7 +29,7 @@ public class UserService {
             return null;
         UserProfile userProfile = new UserProfile();
         u = userRepository.save(u);
-        if (u==null)
+        if (u == null)
             return null;
         userProfile.setUser(u);
         userProfileRepository.save(userProfile);

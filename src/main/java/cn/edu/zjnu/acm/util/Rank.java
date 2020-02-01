@@ -21,6 +21,10 @@ public class Rank {
     @JsonIgnore
     private List<Boolean> problemHasAc;
 
+    public Rank(Contest c) {
+        init(c);
+    }
+
     public List<RankRow> getRows() {
         List<RankRow> rows = new ArrayList<>(rowMap.values());
         Collections.sort(rows);
@@ -48,10 +52,6 @@ public class Rank {
             }
         }
         return rows;
-    }
-
-    public Rank(Contest c) {
-        init(c);
     }
 
     public Rank init(Contest contest) {

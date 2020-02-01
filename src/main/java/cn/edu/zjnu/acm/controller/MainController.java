@@ -1,7 +1,7 @@
 package cn.edu.zjnu.acm.controller;
 
-import cn.edu.zjnu.acm.exception.NotFoundException;
 import cn.edu.zjnu.acm.entity.oj.Solution;
+import cn.edu.zjnu.acm.exception.NotFoundException;
 import cn.edu.zjnu.acm.service.JudgeService;
 import cn.edu.zjnu.acm.service.SolutionService;
 import lombok.Data;
@@ -27,32 +27,6 @@ public class MainController {
     public ModelAndView home() {
         ModelAndView m = new ModelAndView("index");
         return m;
-    }
-
-    @Data
-    static class JudgeCallback {
-        @NotNull
-        private Long submit_id;
-        private String err;
-        private String info;
-        private ArrayList<RunMessage> results;
-
-        @Data
-        static class RunMessage {
-            public static final String[] code = new String[]{Solution.AC,
-                    Solution.TLE,
-                    Solution.TLE,
-                    Solution.MLE,
-                    Solution.RE,
-                    Solution.SE};
-            private int cpu_time;
-            private int real_time;
-            private int memory;
-            private int signal;
-            private int exit_code;
-            private int error;
-            private int result;
-        }
     }
 
     @PostMapping("/judge/callback")
@@ -99,6 +73,32 @@ public class MainController {
             return "success";
         } catch (Exception e) {
             throw new NotFoundException();
+        }
+    }
+
+    @Data
+    static class JudgeCallback {
+        @NotNull
+        private Long submit_id;
+        private String err;
+        private String info;
+        private ArrayList<RunMessage> results;
+
+        @Data
+        static class RunMessage {
+            public static final String[] code = new String[]{Solution.AC,
+                    Solution.TLE,
+                    Solution.TLE,
+                    Solution.MLE,
+                    Solution.RE,
+                    Solution.SE};
+            private int cpu_time;
+            private int real_time;
+            private int memory;
+            private int signal;
+            private int exit_code;
+            private int error;
+            private int result;
         }
     }
 }

@@ -12,7 +12,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class TeamService {
@@ -34,9 +33,9 @@ public class TeamService {
         return team;
     }
 
-    public Boolean isUserInTeam(User u, Team t){
-        Teammate teammate = teammateRepository.findByUserAndTeam(u,t).orElse(null);
-        return teammate!=null;
+    public Boolean isUserInTeam(User u, Team t) {
+        Teammate teammate = teammateRepository.findByUserAndTeam(u, t).orElse(null);
+        return teammate != null;
     }
 
 }

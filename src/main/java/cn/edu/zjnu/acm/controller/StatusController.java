@@ -48,6 +48,32 @@ public class StatusController {
     @Autowired
     HttpSession session;
 
+    public static Solution solutionFilter(Solution s) {
+        if (s.getContest() != null && !s.getContest().isEnded()) {
+            s.getUser().setId(0l);
+            s.getUser().setName("contest user");
+            s.getUser().setUsername("contest user");
+            s.setLanguage("c");
+            s.setCaseNumber(0);
+            s.getProblem().setId(0l);
+            s.setTime(0);
+            s.setMemory(0);
+            s.setLength(0);
+            s.setInfo("");
+            s.setShare(false);
+        }
+        s.setIp(null);
+        s.getUser().setPassword(null);
+        s.getUser().setEmail(null);
+        s.getUser().setIntro(null);
+        s.getUser().setUserProfile(null);
+        Problem p = Problem.jsonReturnProblemFactory();
+        p.setId(s.getProblem().getId());
+        s.setProblem(p);
+        s.setContest(null);
+        return s;
+    }
+
     @GetMapping
     public Page searchStatus(@RequestParam(value = "page", defaultValue = "0") Integer page,
                              @RequestParam(value = "user", defaultValue = "") String username,
@@ -73,32 +99,6 @@ public class StatusController {
             s = solutionFilter(s);
         }
         return page_return;
-    }
-
-    public static Solution solutionFilter(Solution s) {
-        if (s.getContest() != null && !s.getContest().isEnded()) {
-            s.getUser().setId(0l);
-            s.getUser().setName("contest user");
-            s.getUser().setUsername("contest user");
-            s.setLanguage("c");
-            s.setCaseNumber(0);
-            s.getProblem().setId(0l);
-            s.setTime(0);
-            s.setMemory(0);
-            s.setLength(0);
-            s.setInfo("");
-            s.setShare(false);
-        }
-        s.setIp(null);
-        s.getUser().setPassword(null);
-        s.getUser().setEmail(null);
-        s.getUser().setIntro(null);
-        s.getUser().setUserProfile(null);
-        Problem p = Problem.jsonReturnProblemFactory();
-        p.setId(s.getProblem().getId());
-        s.setProblem(p);
-        s.setContest(null);
-        return s;
     }
 
     @GetMapping("/view/{id:[0-9]+}")

@@ -24,6 +24,7 @@ public class UserProfile implements Serializable {
     private Integer accepted = 0;
     @Column(nullable = false, columnDefinition = "INT default 0")
     private Integer submitted = 0;
+
     public UserProfile() {
         score = 0;
         accepted = 0;

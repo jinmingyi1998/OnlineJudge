@@ -151,11 +151,12 @@ public class Contest implements Cloneable {
         c.setCreator(creator.clone());
         return c;
     }
-    public Contest clearLazyRoles(){
+
+    public Contest clearLazyRoles() {
         setSolutions(null);
         setProblems(null);
         setContestComments(null);
-        if (team != null){
+        if (team != null) {
             team.clearLazyRoles();
         }
         return this;

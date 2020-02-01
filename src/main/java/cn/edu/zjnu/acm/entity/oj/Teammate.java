@@ -1,7 +1,6 @@
 package cn.edu.zjnu.acm.entity.oj;
 
 import cn.edu.zjnu.acm.entity.User;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
@@ -25,6 +24,7 @@ public class Teammate {
     Team team;
     @Column(nullable = false, columnDefinition = "INT default 2")
     Integer level = MEMBER;
+
     public Teammate() {
     }
 

@@ -64,6 +64,7 @@ class ContestViewController {
 @CrossOrigin
 @RequestMapping("/api/contest")
 public class ContestController {
+    private static final int PAGE_SIZE = 30;
     @Autowired
     HttpSession session;
     @Autowired
@@ -80,7 +81,8 @@ public class ContestController {
     ContestProblemRepository contestProblemRepository;
     @Autowired
     TeamService teamService;
-    private static final int PAGE_SIZE = 30;
+    @Autowired
+    CommentRepository commentRepository;
 
     @GetMapping
     public Page<Contest> showContests(
@@ -222,22 +224,6 @@ public class ContestController {
         }
     }
 
-    @Data
-    static class CommentPost {
-        String rtext = "";
-        Long rid = 0L;
-
-        public Long getRid() {
-            return rid == null ? 0L : rid;
-        }
-
-        public CommentPost() {
-        }
-    }
-
-    @Autowired
-    CommentRepository commentRepository;
-
     @PostMapping("/comments/post/{cid:[0-9]+}")
     public String postComments(@PathVariable(value = "cid") Long cid, @RequestBody CommentPost commentPost) {
         try {
@@ -328,6 +314,19 @@ public class ContestController {
             e.printStackTrace();
         }
         throw new NotFoundException();
+    }
+
+    @Data
+    static class CommentPost {
+        String rtext = "";
+        Long rid = 0L;
+
+        public CommentPost() {
+        }
+
+        public Long getRid() {
+            return rid == null ? 0L : rid;
+        }
     }
 
     /*@PostMapping("/background/edit/{cid}")

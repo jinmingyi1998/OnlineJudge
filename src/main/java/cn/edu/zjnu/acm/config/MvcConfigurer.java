@@ -14,9 +14,10 @@ import java.util.List;
 public class MvcConfigurer implements WebMvcConfigurer {
 
     @Bean
-    public ContestInterceptor getContestInterceptor(){
+    public ContestInterceptor getContestInterceptor() {
         return new ContestInterceptor();
     }
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         List<String> stringList = new ArrayList<>();

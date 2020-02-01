@@ -38,7 +38,8 @@ public class Team {
     public String getNormalCreateTime() {
         return new SimpleDateFormat("yyyy-MM-dd HH:mm").format(Date.from(createTime));
     }
-    public void clearLazyRoles(){
+
+    public void clearLazyRoles() {
         setTeammates(null);
         setContests(null);
     }

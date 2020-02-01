@@ -13,6 +13,6 @@ public interface TeammateRepository extends JpaRepository<Teammate, Long> {
 
     List<Teammate> findByUser(User user);
 
-    Optional <Teammate> findByUserAndTeam(User user,Team team);
+    Optional<Teammate> findByUserAndTeam(User user, Team team);
 
 }

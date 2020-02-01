@@ -46,13 +46,13 @@ public class ProblemController {
     @Autowired
     ProblemService problemService;
     @Autowired
-    private HttpSession session;
-    @Autowired
     UserService userService;
     @Autowired
     JudgeService judgeService;
     @Autowired
     SolutionService solutionService;
+    @Autowired
+    private HttpSession session;
 
     public static String checkSubmitFrequncy(HttpSession session, String source) {
         if (session.getAttribute("last_submit") != null) {
@@ -67,40 +67,6 @@ public class ProblemController {
         }
         session.setAttribute("last_submit", Instant.now());
         return null;
-    }
-
-    public static class SubmitCodeObject {
-        public SubmitCodeObject() {
-        }
-
-        public Boolean isShare() {
-            return share.equals("true");
-        }
-
-        public void setShare(String share) {
-            this.share = share;
-        }
-
-        public void setSource(String source) {
-            this.source = source;
-        }
-
-        public void setLanguage(String language) {
-            this.language = language;
-        }
-
-        public String getSource() {
-            return source;
-        }
-
-
-        public String getLanguage() {
-            return language;
-        }
-
-        private String source;
-        private String language;
-        private String share;
     }
 
     @GetMapping
@@ -175,5 +141,38 @@ public class ProblemController {
     @GetMapping("/tags")
     public List<Tag> showTags() {
         return problemService.getAllTags();
+    }
+
+    public static class SubmitCodeObject {
+        private String source;
+        private String language;
+        private String share;
+
+        public SubmitCodeObject() {
+        }
+
+        public Boolean isShare() {
+            return share.equals("true");
+        }
+
+        public void setShare(String share) {
+            this.share = share;
+        }
+
+        public String getSource() {
+            return source;
+        }
+
+        public void setSource(String source) {
+            this.source = source;
+        }
+
+        public String getLanguage() {
+            return language;
+        }
+
+        public void setLanguage(String language) {
+            this.language = language;
+        }
     }
 }
