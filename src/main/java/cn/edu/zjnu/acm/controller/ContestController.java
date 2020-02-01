@@ -1,8 +1,9 @@
 package cn.edu.zjnu.acm.controller;
 
-import cn.edu.zjnu.acm.exception.NotFoundException;
 import cn.edu.zjnu.acm.entity.User;
 import cn.edu.zjnu.acm.entity.oj.*;
+import cn.edu.zjnu.acm.exception.NeedLoginException;
+import cn.edu.zjnu.acm.exception.NotFoundException;
 import cn.edu.zjnu.acm.repo.CommentRepository;
 import cn.edu.zjnu.acm.repo.ContestProblemRepository;
 import cn.edu.zjnu.acm.service.*;
@@ -32,27 +33,27 @@ class ContestViewController {
         return "contest/contests";
     }
 
-    @GetMapping("/problem/{id}")
+    @GetMapping("/problem/{id:[0-9]+}")
     public String showContest(@PathVariable(value = "id") Long id) {
         return "contest/contestinfo";
     }
 
-    @GetMapping("/status/{id}")
+    @GetMapping("/status/{id:[0-9]+}")
     public String showContestStatus(@PathVariable(value = "id") Long id) {
         return "contest/conteststatus";
     }
 
-    @GetMapping("/ranklist/{id}")
+    @GetMapping("/ranklist/{id:[0-9]+}")
     public String showContestRanklist(@PathVariable(value = "id") Long id) {
         return "contest/contestrank";
     }
 
-    @GetMapping("/comment/{id}")
+    @GetMapping("/comment/{id:[0-9]+}")
     public String showContestComment(@PathVariable(value = "id") Long id) {
         return "contest/contestcomment";
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id:[0-9]+}")
     public String contestGate(@PathVariable(value = "id") Long id) {
         return "contest/contestgate";
     }
@@ -101,7 +102,7 @@ public class ContestController {
         return currentPage;
     }
 
-    @GetMapping("/gate/{cid}")
+    @GetMapping("/gate/{cid:[0-9+]}")
     public String ContestReady(@PathVariable("cid") Long cid) {
         Contest contest = contestService.getContestById(cid);
         if (!contest.isStarted())
@@ -109,7 +110,7 @@ public class ContestController {
         if (contest.getPrivilege().equals(Contest.TEAM)) {
             User user = (User) session.getAttribute("currentUser");
             if (user == null)
-                return "请登录 Please Login";
+                throw new NeedLoginException();
             Team team = contest.getTeam();
             if (teamService.isUserInTeam(user, team)) {
                 return "success";
@@ -121,7 +122,7 @@ public class ContestController {
         }
     }
 
-    @GetMapping("/{cid}")
+    @GetMapping("/{cid:[0-9]+}")
     public Contest getContestDetail(@PathVariable("cid") Long cid,
                                     @RequestParam(value = "password", defaultValue = "") String password) {
         Contest c = contestService.getContestById(cid, false);
@@ -174,7 +175,7 @@ public class ContestController {
         return c;
     }
 
-    @PostMapping("/submit/{pid}/{cid}")
+    @PostMapping("/submit/{pid:[0-9]+}/{cid:[0-9]+}")
     public String submitProblemInContest(@PathVariable("pid") Long pid,
                                          @PathVariable("cid") Long cid,
                                          HttpServletRequest request,
@@ -237,7 +238,7 @@ public class ContestController {
     @Autowired
     CommentRepository commentRepository;
 
-    @PostMapping("/comments/post/{cid}")
+    @PostMapping("/comments/post/{cid:[0-9]+}")
     public String postComments(@PathVariable(value = "cid") Long cid, @RequestBody CommentPost commentPost) {
         try {
             if (commentPost.rtext.length() < 4) return "too short";
@@ -264,7 +265,7 @@ public class ContestController {
         return comment;
     }
 
-    @GetMapping("/comments/{cid}")
+    @GetMapping("/comments/{cid:[0-9]+}")
     public List<Comment> getCommentsOfContest(@PathVariable Long cid) {
         try {
             @NotNull Contest contest = contestService.getContestById(cid, false);
@@ -280,7 +281,7 @@ public class ContestController {
         }
     }
 
-    @GetMapping("/status/{cid}")
+    @GetMapping("/status/{cid:[0-9]+}")
     public Page<Solution> getUserSolutions(@PathVariable("cid") Long cid,
                                            @RequestParam(value = "page", defaultValue = "0") int page) {
         try {
@@ -312,7 +313,7 @@ public class ContestController {
         throw new NotFoundException();
     }
 
-    @GetMapping("/ranklist/{cid}")
+    @GetMapping("/ranklist/{cid:[0-9]+}")
     public Rank getRankOfContest(@PathVariable Long cid) {
         try {
             @NotNull Contest contest = contestService.getContestById(cid, true);

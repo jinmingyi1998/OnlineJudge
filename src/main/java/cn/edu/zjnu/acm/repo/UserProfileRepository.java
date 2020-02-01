@@ -8,6 +8,10 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface UserProfileRepository extends JpaRepository<UserProfile, Long> {
+
+    @Override
+    <S extends UserProfile> S save(S entity);
+
     @Transactional
     @Modifying
     @Query(value = "UPDATE user_profile set score=score+:score where id = :pid", nativeQuery = true)

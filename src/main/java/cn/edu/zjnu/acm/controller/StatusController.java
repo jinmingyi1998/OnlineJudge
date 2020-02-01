@@ -1,10 +1,10 @@
 package cn.edu.zjnu.acm.controller;
 
-import cn.edu.zjnu.acm.exception.NotFoundException;
 import cn.edu.zjnu.acm.config.Config;
 import cn.edu.zjnu.acm.entity.User;
 import cn.edu.zjnu.acm.entity.oj.Problem;
 import cn.edu.zjnu.acm.entity.oj.Solution;
+import cn.edu.zjnu.acm.exception.NotFoundException;
 import cn.edu.zjnu.acm.service.ProblemService;
 import cn.edu.zjnu.acm.service.SolutionService;
 import cn.edu.zjnu.acm.service.UserService;
@@ -101,7 +101,7 @@ public class StatusController {
         return s;
     }
 
-    @GetMapping("/view/{id}")
+    @GetMapping("/view/{id:[0-9]+}")
     public Solution restfulShowSourceCode(@PathVariable(value = "id") Long id) {
         Solution solution = solutionService.getSolutionById(id);
         try {
@@ -124,7 +124,7 @@ public class StatusController {
         }
     }
 
-    @PostMapping("/share/{id}")
+    @PostMapping("/share/{id:[0-9]+}")
     public boolean setShare(@PathVariable("id") Long id) {
         try {
             User user = (User) session.getAttribute("currentUser");
@@ -141,7 +141,7 @@ public class StatusController {
         throw new NotFoundException();
     }
 
-    @GetMapping("/user/latest/submit/{id}")
+    @GetMapping("/user/latest/submit/{id:[0-9]+}")
     public List<Solution> userSubmitLatestHistory(@PathVariable("id") Long pid) {
         User user = (User) session.getAttribute("currentUser");
         Problem problem = problemService.getActiveProblemById(pid);

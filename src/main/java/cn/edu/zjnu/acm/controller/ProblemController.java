@@ -1,11 +1,15 @@
 package cn.edu.zjnu.acm.controller;
 
-import cn.edu.zjnu.acm.exception.NotFoundException;
 import cn.edu.zjnu.acm.entity.User;
 import cn.edu.zjnu.acm.entity.oj.Problem;
 import cn.edu.zjnu.acm.entity.oj.Solution;
 import cn.edu.zjnu.acm.entity.oj.Tag;
-import cn.edu.zjnu.acm.service.*;
+import cn.edu.zjnu.acm.exception.NeedLoginException;
+import cn.edu.zjnu.acm.exception.NotFoundException;
+import cn.edu.zjnu.acm.service.JudgeService;
+import cn.edu.zjnu.acm.service.ProblemService;
+import cn.edu.zjnu.acm.service.SolutionService;
+import cn.edu.zjnu.acm.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -14,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import javax.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
@@ -28,7 +31,7 @@ class ProblemViewController {
         return "problem/problemlist";
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id:[0-9]+}")
     public String showproblem(@PathVariable Long id) {
         return "problem/showproblem";
     }
@@ -130,7 +133,7 @@ public class ProblemController {
         return problemPage;
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id:[0-9]+}")
     public Problem showProblem(@PathVariable Long id) {
         Problem problem = problemService.getActiveProblemById(id);
         if (problem == null)
@@ -138,7 +141,7 @@ public class ProblemController {
         return problem;
     }
 
-    @PostMapping("/submit/{id}")
+    @PostMapping("/submit/{id:[0-9]+}")
     public String submitProblem(@PathVariable("id") Long id,
                                 @RequestBody SubmitCodeObject submitCodeObject,
                                 HttpServletRequest request) {
