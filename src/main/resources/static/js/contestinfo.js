@@ -58,6 +58,28 @@ var cont = new Vue({
         code: ""
     },
     methods: {
+        init_window(){
+            setInterval(this.time_left,500);
+            $(".progress").progress();
+            $(function () {
+                code_editor = editormd("code-editor", {
+                    width: "100%",
+                    height: 500,
+                    watch: false,
+                    toolbar: false,
+                    codeFold: true,
+                    searchReplace: true,
+                    autoFocus: false,
+                    value: "",
+                    placeholder: "Enjoy coding!",
+                    editorTheme: "tomorrow-night-bright",
+                    previewTheme: "dark",
+                    theam: "dark",
+                    mode: "clike",
+                    path: '/editor/lib/',
+                });
+            });
+        },
         time_left() {
             days_of_month = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
             let dd = 0;
@@ -144,6 +166,7 @@ var cont = new Vue({
                         that.problem = that.contest.problems[0]
                         that.pid = that.problem.tempId;
                         render_md();
+                        that.init_window();
                         that.dataready = true;
                     } else {
                         that.attend = false;
@@ -164,30 +187,10 @@ var cont = new Vue({
                         that.problem = that.contest.problems[0];
                         that.pid = that.problem.tempId;
                     }
-                    that.time_left();
-                    $(".progress").progress();
-                    setInterval(that.time_left,500);
                     render_md();
                     $('title').text(that.contest.title);
+                    that.init_window();
                     that.dataready = true;
-                    $(function () {
-                        code_editor = editormd("code-editor", {
-                            width: "100%",
-                            height: 500,
-                            watch: false,
-                            toolbar: false,
-                            codeFold: true,
-                            searchReplace: true,
-                            autoFocus: false,
-                            value: "",
-                            placeholder: "Enjoy coding!",
-                            editorTheme: "tomorrow-night-bright",
-                            previewTheme: "dark",
-                            theam: "dark",
-                            mode: "clike",
-                            path: '/editor/lib/',
-                        });
-                    });
                 } else {
                     that.attend = false;
                 }
