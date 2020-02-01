@@ -1,8 +1,5 @@
 FROM openjdk:8-jdk-alpine
-
-MAINTAINER Mingyi Jin
-
+COPY .  /app
 WORKDIR /app
-COPY * ./
-RUN chmod 755 gradlew && ./gradlew bootJar && cp build/libs/acm-0.0.1-SNAPSHOT.jar / && rm -rf * &&  mv /acm-0.0.1-SNAPSHOT.jar .
+RUN chmod 755 gradlew && ./gradlew bootJar && mv /app/build/libs/acm-0.0.1-SNAPSHOT.jar  && rm -rf /app && mv /acm-0.0.1-SNAPSHOT.jar . && rm -rf /root/.gradle
 CMD java -jar acm-0.0.1-SNAPSHOT.jar
