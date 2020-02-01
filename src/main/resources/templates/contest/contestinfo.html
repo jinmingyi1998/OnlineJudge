@@ -29,7 +29,13 @@
         <div class="ui grid two column row">
             <div class="ui four wide column">
                 <div class="ui segments">
-                    <div class="ui padded blue segment">
+                    <div class="ui padded segment" v-if="!contest.ended">
+                        <h2 class="ui center aligned header"><i class="ui stopwatch icon"></i>{{timeLeft}}</h2>
+                        <div class="ui attached top indicating progress" id="time-pogress" data-percent="0">
+                            <div class="bar"></div>
+                        </div>
+                    </div>
+                    <div class="ui padded segment">
                         <div class="ui pointing vertical menu fluid">
                             <div class="link item" v-for="p in contest.problems" :class="{active:p.tempId==pid}"
                                  @click="change_problem(p.tempId)">

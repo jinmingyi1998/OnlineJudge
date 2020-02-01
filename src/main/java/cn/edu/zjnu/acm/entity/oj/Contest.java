@@ -22,7 +22,7 @@ import java.util.List;
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Contest implements Cloneable {
     public static final String PUBLIC = "public";
-    public static final String GROUP = "group";
+    public static final String TEAM = "team";
     public static final String PRIVATE = "private";
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

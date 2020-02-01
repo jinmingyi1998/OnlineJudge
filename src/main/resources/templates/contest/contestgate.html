@@ -13,8 +13,8 @@
 <body>
 <main class="ui container fluid" id="contest-content">
     <div class="segment">
-        <div class="header">Waiting...</div>
-
+        <div class="header" v-if="info.length==0">Waiting...</div>
+        <h1 class="ui center aligned header" v-html="info"></h1>
     </div>
 </main>
 <script>
@@ -23,26 +23,23 @@
     var cont = new Vue({
         el: "#contest-content",
         data: {
-            begin:false,
-            contest: {}
+            info:""
         },
         created() {
             var that = this;
-            that.dataready = false;
-            // this.attend=true;
-            axios.get('/api/contest/' + cid)
+            axios.get('/api/contest/gate/' + cid)
                 .then(function (response) {
-                    that.contest = response.data;
-                    that.begin = that.contest.started;
-                    if (that.begin){
-                        location.href='/contest/problem/'+that.contest.id;
+                    let res = response.data;
+                    if (res=="success"){
+                        location.href="/contest/problem/"+cid;
+                        return;
                     }
+                    alert(res);
+                    that.info = res;
                 });
         }
     });
 </script>
-<script src="/js/contestinfo.js"></script>
-<script src="/js/contesttab.js"></script>
 <footer th:replace="~{fragment/footer :: footer}"></footer>
 </body>
 </html>

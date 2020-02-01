@@ -1,4 +1,5 @@
 var code_editor;
+
 function render_md() {
     $(function () {
         $(".md-text").each(function () {
@@ -52,9 +53,35 @@ var cont = new Vue({
         },
         language: "c",
         share: false,
+        timeLeft: "",
+        percentage:0,
         code: ""
     },
     methods: {
+        time_left() {
+            days_of_month = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+            let dd = 0;
+            let hh = 0;
+            let mm = 0;
+            let ss = 0;
+            if (this.contest.started && !this.contest.ended) {
+                dend = new Date(this.contest.endTime);
+                dsta = new Date(this.contest.startTime);
+                dn = new Date();
+                d3 = new Date(dend - dn);
+                ss = d3.getUTCSeconds();
+                mm = d3.getUTCMinutes();
+                hh = d3.getUTCHours();
+                dd = d3.getUTCDate()-1;
+                dd += days_of_month[d3.getUTCMonth()];
+                let len = dend-dsta;
+                let gon = dn - dsta;
+                per =gon/len*100;
+                $("#time-pogress").progress("set percent",per);
+            }
+            this.timeLeft = dd + (hh<10?":0":":") + hh + (mm<10?":0":":") + mm + (ss<10?":0":":") + ss;
+            // setInterval(this.time_left,500);
+        },
         change_lang() {
             if (this.language === "java") {
                 code_editor.setCodeMirrorOption("mode", "clike");
@@ -137,6 +164,9 @@ var cont = new Vue({
                         that.problem = that.contest.problems[0];
                         that.pid = that.problem.tempId;
                     }
+                    that.time_left();
+                    $(".progress").progress();
+                    setInterval(that.time_left,500);
                     render_md();
                     $('title').text(that.contest.title);
                     that.dataready = true;
@@ -149,7 +179,7 @@ var cont = new Vue({
                             codeFold: true,
                             searchReplace: true,
                             autoFocus: false,
-                            value:"",
+                            value: "",
                             placeholder: "Enjoy coding!",
                             editorTheme: "tomorrow-night-bright",
                             previewTheme: "dark",

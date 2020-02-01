@@ -101,6 +101,26 @@ public class ContestController {
         return currentPage;
     }
 
+    @GetMapping("/gate/{cid}")
+    public String ContestReady(@PathVariable("cid") Long cid) {
+        Contest contest = contestService.getContestById(cid);
+        if (!contest.isStarted())
+            return "未开始 not started";
+        if (contest.getPrivilege().equals(Contest.TEAM)) {
+            User user = (User) session.getAttribute("currentUser");
+            if (user == null)
+                return "请登录 Please Login";
+            Team team = contest.getTeam();
+            if (teamService.isUserInTeam(user, team)) {
+                return "success";
+            } else {
+                return "没有权限";
+            }
+        } else {
+            return "success";
+        }
+    }
+
     @GetMapping("/{cid}")
     public Contest getContestDetail(@PathVariable("cid") Long cid,
                                     @RequestParam(value = "password", defaultValue = "") String password) {
@@ -147,7 +167,7 @@ public class ContestController {
                 p.setScore(null);
                 p.setSource(null);
             }
-            c.getProblems().sort( (a,b)-> (int) (a.getTempId()-b.getTempId()));
+            c.getProblems().sort((a, b) -> (int) (a.getTempId() - b.getTempId()));
         } catch (Exception e) {
             throw new NotFoundException();
         }

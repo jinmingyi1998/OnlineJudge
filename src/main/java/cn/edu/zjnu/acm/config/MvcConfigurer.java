@@ -23,6 +23,6 @@ public class MvcConfigurer implements WebMvcConfigurer {
         stringList.add("/oj/admin/**");
         registry.addInterceptor(new SessionHandlerInterceptor()).addPathPatterns(stringList);
         registry.addInterceptor(getContestInterceptor()).addPathPatterns("/contest/*/**").excludePathPatterns("/contest/*")
-                .addPathPatterns("/api/contest/*/**").excludePathPatterns("/api/contest/*");
+                .addPathPatterns("/api/contest/**").excludePathPatterns("/api/contest/gate/*");
     }
 }

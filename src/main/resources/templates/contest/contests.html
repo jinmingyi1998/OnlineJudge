@@ -21,7 +21,7 @@
         <a class="ui link item" target="_blank" v-for="c in contests" :href="'/contest/'+c.id">
             <div class="ui relaxed header" v-html="c.title"></div>
             <div class="ui relaxed meta">{{c.description.substring(0,35)}}</div>
-            <div class="ui small ribbon label" :class="{blue:c.privilege=='public',orange:c.privilege=='group'}"
+            <div class="ui small ribbon label" :class="{blue:c.privilege=='public',orange:c.privilege=='team'}"
                  v-html="c.privilege.toUpperCase()"></div>
             <div class="right floated">
                 <div class="ui big label">{{c.runStatu}}

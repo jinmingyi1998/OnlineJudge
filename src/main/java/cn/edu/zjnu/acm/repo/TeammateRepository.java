@@ -11,6 +11,8 @@ import java.util.Optional;
 public interface TeammateRepository extends JpaRepository<Teammate, Long> {
     List<Teammate> findAllByTeam(Team team);
 
-    Optional<Teammate> findByUser(User user);
+    List<Teammate> findByUser(User user);
+
+    Optional <Teammate> findByUserAndTeam(User user,Team team);
 
 }
