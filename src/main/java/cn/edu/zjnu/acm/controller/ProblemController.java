@@ -1,6 +1,6 @@
 package cn.edu.zjnu.acm.controller;
 
-import cn.edu.zjnu.acm.NotFoundException;
+import cn.edu.zjnu.acm.exception.NotFoundException;
 import cn.edu.zjnu.acm.entity.User;
 import cn.edu.zjnu.acm.entity.oj.Problem;
 import cn.edu.zjnu.acm.entity.oj.Solution;

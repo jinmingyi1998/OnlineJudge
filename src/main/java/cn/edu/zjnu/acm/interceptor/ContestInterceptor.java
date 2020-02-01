@@ -1,6 +1,6 @@
 package cn.edu.zjnu.acm.interceptor;
 
-import cn.edu.zjnu.acm.NotFoundException;
+import cn.edu.zjnu.acm.exception.NotFoundException;
 import cn.edu.zjnu.acm.entity.oj.Contest;
 import cn.edu.zjnu.acm.service.ContestService;
 import lombok.extern.slf4j.Slf4j;
