@@ -110,12 +110,12 @@ public class AdminController {
 class AdminViewController {
     @GetMapping("/problem")
     public String getAllProblem() {
-        return "/admin/admin";
+        return "admin/admin";
     }
 
     @GetMapping("/problem/edit/{pid:[0-9]+}")
     public String editProblem() {
-        return "/admin/edit";
+        return "admin/edit";
     }
 
     @GetMapping("/problem/add")
