@@ -22,12 +22,16 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {
 
     List<Problem> findProblemsByActiveAndId(Boolean active, Long id);
 
+    Page<Problem> findAllByTitleContaining(Pageable pageable, String title);
 
     List<Problem> findAllByActiveAndTitleContaining(Boolean active, String title);
 
     Page<Problem> findProblemsByActiveAndTagsInAndIdIn(Pageable pageable, Boolean active, List<Tag> tags, List<Long> ids);
 
     List<Problem> findAllByTags(Tag tag);
+
+    Optional<Problem> findByTitle(String title);
+    Optional<Problem> findById(Long id);
 
     @Transactional
     @Modifying

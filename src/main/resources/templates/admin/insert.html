@@ -1,199 +1,193 @@
-<!--
-  ~ Copyright (c) 2019. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-  ~ Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
-  ~ Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
-  ~ Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
-  ~ Vestibulum commodo. Ut rhoncus gravida arcu.
-  -->
-
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <th:block th:insert="~{fragment/header :: header}"></th:block>
-    <title>Insert</title>
+    <title>New Problem</title>
     <meta content="text/html;charset=UTF-8" http-equiv="Content-Type">
-    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
-    <link rel="stylesheet" th:href="@{/css/font-awesome.css}">
     <link rel="stylesheet" href="/editor/css/editormd.css">
-    <script src="/editor/lib/marked.min.js"></script>
-    <script src="/editor/lib/raphael.min.js"></script>
-    <script src="/editor/lib/underscore.min.js"></script>
-    <script src="/editor/lib/sequence-diagram.min.js"></script>
-    <script src="/editor/lib/flowchart.min.js"></script>
-    <script src="/editor/lib/jquery.flowchart.min.js"></script>
     <script src="/editor/editormd.js"></script>
-    <link rel="stylesheet" href="/js/prettify/skins/sunburst.css">
 </head>
 <body>
-<div class="container">
-    <div class="alert alert-info">支持HTML，MathJax</div>
-    <div class="alert alert-info" th:if="${message!=''}" th:text="${message}"></div>
-    <form action="" method="post" enctype="multipart/form-data">
-        <div class="form-group">
-            Title:<input class="form-control" name="title" type="text">
+<div class="ui container segment" id="vproblem">
+    <div class="ui header">支持Markdown</div>
+    <form onsubmit="return false" class="ui form">
+        <div class="field">
+            Title:<input name="title" type="text" v-model="title">
         </div>
-        <div class="form-group">Active: <select class="form-control" name="active" id="active" required>
-            <option value="1">Active</option>
-            <option value="0">No</option>
-        </select></div>
-        <div class="form-group">
-            Time Limit(ms):<input class="form-control" name="timeLimit" type="number" value="1000">
-        </div>
-        <div class="form-group">
-            Memory Limit(Bytes):<input class="form-control" name="memoryLimit" type="number" value="65536000">
-        </div>
-        <div class="form-group">Tags(用
-            <mark>英文逗号</mark>
-            分隔，只能是已经存在的tag)<input class="form-control" name="tag" type="text" required>
-        </div>
-        <div class="form-group">
-            Score: <input class="form-control" name="score" type="number" required>
-        </div>
-        <div class="form-group">
-            Description:
-            <div class="form-group" id="editor-description">
-                <textarea name="description" class="w-100"></textarea>
+        <div class="field">
+            <div class="ui checkbox">
+                <label for="active">可见</label>
+                <input id="active" name="acvive" v-model="active" type="checkbox">
             </div>
-            <!--Description: <textarea class="form-control" cols="35" name="description" rows="10"></textarea>-->
         </div>
-        <div class="form-group">
-            Input:
-            <div class="form-group" id="editor-input">
-                <textarea name="input" class="w-100"></textarea></div>
-            <!--<textarea class="form-control" cols="35" name="input" rows="5"></textarea>-->
+        <div class="field">
+            <div class="ui right labeled input ">
+                <label class="ui label">Time Limit:</label>
+                <input type="text" placeholder="Time Limit" v-model="time">
+                <div class="ui basic label">
+                    ms
+                </div>
+            </div>
         </div>
-        <div class="form-group">
-            Output:
-            <div class="form-group" id="editor-output">
-                <textarea name="output" class="w-100"></textarea></div>
-            <!--<textarea class="form-control" cols="35" name="output" rows="5"></textarea>-->
+        <div class="field">
+            <div class="ui right labeled input ">
+                <label class="ui label">Memory Limit:</label>
+                <input type="text" placeholder="Memory Limit" v-model="memory">
+                <div class="ui basic label">
+                    bytes
+                </div>
+            </div>
         </div>
-        <div class="form-group">
+        <div class="ui field">Tags(用
+            <mark>英文逗号</mark>
+            分隔，只能是已经存在的tag)
+            <input name="tag" type="text" required v-model="tags">
+        </div>
+        <div class="field">
+            题目分数Score: <input name="score" type="number" required v-model="score">
+        </div>
+        <div class="field">
+            题目描述Description:
+            <div id="editor-description">
+                <textarea name="description" style="display: none"></textarea>
+            </div>
+        </div>
+        <div class="field">
+            输入Input:
+            <div id="editor-input">
+                <textarea name="input" style="display: none"></textarea></div>
+        </div>
+        <div class="field">
+            输出Output:
+            <div id="editor-output">
+                <textarea name="output" style="display: none;"></textarea></div>
+        </div>
+        <div class="field">
             Sample Input:
-            <textarea class="form-control" cols="35" name="sampleInput" rows="5"></textarea>
+            <textarea name="sampleInput" rows="8" v-model="sampleInput"></textarea></div>
+        <div class="field">
+            Sample Output:
+            <textarea name="sampleOutput" rows="8" v-model="sampleOutput"></textarea>
         </div>
         <div class="form-group">
-            Sample Output: <textarea class="form-control" cols="35" name="sampleOutput" rows="5"></textarea>
-        </div>
-        <div class="form-group">
-            Hint:
+            提示Hint:
             <div class="form-group" id="editor-hint">
-                <textarea name="hint" class="w-100"></textarea></div>
-            <!--<textarea class="form-control" cols="35" name="hint" rows="3"></textarea>-->
+                <textarea name="hint" style="display: none"></textarea></div>
         </div>
         <div class="form-group">
-            Source: <textarea class="form-control" cols="35" name="source" rows="3"></textarea>
+            来源Source: <textarea class="form-control" v-model="source" cols="35" name="source" rows="3"></textarea>
         </div>
-        <div class="alert-danger alert">必须为zip格式（不能直接改扩展名为zip！）</div>
-        <div class="form-group">
-            Data Files: <input type="file" class="form-control" required="required" name="zipfile">
-        </div>
-        <div class="form-group">
-            <input class="btn btn-primary" type="submit">
-        </div>
+        <div class="ui button green" v-on:click="submit_problem()">提交Submit</div>
     </form>
 </div>
 <script>
-    var editor_description = editormd({
-        id: "editor-description",
-        path: "/editor/lib/",
-        height: 500,
-        autoFocus: false,
-        codeFold: true,
-        saveHTMLToTextarea: true,
-        searchReplace: true,
-        gfm: true,
-        toc: true,
-        autoLoadKaTeX: true,
-        pageBreak: true,
-        atLink: true,    // for @link
-        emailLink: true,    // for mail address auto link
-        tex: true,
-        taskList: true,   // Github Flavored Markdown task lists
-        flowChart: true,
-        sequenceDiagram: true,
-        previewCodeHighlight: true
+    var editor_description;
+    var editor_input;
+    var editor_output;
+    var editor_hint;
+    $(function () {
+        $('.ui.checkbox').checkbox();
+        editor_description = editormd({
+            id: "editor-description",
+            path: "/editor/lib/",
+            width: "90%",
+            height: 500,
+            autoFocus: false,
+            codeFold: true,
+            searchReplace: true,
+            autoLoadKaTeX: true,
+            tex: true,
+            flowChart: true,
+            previewCodeHighlight: true
+        });
+        editor_input = editormd({
+            id: "editor-input",
+            path: "/editor/lib/",
+            width: "90%",
+            height: 500,
+            autoFocus: false,
+            codeFold: true,
+            searchReplace: true,
+            autoLoadKaTeX: true,
+            tex: true,
+            flowChart: true,
+            previewCodeHighlight: true
+        });
+        editor_output = editormd({
+            id: "editor-output",
+            path: "/editor/lib/",
+            width: "90%",
+            height: 500,
+            autoFocus: false,
+            codeFold: true,
+            searchReplace: true,
+            autoLoadKaTeX: true,
+            tex: true,
+            flowChart: true,
+            previewCodeHighlight: true
+        });
+        editor_hint = editormd({
+            id: "editor-hint",
+            path: "/editor/lib/",
+            width: "90%",
+            height: 500,
+            autoFocus: false,
+            codeFold: true,
+            searchReplace: true,
+            autoLoadKaTeX: true,
+            tex: true,
+            flowChart: true,
+            previewCodeHighlight: true
+        });
     });
-    var editor_description = editormd({
-        id: "editor-description",
-        path: "/editor/lib/",
-        autoFocus: false,
-        height: 500,
-        codeFold: true,
-        saveHTMLToTextarea: true,
-        searchReplace: true,
-        gfm: true,
-        toc: true,
-        autoLoadKaTeX: true,
-        pageBreak: true,
-        atLink: true,    // for @link
-        emailLink: true,    // for mail address auto link
-        tex: true,
-        taskList: true,   // Github Flavored Markdown task lists
-        flowChart: true,
-        sequenceDiagram: true,
-        previewCodeHighlight: true
-    });
-    var editor_input = editormd({
-        id: "editor-input",
-        path: "/editor/lib/",
-        autoFocus: false,
-        height: 500,
-        codeFold: true,
-        saveHTMLToTextarea: true,
-        searchReplace: true,
-        gfm: true,
-        toc: true,
-        autoLoadKaTeX: true,
-        pageBreak: true,
-        atLink: true,    // for @link
-        emailLink: true,    // for mail address auto link
-        tex: true,
-        taskList: true,   // Github Flavored Markdown task lists
-        flowChart: true,
-        sequenceDiagram: true,
-        previewCodeHighlight: true
-    });
-    var editor_output = editormd({
-        id: "editor-output",
-        path: "/editor/lib/",
-        autoFocus: false,
-        height: 500,
-        codeFold: true,
-        saveHTMLToTextarea: true,
-        searchReplace: true,
-        gfm: true,
-        toc: true,
-        autoLoadKaTeX: true,
-        pageBreak: true,
-        atLink: true,    // for @link
-        emailLink: true,    // for mail address auto link
-        tex: true,
-        taskList: true,   // Github Flavored Markdown task lists
-        flowChart: true,
-        sequenceDiagram: true,
-        previewCodeHighlight: true
-    });
-    var editor_hint = editormd({
-        id: "editor-hint",
-        path: "/editor/lib/",
-        autoFocus: false,
-        height: 500,
-        codeFold: true,
-        saveHTMLToTextarea: true,
-        searchReplace: true,
-        gfm: true,
-        toc: true,
-        autoLoadKaTeX: true,
-        pageBreak: true,
-        atLink: true,    // for @link
-        emailLink: true,    // for mail address auto link
-        tex: true,
-        taskList: true,   // Github Flavored Markdown task lists
-        flowChart: true,
-        sequenceDiagram: true,
-        previewCodeHighlight: true
-    });
+    var vproblem = new Vue({
+        el: "#vproblem",
+        data: {
+            title: "",
+            active: false,
+            time: "",
+            memory: "",
+            score: 0,
+            description: "",
+            input: "",
+            output: "",
+            sampleInput: "",
+            sampleOutput: "",
+            hint: "",
+            source: "",
+            tags: ""
+        },
+        methods: {
+            submit_problem() {
+                this.description = editor_description.getMarkdown();
+                this.input = editor_input.getMarkdown();
+                this.output = editor_output.getMarkdown();
+                this.hint = editor_hint.getMarkdown();
+                axios.post("/api/admin/problem/insert",{
+                    title:this.title,
+                    description:this.description,
+                    input:this.input,
+                    output:this.output,
+                    sampleInput:this.sampleInput,
+                    sampleOutput: this.sampleOutput,
+                    hint:this.hint,
+                    source:this.source,
+                    time:this.time,
+                    memory:this.memory,
+                    active:this.active,
+                    score:this.score,
+                    tags:this.tags
+                }).then(function (res) {
+                    res = res.data;
+                    if (res !== "success") {
+                        console.log(res);
+                        alert(res);
+                    }
+                    location.href="/admin/problem";
+                })
+            }
+        }
+    })
 </script>
 </body>
 </html>

@@ -29,6 +29,10 @@ public class ProblemService {
         return problemRepository.findProblemsByActive(PageRequest.of(page, size), true);
     }
 
+    public Page<Problem> getAllProblems(int page, int size, String search) {
+        return problemRepository.findAllByTitleContaining(PageRequest.of(page, size), search);
+    }
+
     public Page<Problem> getByTagName(int page, int size, List<String> tagNames, List<Problem> problems) {
         problems = new ArrayList<>(problems);
         for (String tagName : tagNames) {
@@ -73,4 +77,24 @@ public class ProblemService {
         return tagRepository.findAll();
     }
 
+    public Problem insertNewProblem(Problem problem){
+        return problemRepository.save(problem);
+    }
+    public Boolean isProblemRepeated(String title){
+        return problemRepository.findByTitle(title).isPresent();
+    }
+    public Problem getProblemById(Long id){
+        return problemRepository.findById(id).orElse(null);
+    }
+    public List<Tag> convertString2Tag(String s){
+        String[]ts = s.split("[,，]");
+        ArrayList<Tag> tags = new ArrayList<>();
+        for (int i = 0; i < ts.length; i++) {
+            Tag t =tagRepository.findByName(ts[i]).orElse(null);
+            if (t!=null){
+                tags.add(t);
+            }
+        }
+        return tags;
+    }
 }

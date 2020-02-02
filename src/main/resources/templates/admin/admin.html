@@ -1,108 +1,140 @@
-<!--
-  ~ Copyright (c) 2019. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-  ~ Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
-  ~ Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
-  ~ Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
-  ~ Vestibulum commodo. Ut rhoncus gravida arcu.
-  -->
-
 <!DOCTYPE html>
-<html th:fragment="header" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta content="text/html;charset=UTF-8" http-equiv="Content-Type">
-    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
-    <link rel="stylesheet" th:href="@{/css/font-awesome.css}">
-    <script th:src="@{/js/jquery-3.2.1.min.js}"></script>
-    <script th:src="@{/js/popper.min.js}"></script>
-    <script th:src="@{/js/bootstrap.min.js}"></script>
-    <script src="/js/urlcontrol.js"></script>
-    <script th:inline="javascript">
-        query.page = [[${problems.number}]];
-        query.maxpage = [[${problems.totalPages}]];
-    </script>
-    <script>
-        if (typeof (query.page) == "undefined") {
-            query.page = 0;
-        }
-        if (typeof (query.problem) == "undefined") {
-            query.problem = "";
-        }
-        $(function () {
-            for (var i = Math.max(0, parseInt(query.page) - 5); i < Math.min(parseInt(query.page) + 4, query.maxpage); i++) {
-                if (i == query.page)
-                    $("#Next").before("<li class=\"page-item active\" ><a class=\"page-link turnpage\"  page='" + i + "'>" + (parseInt(i) + 1) + "</a></li>");
-                else
-                    $("#Next").before("<li class=\"page-item\" ><a class=\"page-link turnpage\"  page='" + i + "'>" + (parseInt(i) + 1) + "</a></li>");
-            }
-            $(".turnpage").click(function () {
-                var act = $(this).attr("page");
-                if (act == "next-page") {
-                    query.page++;
-                } else if (act == "last-page") {
-                    query.page--;
-                } else {
-                    query.page = parseInt(act);
-                }
-                url = location.pathname + "?problem=" + query.problem + "&page=" + query.page;
-                location.href = url;
-            });
-            $("#search").click(function () {
-                var act = $("#search-problem").val();
-                query.problem = act;
-                url = location.pathname + "?problem=" + query.problem + "&page=" + query.page;
-                location.href = url;
-            });
-        });
-
-    </script>
-    <title>Admin</title>
-    <style>
-        html, body {
-            height: 100%;
-        }
-
-        body {
-            margin: 30px;
-        }
-    </style>
-    <script>
-        $(function () {
-            $(".remove-btn").click(function () {
-                if (confirm("You are going to delete problem " + $(this).attr("id"))) {
-                    $.ajax({
-                        type: "delete",
-                        url: "/oj/admin/delete/" + $(this).attr("id"),
-                        success: function () {
-                            location.reload();
-                        }
-                    });
-                }
-            });
-        })
-    </script>
+    <th:block th:insert="~{fragment/header :: header}"></th:block>
+    <meta charset="UTF-8">
+    <title>Problem List</title>
+    <script src="/js/pagination.js"></script>
 </head>
 <body>
-<div class="container">
-    <a class="btn btn-success" href="/oj/admin/insert">Add a problem</a>
-    <a class="btn btn-primary" href="/oj/admin/contest">Contests</a>
-    <div action="" class="form-inline">Search: <input class="form-control" id="search-problem" name="search"
-                                                      type="text">
-        <button class="btn" id="search">Search</button>
+<main class="ui fluid container">
+    <div id="problem-list">
+        <div class="ui ">
+            <div class="ui container">
+                <form class="ui icon input" v-on:submit.prevent="search_problem()">
+                    <input type="text" v-model="search_string" placeholder="搜索题目名">
+                    <i class="search link icon" v-on:click="search_problem()"></i>
+                </form>
+                <a class="ui green button" href="/admin/problem/add">New Problem</a>
+            </div>
+            <div class="ui selection vertically list celled segment" :class="{loading:!ready}">
+                <div class="ui item" target="_blank" v-for="p in problems" >
+                    <a :href="'/problems/'+p.id"><h3>{{p.id}} - {{p.title}}</h3></a>
+                    <div class="right floated">
+                        <div class="ui inverted red button small">Delete</div>
+                        <a class="ui button brown inverted small" :href="'/admin/problem/edit/'+p.id">Update</a>
+                    </div>
+                    <div class="ui small horizontal labels">
+                        <div class="ui label" v-for="pt in p.tags" v-html="pt.name"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="ui center aligned pagination menu">
+                <pagination :class="{disabled:first}" content='<i class="angle double left icon"></i>'
+                            v-on:change_page="get_page" v-bind:to_page="0"></pagination>
+                <pagination :class="{disabled:first}" content="<i class='angle left icon'></i>"
+                            v-on:change_page="get_page" v-bind:to_page="number-1"></pagination>
+                <pagination v-for="n in npage" :class="{active:number == n}" v-bind:content="n+1"
+                            v-on:change_page="get_page" v-bind:to_page="n"></pagination>
+                <pagination :class="{disabled:last}" content='<i class="angle  right icon"></i>'
+                            v-on:change_page="get_page" v-bind:to_page="number+1"></pagination>
+                <pagination :class="{disabled:last}" content='<i class="angle double right icon"></i>'
+                            v-on:change_page="get_page" v-bind:to_page="totalPages-1"></pagination>
+            </div>
+        </div>
     </div>
-    <ul class="list-group" th:each="problem,proStat:${problems.content}">
-        <li class="list-group-item list-group-item-action">
-            <span th:text="${problem.id}"></span>
-            <span th:text="${problem.title}"></span>
-            <a class="btn-sm btn-primary float-right" th:href="'/oj/admin/edit/'+${problem.id}">Update</a>
-            <a class="btn-sm btn-primary float-right" th:href="'/oj/admin/editdata/'+${problem.id}">Change Data</a>
-            <a class="btn-danger btn-sm remove-btn float-right" th:id="${problem.id}">Remove</a></li>
-    </ul>
-    <div class="container">
-        <ul class="pagination">
-            <li class="page-item"><a class="page-link turnpage" page="last-page">Last</a></li>
-            <li class="page-item" id="Next"><a class="page-link turnpage" page="next-page">Next</a></li>
-        </ul>
-    </div>
-</div>
+</main>
+<script>
+    Array.prototype.remove = function (from, to) {
+        var rest = this.slice((to || from) + 1 || this.length);
+        this.length = from < 0 ? this.length + from : from;
+        return this.push.apply(this, rest);
+    };
+    var problems_list = new Vue({
+        el: "#problem-list",
+        data: {
+            ready: false,
+            problems: [],
+            number: 0,
+            first: false,
+            last: false,
+            npage: [],
+            totalPages: 1,
+            search_string: "",
+            color: ["red", "blue", "green", "orange", "yellow", "pink", "brown", "purple", "olive", "teal"]
+        },
+        methods: {
+            search() {
+                let ss = this.search_string;
+                return ss;
+            },
+            colorClass(id) {
+                try {
+                    return this.color[parseInt(id) % 10]
+                } catch (e) {
+                    return this.color[Math.floor(Math.random() * 10)]
+                }
+            },
+            add_search_tag(event) {
+                ss = event.target.innerText.trim();
+                if (this.search_tag.indexOf(ss) === -1)
+                    this.search_tag.push(ss);
+                this.get_page(0);
+            },
+            remove_search_tag(event) {
+                ss = event.target.parentNode.innerText.trim();
+                if (this.search_tag.indexOf(ss) === -1) {
+                    return;
+                }
+                this.search_tag.remove(this.search_tag.indexOf(ss));
+                this.get_page(0);
+            },
+            search_problem: function () {
+                this.get_page(0);
+            },
+            get_page: function (to_page) {
+                var that = this;
+                if (to_page !== 0 && (to_page < 0 || to_page >= that.totpage))
+                    return null;
+                url = "/api/admin/problem?page=" + to_page + "&search=" + this.search();
+                axios.get(url)
+                    .then(function (response) {
+                        response = response.data;
+                        that.problems = response.content;
+                        that.last = response.last;
+                        that.first = response.first;
+                        that.number = response.number;
+                        that.totalPages = response.totalPages;
+                        that.npage = [];
+                        for (var i = Math.max(0, that.number - 3); i < Math.min(that.totalPages, that.number + 3); i++) {
+                            that.npage.push(i)
+                        }
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+            }
+        },
+        created() {
+            var that = this;
+            axios.get('/api/admin/problem')
+                .then(function (response) {
+                    response = response.data;
+                    that.problems = response.content;
+                    that.totalPages = response.totalPages;
+                    that.last = response.last;
+                    that.first = response.first;
+                    that.number = response.number;
+                    for (var i = Math.max(0, that.number - 3); i < Math.min(that.totalPages, that.number + 3); i++) {
+                        that.npage.push(i)
+                    }
+                    that.ready = true;
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        }
+    });
+</script>
 </body>
 </html>
