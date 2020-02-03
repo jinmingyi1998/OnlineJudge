@@ -30,27 +30,28 @@
                 </div>
             </div>
 
-            <div class="ui animated huge selection vertically celled list segment" :class="{loading:!ready}">
-                <a class="ui link item" target="_blank" v-for="p in problems" :href="'/problems/'+p.id">
-                    <div class="ui header">{{p.id}} - {{p.title}}</div>
-                    <div class="meta">{{p.description.substring(0,35)}}
-                        <div class="ui small horizontal labels">
-                            <div class="ui label" v-for="pt in p.tags" v-html="pt.name"></div>
-                        </div>
-                        <div class="right relaxed floated content">
-                            <div class="ui container right aligned">
-                                <div class="ui mini horizontal blue statistic">
-                                    <div class="value">{{p.submitted}}</div>
-                                    <div class="label">提交</div>
-                                </div>
-                                <div class="ui mini horizontal green statistic">
-                                    <div class="value">{{p.accepted}}</div>
-                                    <div class="label">通过</div>
+            <div class="ui segment" :class="{loading:!ready}">
+                <div class="ui animated huge selection vertically list">
+                    <a class="ui link item" target="_blank" v-for="p in problems" :href="'/problems/'+p.id">
+                        <div class="ui header">{{p.id}} - {{p.title}}</div>
+                        <div class="meta">{{p.description.substring(0,35)}}
+                            <div class="ui small horizontal labels">
+                                <div class="ui label" v-for="pt in p.tags" v-html="pt.name"></div>
+                            </div>
+                            <div class="right relaxed floated content">
+                                <div class="ui container right aligned">
+                                    <div class="ui mini horizontal blue statistic">
+                                        <div class="value">{{p.submitted}}</div>
+                                        <div class="label">提交</div>
+                                    </div>
+                                    <div class="ui mini horizontal green statistic">
+                                        <div class="value">{{p.accepted}}</div>
+                                        <div class="label">通过</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </a>
+                    </a></div>
             </div>
             <div class="ui center aligned pagination menu">
                 <pagination :class="{disabled:first}" content='<i class="angle double left icon"></i>'
