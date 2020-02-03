@@ -97,4 +97,10 @@ public class User implements Cloneable, Comparable {
                 ", intro='" + intro + '\'' +
                 '}';
     }
+    public User hideInfo(){
+        setPassword(null);
+        setEmail(null);
+        setIntro(null);
+        return this;
+    }
 }
