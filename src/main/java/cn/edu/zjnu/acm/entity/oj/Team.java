@@ -24,7 +24,7 @@ public class Team {
     private String name;
     @Column(nullable = false, columnDefinition = "LONGTEXT default ''")
     private String description;
-    @OneToMany(mappedBy = "team")
+    @OneToMany(mappedBy = "team",fetch = FetchType.LAZY)
     private List<Teammate> teammates;
     @ManyToOne(optional = false)
     private User creator;

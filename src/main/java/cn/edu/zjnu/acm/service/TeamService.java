@@ -2,7 +2,9 @@ package cn.edu.zjnu.acm.service;
 
 import cn.edu.zjnu.acm.entity.User;
 import cn.edu.zjnu.acm.entity.oj.Team;
+import cn.edu.zjnu.acm.entity.oj.TeamApply;
 import cn.edu.zjnu.acm.entity.oj.Teammate;
+import cn.edu.zjnu.acm.repo.TeamApplyRepository;
 import cn.edu.zjnu.acm.repo.TeamRepository;
 import cn.edu.zjnu.acm.repo.TeammateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,5 +39,17 @@ public class TeamService {
         Teammate teammate = teammateRepository.findByUserAndTeam(u, t).orElse(null);
         return teammate != null;
     }
-
+    public Team getTeamById(Long tid){
+        return teamRepository.findById(tid).orElse(null);
+    }
+    @Autowired
+    TeamApplyRepository teamApplyRepository;
+    public TeamApply resolveApply(Long id,boolean approve){
+        TeamApply teamApply = teamApplyRepository.findById(id).orElse(null);
+        if (teamApply==null)
+            return null;
+        teamApply.setResult(approve?"approved":"rejected");
+        teamApply.setActive(false);
+        return teamApply;
+    }
 }

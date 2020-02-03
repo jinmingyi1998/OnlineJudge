@@ -2,6 +2,7 @@ package cn.edu.zjnu.acm.service;
 
 import cn.edu.zjnu.acm.entity.oj.Comment;
 import cn.edu.zjnu.acm.entity.oj.Contest;
+import cn.edu.zjnu.acm.entity.oj.Team;
 import cn.edu.zjnu.acm.repo.CommentRepository;
 import cn.edu.zjnu.acm.repo.ContestProblemRepository;
 import cn.edu.zjnu.acm.repo.ContestRepository;
@@ -76,4 +77,7 @@ public class ContestService {
         return commentRepository.save(Comment);
     }
 
+    public List<Contest>contestsOfTeam(Team team){
+        return contestRepository.findAllByTeam(team);
+    }
 }

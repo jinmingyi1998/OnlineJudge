@@ -9,6 +9,7 @@
 package cn.edu.zjnu.acm.repo;
 
 import cn.edu.zjnu.acm.entity.oj.Contest;
+import cn.edu.zjnu.acm.entity.oj.Team;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,10 +24,9 @@ public interface ContestRepository extends JpaRepository<Contest, Long> {
     @Override
     List<Contest> findAll();
 
+    List<Contest> findAllByTeam(Team team);
+
     Optional<Contest> findById(Long aLong);
 
-
     Page<Contest> findByTitleContains(Pageable pageable, String title);
-
-    Contest save(Contest contest);
 }

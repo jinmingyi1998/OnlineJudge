@@ -24,7 +24,7 @@ public class AdminController {
     UserService userService;
     @Autowired
     HttpSession session;
-    @Autowired
+
     public static final int PAGE_SIZE = 50;
 
     @GetMapping("/problem")

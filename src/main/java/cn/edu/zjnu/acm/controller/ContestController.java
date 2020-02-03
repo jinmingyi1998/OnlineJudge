@@ -105,7 +105,7 @@ public class ContestController {
     }
 
     @GetMapping("/gate/{cid:[0-9+]}")
-    public String ContestReady(@PathVariable("cid") Long cid) {
+    public String contestReady(@PathVariable("cid") Long cid) {
         Contest contest = contestService.getContestById(cid);
         if (!contest.isStarted())
             return "未开始 not started";
