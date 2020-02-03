@@ -24,9 +24,9 @@ public class User implements Cloneable, Comparable {
     @Size(min = 6, max = 35)
     private String username;
 
-    @Column(nullable = false, length = 30)
+    @Column(nullable = false, length = 60)
     @NotEmpty
-    @Size(min = 6, max = 35)
+    @Size(min = 6,max = 60)
     private String password;
 
     @Column(nullable = false, columnDefinition = "VARCHAR(250) default ''")
@@ -84,5 +84,17 @@ public class User implements Cloneable, Comparable {
     @Override
     public int compareTo(Object o) {
         return getId().compareTo(((User) o).getId());
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", intro='" + intro + '\'' +
+                '}';
     }
 }

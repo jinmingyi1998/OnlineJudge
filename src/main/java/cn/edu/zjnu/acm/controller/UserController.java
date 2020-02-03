@@ -50,13 +50,13 @@ public class UserController {
 
     @PostMapping("/login")
     public String loginUser(@RequestBody User user, HttpSession session, Model m) {
-        User t_user = userService.loginUser(user);
-        if (t_user != null) {
-            session.setMaxInactiveInterval(6 * 60 * 60);
-            session.setAttribute("currentUser", t_user);
-            session.setAttribute("loginTime", Instant.now());
-            return "success";
+        User login_user = userService.loginUser(user);
+        if (login_user == null ) {
+            return "用户名或密码错误。";
         }
-        return "用户名或密码错误。";
+        session.setMaxInactiveInterval(6 * 60 * 60);
+        session.setAttribute("currentUser", login_user);
+        session.setAttribute("loginTime", Instant.now());
+        return "success";
     }
 }

@@ -5,6 +5,7 @@ import cn.edu.zjnu.acm.entity.UserProfile;
 import cn.edu.zjnu.acm.repo.UserProfileRepository;
 import cn.edu.zjnu.acm.repo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +28,8 @@ public class UserService {
     public User registerUser(User u) {
         if (userRepository.findByUsername(u.getUsername()).isPresent())
             return null;
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        u.setPassword(encoder.encode(u.getPassword()));
         UserProfile userProfile = new UserProfile();
         u = userRepository.save(u);
         if (u == null)
@@ -37,6 +40,13 @@ public class UserService {
     }
 
     public User loginUser(User user) {
-        return userRepository.findByUsernameAndPassword(user.getUsername(), user.getPassword()).orElse(null);
+        User u=userRepository.findByUsername(user.getUsername()).orElse(null);
+        if(u==null)
+            return null;
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        if( encoder.matches(user.getPassword(),u.getPassword()))
+            return u;
+        return null;
+//        return userRepository.findByUsernameAndPassword(user.getUsername(), user.getPassword()).orElse(null);
     }
 }
