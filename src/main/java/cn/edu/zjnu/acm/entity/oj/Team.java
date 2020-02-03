@@ -3,6 +3,7 @@ package cn.edu.zjnu.acm.entity.oj;
 import cn.edu.zjnu.acm.entity.User;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
+import org.hibernate.LazyInitializationException;
 
 import javax.persistence.*;
 import java.text.SimpleDateFormat;
@@ -24,7 +25,7 @@ public class Team {
     private String name;
     @Column(nullable = false, columnDefinition = "LONGTEXT default ''")
     private String description;
-    @OneToMany(mappedBy = "team",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "team", fetch = FetchType.LAZY)
     private List<Teammate> teammates;
     @ManyToOne(optional = false)
     private User creator;
@@ -39,8 +40,29 @@ public class Team {
         return new SimpleDateFormat("yyyy-MM-dd HH:mm").format(Date.from(createTime));
     }
 
-    public void clearLazyRoles() {
+    public Team clearLazyRoles() {
         setTeammates(null);
         setContests(null);
+        return this;
+    }
+
+    public Team hideInfo() {
+        creator.hideInfo();
+        try {
+            if (contests != null)
+                for (Contest c : contests) {
+                    c.setTeam(null);
+                    c.clearLazyRoles();
+                    c.hideInfo();
+                }
+            if (teammates != null)
+                for (Teammate t : teammates) {
+                    t.getUser().hideInfo();
+                    t.setTeam(null);
+                }
+        } catch (LazyInitializationException e) {
+            ;
+        }
+        return this;
     }
 }
