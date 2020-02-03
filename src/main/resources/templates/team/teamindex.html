@@ -8,7 +8,7 @@
 <body>
 
 <main class="ui fluid container" id="vue-team">
-    <table class="ui selectable blue table" >
+    <table class="ui selectable blue table center aligned" >
         <thead>
         <tr>
             <th>Number</th>
@@ -22,8 +22,8 @@
         </thead>
         <tbody>
         <tr v-for="vt in vteams">
-            <td>{{vt.id}}</td>
-            <td>{{vt.name}}</td>
+            <td v-html="vt.id"></td>
+            <td><a :href="'/team/'+vt.id" v-html="vt.name"></a></td>
             <td>{{vt.creator.name}}</td>
             <td>{{vt.normalCreateTime}}</td>
             <td>{{vt.attend}}</td>

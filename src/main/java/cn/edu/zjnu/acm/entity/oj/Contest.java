@@ -161,4 +161,12 @@ public class Contest implements Cloneable {
         }
         return this;
     }
+    public Contest hideInfo(){
+        setCreator(null);
+        setPattern(null);
+        setPassword(null);
+        setPrivilege(null);
+        setFreezeRank(null);
+        return this;
+    }
 }

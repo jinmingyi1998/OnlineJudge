@@ -1,6 +1,7 @@
 package cn.edu.zjnu.acm.controller;
 
 import cn.edu.zjnu.acm.entity.User;
+import cn.edu.zjnu.acm.entity.oj.Contest;
 import cn.edu.zjnu.acm.entity.oj.Team;
 import cn.edu.zjnu.acm.entity.oj.TeamApply;
 import cn.edu.zjnu.acm.entity.oj.Teammate;
@@ -31,16 +32,9 @@ public class TeamController {
         page = Math.max(0, page);
         Page<Team> return_page = teamService.getAll(page, PAGE_SIZE);
         for (Team t : return_page.getContent()) {
-            t.getCreator().setPassword(null);
-            t.getCreator().setEmail(null);
-            t.getCreator().setIntro(null);
             t.clearLazyRoles();
             t = teamService.fillTeamTeammate(t);
-            for (Teammate tm : t.getTeammates()) {
-                tm.getUser().setPassword(null);
-                tm.getUser().setIntro(null);
-                tm.getUser().setEmail(null);
-            }
+            t.hideInfo();
         }
         return return_page;
     }
@@ -90,10 +84,9 @@ public class TeamController {
         if (team==null)
             throw new NotFoundException();
         team.setContests(contestService.contestsOfTeam(team));
-        team.getCreator().setPassword(null);
-        team.getCreator().setIntro(null);
-        team.getCreator().setEmail(null);
-        return null;
+        team = teamService.fillTeamTeammate(team);
+        team.hideInfo();
+        return team;
     }
 
 }
@@ -106,7 +99,7 @@ class TeamViewController {
         return "team/teamindex";
     }
 
-    @GetMapping("/team/{id:[0-9]}+")
+    @GetMapping("/{id:[0-9]+}")
     public String teamDetail() {
         return "team/teaminfo";
     }

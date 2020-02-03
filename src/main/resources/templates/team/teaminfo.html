@@ -1,92 +1,69 @@
-<!--
-  ~ Copyright (c) 2019. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-  ~ Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
-  ~ Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
-  ~ Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
-  ~ Vestibulum commodo. Ut rhoncus gravida arcu.
-  -->
-
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <th:block th:insert="~{fragment/header :: header}"></th:block>
     <meta charset="UTF-8">
-    <title th:text="|群组 ${team.name}|">群组</title>
+    <title>Team</title>
 </head>
 <body>
-<div class="container-fluid">
-    <h2 class="text-center" th:text="${team.name}"></h2>
-    <div class="row">
-        <div class="col-2">
-            <ul class="list-group">
-                <dl class="list-group-item">
-                    <dt>群组号：</dt>
-                    <dd th:text="${team.id}"></dd>
-                </dl>
-                <dl class="list-group-item">
-                    <dt>加群方式：</dt>
-                    <div th:switch="${team.joinPolicy}">
-                        <dd th:case="${team.joinPolicy.invite}" class="badge badge-success">仅邀请</dd>
-                        <dd th:case="${team.joinPolicy.apply}" class="badge badge-success">需申请</dd>
-                        <dd th:case="${team.joinPolicy.free}" class="badge badge-success">自由加入</dd>
+<main class="ui fluid container" id="vteam">
+    <div class="ui grid">
+        <div class="twelve wide column">
+            <div class="ui raised segments">
+                <h2 class="ui header">Team Contests</h2>
+                <div class="ui segment" v-for="c in contests">
+                    <div class="content">
+                        <a :href="'/contest/'+c.id" class="ui header" v-html="c.title"></a>
+                        <div class="description" v-html="c.normalStartTime"></div>
                     </div>
-                </dl>
-                <dl class="list-group-item">
-                    <dt>创建时间：</dt>
-                    <dd th:text="${team.normalCreateTime}"></dd>
-                </dl>
-            </ul>
-        </div>
-        <div class="col-8">
-            <div class="container justify-content-center">
-                <div class="card p-3 ">
-                    <div class="card-body card-text" th:text="${team.introduction}"></div>
                 </div>
             </div>
-            <div class="container">
-                <h3>群组比赛</h3>
-                <table class="table text-center table-light table-sm table-responsive-sm table-striped table-hover table-bordered">
-                    <thead class="thead-light">
-                    <tr>
-                        <th>标题</th>
-                        <th>开始时间</th>
-                        <th>结束时间</th>
-                        <th>状态</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="con:${team.contests}">
-                        <td><a th:href="@{/oj/contest/{cid}(cid=${con.id})}" th:text="${con.title}"></a></td>
-                        <td th:text="${con.normalStartTime}"></td>
-                        <td th:text="${con.normalEndTime}"></td>
-                        <td th:text="${con.runStatu}"></td>
-                    </tr>
-                    </tbody>
-                </table>
+        </div>
+        <div class="four wide column">
+            <div class="ui segment">
+                <h2>{{id}} - {{name}}</h2>
+                <div class="ui list" v-for="m in teammates.slice(50)">
+                    <div class="item">{{m.user.name}}</div>
+                </div>
             </div>
         </div>
-        <div class="col-2">
-            <table class="text-center table table-sm table-light table-hover table-striped table-bordered table-responsive-sm">
-                <thead>
-                <tr>
-                    <th>角色</th>
-                    <th>昵称</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="mem:${members}">
-                    <td th:switch="${mem.role}">
-                        <span th:case="${mem.role.admin}" class="badge badge-primary">群主</span>
-                        <span th:case="${mem.role.manager}" class="badge badge-info">管理员</span>
-                        <span th:case="${mem.role.member}" class="badge badge-secondary">成员</span>
-                    </td>
-                    <td><a th:href="@{/user/{uid}(uid=${mem.user.id})}" th:text="${mem.user.name}"></a></td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
     </div>
-</div>
+</main>
 <footer th:replace="~{fragment/footer :: footer}"></footer>
+<script>
+    tid = location.pathname.split('/');
+    tid = tid[tid.length - 1];
+    vteam = new Vue({
+        el: "#vteam",
+        data: {
+            id: 0,
+            name: "",
+            description: "",
+            teammates: [],
+            creator: {},
+            contests: [],
+            attend: "public",
+            normalCreateTime: "",
+            createTime: ""
+        },
+        methods: {},
+        created() {
+            var that = this;
+            axios.get('/api/team/' + tid)
+                .then(function (res) {
+                    res = res.data;
+                    that.id = res.id;
+                    that.name = res.name;
+                    that.description = res.description;
+                    that.teammates = res.teammates;
+                    that.creator = res.creator;
+                    that.contests = res.contests;
+                    that.attend = res.attend;
+                    that.normalCreateTime = res.normalCreateTime;
+                    that.createTime = res.createTime;
+                })
+        }
+    })
+</script>
 </body>
 </html>
