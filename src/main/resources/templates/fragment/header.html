@@ -19,6 +19,7 @@
             padding-top: 6rem;
             margin: 0;
         }
+
         .ui.fluid.container {
             max-width: 85% !important;
         }
@@ -35,16 +36,37 @@
         <a class="link item" href="/status">提交记录</a>
         <a class="link item" href="/standing">排名</a>
         <a class="link item" href="/team">群组</a>
-        <div class="ui right big borderless menu">
-            <a class="link item" href="/login" th:if="${session.currentUser== null}"
-               data-toggle="modal" data-target="#loginModal">登录</a>
-            <a class="item" th:href="'/user/'+${session.currentUser.id}"
-               th:unless="${session.currentUser== null}"
-               data-toggle="tooltip" th:title="${session.currentUser.name}">个人中心</a>
-            <a class="item" href="/register"
-               th:if="${session.currentUser==null}">注册</a>
-            <a class="item" th:href="@{/logout}" th:unless="${session.currentUser==null}">注销</a></div>
+        <div class="ui right borderless menu" id="userbar">
+            <div v-if="!isLogin" class="ui menu">
+                <a class="item" href="/login">登录</a>
+                <a class="item" href="/register">注册</a>
+            </div>
+            <div v-if="isLogin" class="ui menu">
+                <a class="item" :href="'/user/'+user.id" v-if="isLogin"
+                   data-inverted="" v-bind:data-tooltip="user.name" data-position="bottom center">个人中心</a>
+                <a class="item" href="/logout">注销</a>
+            </div>
+        </div>
     </div>
 </nav>
+<script>
+    var user_bar = new Vue({
+        el: "#userbar",
+        data: {
+            user: {},
+            isLogin: false
+        },
+        created() {
+            var that = this
+            axios.get("/user/session").then(function (res) {
+                res = res.data;
+                if (res.username != undefined) {
+                    that.user = res;
+                    that.isLogin = true;
+                }
+            })
+        }
+    })
+</script>
 </body>
 </html>
