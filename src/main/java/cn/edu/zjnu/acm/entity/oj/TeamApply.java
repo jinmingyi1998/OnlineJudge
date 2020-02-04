@@ -10,6 +10,8 @@ import java.time.Instant;
 @Entity
 @Data
 public class TeamApply implements Serializable {
+    public static final String REJECTED = "rejected";
+    public static final String APPROVED = "approved";
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
@@ -19,14 +21,19 @@ public class TeamApply implements Serializable {
     User user;
     @Column(columnDefinition = "DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP")
     Instant time;
-    @Column(nullable = false,columnDefinition = "bit(1) default 1")
-    Boolean active;
-    @Column(nullable = false,columnDefinition = "varchar(20) default 'rejected'")
-    String result;
-    public TeamApply(){}
-    public TeamApply(User u,Team t){
-        team=t;
-        user=u;
-        time=Instant.now();
+    @Column(nullable = false, columnDefinition = "bit(1) default 1")
+    Boolean active = true;
+    @Column(nullable = false, columnDefinition = "varchar(20) default 'rejected'")
+    String result = REJECTED;
+
+    public TeamApply() {
+    }
+
+    public TeamApply(User u, Team t) {
+        team = t;
+        user = u;
+        result = REJECTED;
+        active = true;
+        time = Instant.now();
     }
 }

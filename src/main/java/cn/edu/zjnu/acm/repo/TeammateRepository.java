@@ -15,4 +15,5 @@ public interface TeammateRepository extends JpaRepository<Teammate, Long> {
 
     Optional<Teammate> findByUserAndTeam(User user, Team team);
 
+    void deleteById(Long id);
 }
