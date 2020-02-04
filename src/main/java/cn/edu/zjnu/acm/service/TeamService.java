@@ -50,6 +50,7 @@ public class TeamService {
     public Teammate getTeammateById(Long tid) {
         return teammateRepository.findById(tid).orElse(null);
     }
+
     public Teammate getUserInTeam(User u, Team t) {
         return teammateRepository.findByUserAndTeam(u, t).orElse(null);
     }
@@ -65,9 +66,12 @@ public class TeamService {
     public TeamApply resolveApply(TeamApply teamApply, boolean approve) {
         teamApply.setResult(approve ? TeamApply.APPROVED : TeamApply.REJECTED);
         teamApply.setActive(false);
+        teamApply = teamApplyRepository.save(teamApply);
         if (approve) {
-            Teammate teammate = new Teammate(teamApply.getUser(), teamApply.getTeam());
-            teammateRepository.save(teammate);
+            if (getUserInTeam(teamApply.getUser(), teamApply.getTeam()) == null) {
+                Teammate teammate = new Teammate(teamApply.getUser(), teamApply.getTeam());
+                teammateRepository.save(teammate);
+            }
         }
         return teamApply;
     }

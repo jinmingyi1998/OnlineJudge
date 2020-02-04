@@ -51,7 +51,7 @@ public class TeamController {
         this.contestService = contestService;
     }
 
-    private boolean isUserPermitted(Long tid) {
+    private boolean isUserPermitted(Long tid, Integer require_level) {
         Team team = teamService.getTeamById(tid);
         if (team == null)
             throw new NotFoundException();
@@ -59,7 +59,7 @@ public class TeamController {
         if (user == null)
             throw new ForbiddenException();
         Teammate teammate = teamService.getUserInTeam(user, team);
-        if (teammate.getLevel().equals(Teammate.MEMBER)) {
+        if (teammate.getLevel() > require_level) {
             throw new ForbiddenException();
         }
         return true;
@@ -67,7 +67,7 @@ public class TeamController {
 
     @GetMapping("/showapply/{gid:[0-9]+}")
     public List<TeamApply> showApply(@PathVariable(value = "gid") Long gid) {
-        if (!isUserPermitted(gid))
+        if (!isUserPermitted(gid, Teammate.MANAGER))
             throw new ForbiddenException();
         Team team = teamService.getTeamById(gid);
         List<TeamApply> teamApplies = teamService.getAllApplies(team);
@@ -75,6 +75,7 @@ public class TeamController {
             t.setTeam(null);
             t.getUser().hideInfo();
         }
+        teamApplies.sort((o1, o2) -> (int) (o1.getId() - o2.getId()) * -1);
         return teamApplies;
     }
 
@@ -92,7 +93,7 @@ public class TeamController {
         if (teammate == null) {
             throw new NotFoundException();
         }
-        if (!isUserPermitted(teammate.getTeam().getId())) {
+        if (!isUserPermitted(teammate.getTeam().getId(), Teammate.MASTER)) {
             throw new ForbiddenException();
         }
         User user = (User) session.getAttribute("currentUser");
@@ -107,7 +108,7 @@ public class TeamController {
         if (teammate == null) {
             throw new NotFoundException();
         }
-        if (!isUserPermitted(teammate.getTeam().getId())) {
+        if (!isUserPermitted(teammate.getTeam().getId(), Teammate.MASTER)) {
             throw new ForbiddenException();
         }
         teammate.setLevel(level);
@@ -141,24 +142,25 @@ public class TeamController {
         return "success";
     }
 
-    @PostMapping("/apply/approve/{id:[0-9]+}")
-    public String applyApproveTeam(@PathVariable(value = "id") Long id) {
+    private TeamApply checkTeamApplyById(Long id) {
         TeamApply teamApply = teamService.getTeamApplyById(id);
         if (teamApply == null)
             throw new NotFoundException();
-        if (!isUserPermitted(teamApply.getTeam().getId()))
+        if (!isUserPermitted(teamApply.getTeam().getId(), Teammate.MANAGER))
             throw new ForbiddenException();
+        return teamApply;
+    }
+
+    @PostMapping("/apply/approve/{id:[0-9]+}")
+    public String applyApproveTeam(@PathVariable(value = "id") Long id) {
+        TeamApply teamApply = checkTeamApplyById(id);
         teamService.resolveApply(teamApply, true);
         return "success";
     }
 
     @PostMapping("/apply/reject/{id:[0-9]+}")
     public String applyRejectTeam(@PathVariable(value = "id") Long id) {
-        TeamApply teamApply = teamService.getTeamApplyById(id);
-        if (teamApply == null)
-            throw new NotFoundException();
-        if (!isUserPermitted(teamApply.getTeam().getId()))
-            throw new ForbiddenException();
+        TeamApply teamApply = checkTeamApplyById(id);
         teamService.resolveApply(teamApply, false);
         return "success";
     }
