@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragment/header :: header}"></th:block>
+    <meta charset="UTF-8">
+    <title>Team</title>
+</head>
+<body>
+<main class="ui fluid container" id="vteam">
+    <div class="ui grid">
+        <div class="twelve wide column">
+            <div class="ui raised segments">
+                <h2 class="ui header">比赛</h2>
+                <div class="ui button"><i class="ui plus green inverted icon"></i>添加比赛</div>
+                <div class="ui segment" v-for="c in contests">
+                    <div class="content">
+                        <a :href="'/contest/'+c.id" class="ui header" v-html="c.title"></a>
+                        <div class="description" v-html="c.normalStartTime"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="four wide column">
+            <div class="ui segment">
+                <h2>{{id}} - {{name}}</h2>
+                <h3>成员管理</h3>
+                <div>
+                    <h4>加入申请</h4>
+                    <div class="ui list">
+                        <div class="item"></div>
+                    </div>
+                </div>
+                <div class="ui list" v-for="m in teammates">
+                    <div class="item">{{m.user.name}}
+                        <div class="ui small orange label" v-if="m.level==0">master</div>
+                        <div class="ui small label" v-if="m.level==1">manager</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<footer th:replace="~{fragment/footer :: footer}"></footer>
+<script>
+    tid = location.pathname.split('/');
+    tid = tid[tid.length - 1];
+    vteam = new Vue({
+        el: "#vteam",
+        data: {
+            id: 0,
+            name: "",
+            description: "",
+            teammates: [],
+            creator: {},
+            contests: [],
+            attend: "public",
+            normalCreateTime: "",
+            createTime: ""
+        },
+        methods: {},
+        created() {
+            var that = this;
+            axios.get('/api/team/' + tid)
+                .then(function (res) {
+                    res = res.data;
+                    that.id = res.id;
+                    that.name = res.name;
+                    that.description = res.description;
+                    that.teammates = res.teammates;
+                    that.creator = res.creator;
+                    that.contests = res.contests;
+                    that.attend = res.attend;
+                    that.normalCreateTime = res.normalCreateTime;
+                    that.createTime = res.createTime;
+                })
+        }
+    })
+</script>
+</body>
+</html>
