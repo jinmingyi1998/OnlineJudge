@@ -8,7 +8,7 @@
 <body>
 <main class="ui fluid container" id="vteam">
     <div class="ui grid">
-        <div class="twelve wide column">
+        <div class="ten wide column">
             <div class="ui raised segments">
                 <h2 class="ui header">比赛</h2>
                 <div class="ui button"><i class="ui plus green inverted icon"></i>添加比赛</div>
@@ -20,21 +20,40 @@
                 </div>
             </div>
         </div>
-        <div class="four wide column">
+        <div class="six wide column">
             <div class="ui segment">
                 <h2>{{id}} - {{name}}</h2>
                 <h3>成员管理</h3>
                 <div>
                     <h4>加入申请</h4>
-                    <div class="ui list">
-                        <div class="item"></div>
+                    <div class="ui middle aligned divided list selection">
+                        <div class="item" v-for="a in apply">
+                            <div class="ui right floated">
+                                <div class="ui icon button tiny circular green"><i class="ui check icon"></i></div>
+                                <div class="ui icon button tiny circular red"><i class="ui close icon"></i></div>
+                            </div>
+                            <div class="content">
+                                {{a.user.name}}
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="ui list" v-for="m in teammates">
+                <div class="ui divider"></div>
+                <div class="ui middle aligned divided list selection" v-for="m in teammates">
                     <div class="item">{{m.user.name}}
                         <div class="ui small orange label" v-if="m.level==0">master</div>
                         <div class="ui small label" v-if="m.level==1">manager</div>
-
+                        <div class="right floated">
+                            <div @click="set_manager(m.id)" class="ui button orange tiny"
+                                 v-if="m.level==2">设为管理员
+                            </div>
+                            <div @click="remove_manager(m.id)" class="ui button yellow tiny"
+                                 v-if="m.level==1">移除管理员
+                            </div>
+                            <div @click="delete_member(m.id)" class="ui button red tiny">
+                                <i class="ui close icon"></i>移除成员
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -56,9 +75,46 @@
             contests: [],
             attend: "public",
             normalCreateTime: "",
-            createTime: ""
+            createTime: "",
+            apply: []
         },
-        methods: {},
+        methods: {
+            set_manager(id) {
+                var that = this;
+                axios.post('/api/team/add/manager/' + id).then(function (res) {
+                    if (res.data != "success") {
+                        alert("failed");
+                    } else {
+                        location.reload();
+                    }
+                })
+            },
+            remove_manager(id) {
+                axios.post('/api/team/remove/manager/' + id).then(function (res) {
+                    if (res.data != "success") {
+                        alert("failed");
+                    } else {
+
+                        location.reload();
+                    }
+                })
+            },
+            delete_member(id) {
+                console.log(id);
+                if (user_bar.user.id == id) {
+                    alert("我踢我自己？？？");
+                    return;
+                }
+                if (confirm("确定吗"))
+                    axios.delete('/api/team/delete/teammate/' + id).then(function (res) {
+                        if (res.data != "success") {
+                            alert("failed");
+                        } else {
+                            location.reload();
+                        }
+                    });
+            }
+        },
         created() {
             var that = this;
             axios.get('/api/team/' + tid)
@@ -73,6 +129,11 @@
                     that.attend = res.attend;
                     that.normalCreateTime = res.normalCreateTime;
                     that.createTime = res.createTime;
+                });
+            axios.get('/api/team/showapply/' + tid)
+                .then(function (res) {
+                    res = res.data;
+                    that.apply = res;
                 })
         }
     })

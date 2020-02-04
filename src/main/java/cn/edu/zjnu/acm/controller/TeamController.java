@@ -86,32 +86,43 @@ public class TeamController {
         return teamService.getUserInTeam(user, team);
     }
 
-    @DeleteMapping("/delete/teammate/{uid:[0-9]+}/{tid:[0-9]+}")
-    public String deleteTeammate(@PathVariable(value = "uid") Long uid,
-                                 @PathVariable(value = "tid") Long tid) {
-        if (!isUserPermitted(tid)) {
-            throw new ForbiddenException();
-        }
-        Teammate teammate = getTeammate(uid, tid);
+    @DeleteMapping("/delete/teammate/{tid:[0-9]+}")
+    public String deleteTeammate(@PathVariable(value = "tid") Long tid) {
+        Teammate teammate = teamService.getTeammateById(tid);
         if (teammate == null) {
             throw new NotFoundException();
         }
+        if (!isUserPermitted(teammate.getTeam().getId())) {
+            throw new ForbiddenException();
+        }
+        User user = (User) session.getAttribute("currentUser");
+        if (teammate.getUser().getId() == user.getId())
+            return "failed";
         teamService.deleteTeammate(teammate);
         return "success";
     }
 
-    @PostMapping("/add/manager/{uid:[0-9]+}/{tid:[0-9]+}")
-    public String addManager(@PathVariable(value = "uid") Long uid,
-                             @PathVariable(value = "tid") Long tid) {
-        if (!isUserPermitted(tid)) {
-            throw new ForbiddenException();
-        }
-        Teammate teammate = getTeammate(uid, tid);
+    private void updateTeammateLevel(Long tid, Integer level) {
+        Teammate teammate = teamService.getTeammateById(tid);
         if (teammate == null) {
             throw new NotFoundException();
         }
-        teammate.setLevel(Teammate.MANAGER);
+        if (!isUserPermitted(teammate.getTeam().getId())) {
+            throw new ForbiddenException();
+        }
+        teammate.setLevel(level);
         teamService.updateTeammate(teammate);
+    }
+
+    @PostMapping("/add/manager/{tid:[0-9]+}")
+    public String addManager(@PathVariable(value = "tid") Long tid) {
+        updateTeammateLevel(tid, Teammate.MANAGER);
+        return "success";
+    }
+
+    @PostMapping("/remove/manager/{tid:[0-9]+}")
+    public String removeManager(@PathVariable(value = "tid") Long tid) {
+        updateTeammateLevel(tid, Teammate.MEMBER);
         return "success";
     }
 

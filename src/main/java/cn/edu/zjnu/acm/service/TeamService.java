@@ -47,6 +47,9 @@ public class TeamService {
         this.teamApplyRepository = teamApplyRepository;
     }
 
+    public Teammate getTeammateById(Long tid) {
+        return teammateRepository.findById(tid).orElse(null);
+    }
     public Teammate getUserInTeam(User u, Team t) {
         return teammateRepository.findByUserAndTeam(u, t).orElse(null);
     }
