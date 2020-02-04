@@ -3,6 +3,7 @@ package cn.edu.zjnu.acm.config;
 import cn.edu.zjnu.acm.interceptor.ContestInterceptor;
 import cn.edu.zjnu.acm.interceptor.LoginInterceptor;
 import cn.edu.zjnu.acm.interceptor.TeacherCheckInterceptor;
+import cn.edu.zjnu.acm.interceptor.TeamInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -29,5 +30,10 @@ public class MvcConfigurer implements WebMvcConfigurer {
         registry.addInterceptor(new LoginInterceptor())
                 .addPathPatterns("/team/**")
                 .addPathPatterns("/api/status/view/**");
+        registry.addInterceptor(new TeamInterceptor())
+                .addPathPatterns("/team/manage/**")
+                .addPathPatterns("/api/team/**")
+                .excludePathPatterns("/api/team/*")
+                .excludePathPatterns("/api/team/apply/*");
     }
 }

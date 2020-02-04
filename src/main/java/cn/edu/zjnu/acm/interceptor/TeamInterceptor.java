@@ -1,9 +1,10 @@
 package cn.edu.zjnu.acm.interceptor;
 
-import cn.edu.zjnu.acm.entity.Teacher;
 import cn.edu.zjnu.acm.entity.User;
-import cn.edu.zjnu.acm.repo.TeacherRepository;
-import lombok.extern.slf4j.Slf4j;
+import cn.edu.zjnu.acm.entity.oj.Team;
+import cn.edu.zjnu.acm.entity.oj.Teammate;
+import cn.edu.zjnu.acm.exception.ForbiddenException;
+import cn.edu.zjnu.acm.service.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -11,31 +12,28 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
-@Slf4j
 @ComponentScan
-public class TeacherCheckInterceptor implements HandlerInterceptor {
+public class TeamInterceptor implements HandlerInterceptor {
     @Autowired
-    TeacherRepository teacherRepository;
+    TeamService teamService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        HttpSession session = request.getSession();
+        User user = (User) request.getSession().getAttribute("currentUser");
+        if (user == null)
+            return false;
+        String url = String.valueOf(request.getRequestURL());
+        String[] sp = url.split("/");
         try {
-            User user = (User) session.getAttribute("currentUser");
-            if (user != null) {
-                log.info("admin page intercepted:" + user.getId() + user.getUsername());
-                Teacher teacher = teacherRepository.findByUser(user).orElse(null);
-                if (teacher != null)
-                    return true;
-            }
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            return false;
-        } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            return false;
+            Long tid = Long.parseLong(sp[sp.length - 1]);
+            Team team = teamService.getTeamById(tid);
+            if (teamService.getUserInTeam(user, team).getLevel() > Teammate.MANAGER)
+                throw new ForbiddenException();
+        } catch (NumberFormatException e) {
+            return true;
         }
+        return true;
     }
 
     @Override
