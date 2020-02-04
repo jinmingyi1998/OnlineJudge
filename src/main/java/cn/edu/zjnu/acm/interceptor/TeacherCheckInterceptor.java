@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 @Slf4j
-public class SessionHandlerInterceptor implements HandlerInterceptor {
+public class TeacherCheckInterceptor implements HandlerInterceptor {
     @Autowired
     TeacherRepository teacherRepository;
 
