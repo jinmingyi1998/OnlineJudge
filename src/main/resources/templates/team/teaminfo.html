@@ -10,7 +10,7 @@
     <div class="ui grid">
         <div class="twelve wide column">
             <div class="ui raised segments">
-                <h2 class="ui header">Team Contests</h2>
+                <h2 class="ui header">比赛</h2>
                 <div class="ui segment" v-for="c in contests">
                     <div class="content">
                         <a :href="'/contest/'+c.id" class="ui header" v-html="c.title"></a>
@@ -22,8 +22,11 @@
         <div class="four wide column">
             <div class="ui segment">
                 <h2>{{id}} - {{name}}</h2>
-                <div class="ui list" v-for="m in teammates.slice(50)">
-                    <div class="item">{{m.user.name}}</div>
+                <div class="ui list" v-for="m in teammates">
+                    <div class="item">{{m.user.name}}
+                        <div class="ui small orange label" v-if="m.level==0">master</div>
+                        <div class="ui small label" v-if="m.level==1">manager</div>
+                    </div>
                 </div>
             </div>
         </div>

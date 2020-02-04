@@ -1,6 +1,7 @@
 package cn.edu.zjnu.acm.controller;
 
 import cn.edu.zjnu.acm.entity.User;
+import cn.edu.zjnu.acm.exception.NeedLoginException;
 import cn.edu.zjnu.acm.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
@@ -58,5 +59,15 @@ public class UserController {
         session.setAttribute("currentUser", login_user);
         session.setAttribute("loginTime", Instant.now());
         return "success";
+    }
+
+    @Autowired
+    HttpSession session;
+    @GetMapping("/user/session")
+    public User getSession(){
+        User user = (User) session.getAttribute("currentUser");
+        if(user!=null)
+            return user.hideInfo();
+        throw new NeedLoginException();
     }
 }
