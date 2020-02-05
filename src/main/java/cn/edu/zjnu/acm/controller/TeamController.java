@@ -65,11 +65,11 @@ public class TeamController {
         return true;
     }
 
-    @GetMapping("/showapply/{gid:[0-9]+}")
-    public List<TeamApply> showApply(@PathVariable(value = "gid") Long gid) {
-        if (!isUserPermitted(gid, Teammate.MANAGER))
+    @GetMapping("/showapply/{teamid:[0-9]+}")
+    public List<TeamApply> showApply(@PathVariable(value = "teamid") Long teamid) {
+        if (!isUserPermitted(teamid, Teammate.MANAGER))
             throw new ForbiddenException();
-        Team team = teamService.getTeamById(gid);
+        Team team = teamService.getTeamById(teamid);
         List<TeamApply> teamApplies = teamService.getAllApplies(team);
         for (TeamApply t : teamApplies) {
             t.setTeam(null);
@@ -79,17 +79,9 @@ public class TeamController {
         return teamApplies;
     }
 
-    private Teammate getTeammate(Long uid, Long tid) {
-        User user = userService.getUserById(uid);
-        Team team = teamService.getTeamById(tid);
-        if (user == null || team == null)
-            return null;
-        return teamService.getUserInTeam(user, team);
-    }
-
-    @DeleteMapping("/delete/teammate/{tid:[0-9]+}")
-    public String deleteTeammate(@PathVariable(value = "tid") Long tid) {
-        Teammate teammate = teamService.getTeammateById(tid);
+    @DeleteMapping("/delete/teammate/{id:[0-9]+}/{teamid:[0-9]+}")
+    public String deleteTeammate(@PathVariable(value = "id") Long id) {
+        Teammate teammate = teamService.getTeammateById(id);
         if (teammate == null) {
             throw new NotFoundException();
         }
@@ -115,30 +107,35 @@ public class TeamController {
         teamService.updateTeammate(teammate);
     }
 
-    @PostMapping("/add/manager/{tid:[0-9]+}")
-    public String addManager(@PathVariable(value = "tid") Long tid) {
+    @PostMapping("/add/manager/{id:[0-9]+}/{teamid:[0-9]+}")
+    public String addManager(@PathVariable(value = "id") Long tid) {
         updateTeammateLevel(tid, Teammate.MANAGER);
         return "success";
     }
 
-    @PostMapping("/remove/manager/{tid:[0-9]+}")
-    public String removeManager(@PathVariable(value = "tid") Long tid) {
-        updateTeammateLevel(tid, Teammate.MEMBER);
+    @PostMapping("/remove/manager/{id:[0-9]+}/{teamid:[0-9]+}")
+    public String removeManager(@PathVariable(value = "id") Long id) {
+        updateTeammateLevel(id, Teammate.MEMBER);
         return "success";
     }
 
-    @PostMapping("/apply/{gid:[0-9]+}")
-    public String applyTeam(@PathVariable(value = "gid") Long tid) {
+    @PostMapping("/apply/{teamid:[0-9]+}")
+    public String applyTeam(@PathVariable(value = "teamid") Long tid) {
         Team team = teamService.getTeamById(tid);
         if (team == null) {
             throw new NotFoundException();
+        }
+        if (team.getAttend().equals(Team.PRIVATE)) {
+            return "failed";
         }
         User user = (User) session.getAttribute("currentUser");
         if (user == null) {
             throw new NeedLoginException();
         }
+        if (teamService.isUserInTeam(user, team) || teamService.isUserHasApplied(user, team))
+            return "already in team or has applied!";
         TeamApply teamApply = new TeamApply(user, team);
-        teamService.applyTeam(teamApply);
+        teamApply = teamService.applyTeam(teamApply);
         return "success";
     }
 
@@ -151,29 +148,78 @@ public class TeamController {
         return teamApply;
     }
 
-    @PostMapping("/apply/approve/{id:[0-9]+}")
-    public String applyApproveTeam(@PathVariable(value = "id") Long id) {
+    @PostMapping("/apply/approve/{applyid:[0-9]+}/{teamid:[0-9]+}")
+    public String applyApproveTeam(@PathVariable(value = "applyid") Long id) {
         TeamApply teamApply = checkTeamApplyById(id);
         teamService.resolveApply(teamApply, true);
         return "success";
     }
 
-    @PostMapping("/apply/reject/{id:[0-9]+}")
+    @PostMapping("/apply/reject/{id:[0-9]+}/{teamid:[0-9]+}")
     public String applyRejectTeam(@PathVariable(value = "id") Long id) {
         TeamApply teamApply = checkTeamApplyById(id);
         teamService.resolveApply(teamApply, false);
         return "success";
     }
 
-    @GetMapping("/{id:[0-9]+}")
-    public Team teamIndex(@PathVariable(value = "id") Long id) {
+    @GetMapping("/{teamid:[0-9]+}")
+    public Team teamIndex(@PathVariable(value = "teamid") Long id) {
         Team team = teamService.getTeamById(id);
         if (team == null)
+            throw new NotFoundException();
+        User user = (User) session.getAttribute("currentUser");
+        if (user == null || !teamService.isUserInTeam(user, team))
             throw new NotFoundException();
         team.setContests(contestService.contestsOfTeam(team));
         team = teamService.fillTeamTeammate(team);
         team.hideInfo();
         return team;
+    }
+
+    private String generateCode(int number) {
+        int offset = (int) ((Math.random() * 10) % 10);
+        StringBuffer sub = new StringBuffer();
+        sub.append((char) (offset + 65));
+        for (int i = 1; i < 18; i++) {
+            char c = (char) (Math.random() * 26 + 65);
+            sub.append(c);
+        }
+        String str = String.format("%06d", number);
+        for (int i = 1; i <= 6; i++)
+            sub.setCharAt(offset + i, (char) (str.charAt(i - 1) + 17 + offset));
+        return String.valueOf(sub);
+    }
+
+    private int decode(String s) {
+        int offset = s.charAt(0) - 65;
+        int result = 0;
+        for (int i = 1; i <= 6; i++) {
+            result *= 10;
+            int n = s.charAt(offset + i) - 65 - offset;
+            result += n;
+        }
+        return result;
+    }
+
+    @GetMapping("/invite/{id:[0-9]+}")
+    public String getInviteLink(@PathVariable(value = "id") Long id) {
+        Team team = teamService.getTeamById(id);
+        if (team == null)
+            throw new NotFoundException();
+        return generateCode(id.intValue());
+    }
+
+    @GetMapping("/invite/{code:[A-Z]{18}}")
+    public String doInviteLink(@PathVariable(value = "code") String code) {
+        Long tid = Long.valueOf(decode(code));
+        User user = (User) session.getAttribute("currentUser");
+        if (user == null)
+            throw new NeedLoginException();
+        Team team = teamService.getTeamById(tid);
+        if (team == null)
+            throw new NotFoundException();
+        teamService.addTeammate(user, team);
+        return "success";
     }
 
 }

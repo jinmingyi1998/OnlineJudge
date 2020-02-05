@@ -16,12 +16,15 @@ import java.util.List;
 
 @Service
 public class TeamService {
-    private final
-    TeamRepository teamRepository;
-    private final
-    TeammateRepository teammateRepository;
-    private final
-    TeamApplyRepository teamApplyRepository;
+    private final TeamRepository teamRepository;
+    private final TeammateRepository teammateRepository;
+    private final TeamApplyRepository teamApplyRepository;
+
+    public TeamService(TeamRepository teamRepository, TeammateRepository teammateRepository, TeamApplyRepository teamApplyRepository) {
+        this.teamRepository = teamRepository;
+        this.teammateRepository = teammateRepository;
+        this.teamApplyRepository = teamApplyRepository;
+    }
 
     public Page<Team> getAll(int page, int size) {
         return teamRepository.findAll(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")));
@@ -41,12 +44,6 @@ public class TeamService {
         return teammate != null;
     }
 
-    public TeamService(TeamRepository teamRepository, TeammateRepository teammateRepository, TeamApplyRepository teamApplyRepository) {
-        this.teamRepository = teamRepository;
-        this.teammateRepository = teammateRepository;
-        this.teamApplyRepository = teamApplyRepository;
-    }
-
     public Teammate getTeammateById(Long tid) {
         return teammateRepository.findById(tid).orElse(null);
     }
@@ -63,15 +60,20 @@ public class TeamService {
         teammateRepository.save(teammate);
     }
 
+    public Teammate addTeammate(User user, Team team) {
+        if (getUserInTeam(user, team) == null) {
+            Teammate teammate = new Teammate(user, team);
+            return teammateRepository.save(teammate);
+        }
+        return null;
+    }
+
     public TeamApply resolveApply(TeamApply teamApply, boolean approve) {
         teamApply.setResult(approve ? TeamApply.APPROVED : TeamApply.REJECTED);
         teamApply.setActive(false);
         teamApply = teamApplyRepository.save(teamApply);
         if (approve) {
-            if (getUserInTeam(teamApply.getUser(), teamApply.getTeam()) == null) {
-                Teammate teammate = new Teammate(teamApply.getUser(), teamApply.getTeam());
-                teammateRepository.save(teammate);
-            }
+            addTeammate(teamApply.getUser(), teamApply.getTeam());
         }
         return teamApply;
     }
@@ -86,6 +88,10 @@ public class TeamService {
 
     public TeamApply applyTeam(TeamApply teamApply) {
         return teamApplyRepository.save(teamApply);
+    }
+
+    public Boolean isUserHasApplied(User user, Team team) {
+        return teamApplyRepository.findByUserAndTeamAndActive(user, team, true).isPresent();
     }
 
     public void deleteTeammate(Teammate teammate) {
