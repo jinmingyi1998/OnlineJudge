@@ -21,7 +21,7 @@
         </div>
         <div class="four wide column">
             <div class="ui segment">
-                <a class="ui mini button" :href="'manage/'+id">管理队伍</a>
+                <a :href="'manage/'+id" class="ui mini button" v-if="isManager()">管理队伍</a>
                 <h2>{{id}} - {{name}}</h2>
                 <div class="ui list" v-for="m in teammates">
                     <div class="item">{{m.user.name}}
@@ -50,7 +50,16 @@
             normalCreateTime: "",
             createTime: ""
         },
-        methods: {},
+        methods: {
+            isManager() {
+                for (tm of this.teammates) {
+                    if (tm.user.id == user_bar.user.id) {
+                        return tm.level < 2;
+                    }
+                }
+                return false;
+            },
+        },
         created() {
             var that = this;
             axios.get('/api/team/' + tid)

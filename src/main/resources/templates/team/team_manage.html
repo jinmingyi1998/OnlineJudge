@@ -27,6 +27,8 @@
                 <h3>成员管理</h3>
                 <div>
                     <h4>加入申请</h4>
+                    <h3>邀请码</h3>
+                    <p>{{inviteCode}}</p>
                     <div class="ui middle aligned divided list selection">
                         <div class="item" v-for="a in apply">
                             <div class="ui right floated" v-if="a.active">
@@ -71,6 +73,7 @@
     vteam = new Vue({
         el: "#vteam",
         data: {
+            inviteCode: "",
             id: 0,
             name: "",
             description: "",
@@ -170,7 +173,11 @@
                     for (a of that.apply) {
                         a.time = new Date(a.time).toLocaleString();
                     }
-                })
+                });
+            axios.get('/api/team/invite/' + tid)
+                .then(function (res) {
+                    that.inviteCode = res.data;
+                });
         }
     })
 </script>

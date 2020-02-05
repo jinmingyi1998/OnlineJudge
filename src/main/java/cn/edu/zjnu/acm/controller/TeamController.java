@@ -201,8 +201,8 @@ public class TeamController {
         return result;
     }
 
-    @GetMapping("/invite/{id:[0-9]+}")
-    public String getInviteLink(@PathVariable(value = "id") Long id) {
+    @GetMapping("/invite/{teamid:[0-9]+}")
+    public String getInviteLink(@PathVariable(value = "teamid") Long id) {
         Team team = teamService.getTeamById(id);
         if (team == null)
             throw new NotFoundException();
