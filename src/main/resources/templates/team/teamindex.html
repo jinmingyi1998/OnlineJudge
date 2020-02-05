@@ -8,31 +8,48 @@
 <body>
 
 <main class="ui fluid container" id="vue-team">
-    <table class="ui selectable blue table center aligned" >
-        <thead>
-        <tr>
-            <th>Number</th>
-            <th>Team</th>
-            <th>创建人</th>
-            <th>创建时间</th>
-            <th>加入方式</th>
-            <th>人数</th>
-            <th> </th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr v-for="vt in vteams">
-            <td v-html="vt.id"></td>
-            <td><a :href="'/team/'+vt.id" v-html="vt.name"></a></td>
-            <td>{{vt.creator.name}}</td>
-            <td>{{vt.normalCreateTime}}</td>
-            <td>{{vt.attend}}</td>
-            <td>{{vt.teammates.length}}</td>
-        </tr>
-        </tbody>
-    </table>
+    <div class="ui grid">
+        <div class="ten wide column">
+            <div class="ui segment raised">
+                <div class="ui icon input">
+                    <input type="text" placeholder="邀请码" v-model="inviteCode">
+                    <i class="circular arrow right link icon" @click="invite()"></i>
+                </div>
+                <table class="ui selectable blue table center aligned">
+                    <thead>
+                    <tr>
+                        <th>Number</th>
+                        <th>Team</th>
+                        <th>创建人</th>
+                        <th>创建时间</th>
+                        <th>加入方式</th>
+                        <th>人数</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="vt in vteams">
+                        <td v-html="vt.id"></td>
+                        <td><a :href="'/team/'+vt.id" v-html="vt.name"></a></td>
+                        <td>{{vt.creator.name}}</td>
+                        <td>{{vt.normalCreateTime}}</td>
+                        <td :class="{negative:vt.attend=='private'}">{{vt.attend}}</td>
+                        <td>{{vt.teammates.length}}</td>
+                        <td class="link item">
+                            <button class="ui button primary" @click="apply(vt.id)"
+                                    :class="{disabled:vt.attend=='private'}">申请加入
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
 
-
+            </div>
+        </div>
+        <div class="six wide column">
+<!--            My teams-->
+        </div>
+    </div>
 </main>
 <footer th:replace="~{fragment/footer :: footer}"></footer>
 </body>
@@ -41,7 +58,7 @@
         el: "#vue-team",
         data: {
             vteams: [{
-                id: 0, name: "", creator: {name: ""}, normalCreateTime: "", attend: "public",teammates:[]
+                id: 0, name: "", creator: {name: ""}, normalCreateTime: "", attend: "public", teammates: []
             }],
             totalElements: 0,
             totalPages: 0,
@@ -49,9 +66,31 @@
             number: 0,
             size: 50,
             numberOfElements: 0,
+            inviteCode: "",
             first: true,
             empty: true,
             npage: []
+        },
+        methods: {
+            apply(id) {
+                axios.post("/api/team/apply/" + id).then(function (res) {
+                    if (res.data == "success") {
+                        alert("Done!");
+                    } else {
+                        alert("failed!");
+                    }
+                });
+            },
+            invite() {
+                axios.get("/api/team/invite/" + this.inviteCode)
+                    .then(function (res) {
+                        if (res.data == "success") {
+                            alert("Done!");
+                        } else {
+                            alert("failed!");
+                        }
+                    });
+            }
         },
         created() {
             var that = this;

@@ -22,6 +22,7 @@
         </div>
         <div class="six wide column">
             <div class="ui segment">
+                <div class="ui dimmer" :class="{active:dim}"></div>
                 <h2>{{id}} - {{name}}</h2>
                 <h3>成员管理</h3>
                 <div>
@@ -53,7 +54,7 @@
                             <div @click="remove_manager(m.id)" class="ui button yellow tiny"
                                  v-if="m.level==1">移除管理员
                             </div>
-                            <div @click="delete_member(m.id)" class="ui button red tiny">
+                            <div @click="delete_member(m.id,m.user.id)" class="ui button red tiny">
                                 <i class="ui close icon"></i>移除成员
                             </div>
                         </div>
@@ -79,12 +80,14 @@
             attend: "public",
             normalCreateTime: "",
             createTime: "",
-            apply: []
+            apply: [],
+            dim: false
         },
         methods: {
             set_manager(id) {
                 var that = this;
-                axios.post('/api/team/add/manager/' + id).then(function (res) {
+                that.dim = true;
+                axios.post('/api/team/add/manager/' + id + "/" + tid).then(function (res) {
                     if (res.data != "success") {
                         alert("failed");
                     } else {
@@ -93,26 +96,31 @@
                 }).catch(function (res) {
                     alert("denied");
                 });
+                that.dim = false;
             },
             remove_manager(id) {
-                axios.post('/api/team/remove/manager/' + id).then(function (res) {
+                var that = this;
+                that.dim = true;
+                axios.post('/api/team/remove/manager/' + id + "/" + tid).then(function (res) {
                     if (res.data != "success") {
                         alert("failed");
                     } else {
-
                         location.reload();
                     }
                 }).catch(function (res) {
                     alert("denied");
                 });
+                that.dim = false;
             },
-            delete_member(id) {
-                if (user_bar.user.id == id) {
+            delete_member(id, uid) {
+                var that = this;
+                if (user_bar.user.id == uid) {
                     alert("我踢我自己？？？");
                     return;
                 }
-                if (confirm("确定吗"))
-                    axios.delete('/api/team/delete/teammate/' + id).then(function (res) {
+                if (confirm("确定吗")) {
+                    that.dim = true;
+                    axios.delete('/api/team/delete/teammate/' + id + "/" + tid).then(function (res) {
                         if (res.data != "success") {
                             alert("failed");
                         } else {
@@ -121,9 +129,12 @@
                     }).catch(function (res) {
                         alert("denied");
                     });
+                }
+                that.dim = false;
             },
             do_apply(id, option) {
-                axios.post("/api/team/apply/" + option + "/" + id)
+                that.dim = true;
+                axios.post("/api/team/apply/" + option + "/" + id + "/" + tid)
                     .then(function (res) {
                         if (res.data != "success") {
                             alert(res.date);
@@ -134,6 +145,7 @@
                     .catch(function (res) {
                         alert("denied");
                     });
+                that.dim = false;
             }
         },
         created() {

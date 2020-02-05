@@ -21,6 +21,7 @@
         </div>
         <div class="four wide column">
             <div class="ui segment">
+                <a class="ui mini button" :href="'manage/'+id">管理队伍</a>
                 <h2>{{id}} - {{name}}</h2>
                 <div class="ui list" v-for="m in teammates">
                     <div class="item">{{m.user.name}}
