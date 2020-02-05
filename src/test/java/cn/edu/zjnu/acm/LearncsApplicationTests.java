@@ -20,13 +20,32 @@ class LearncsApplicationTests {
     SolutionService solutionService;
     @Test
     void contextLoads() {
-//        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-//        List<User> userList =userRepository.findAll();
-//        for (User u:userList) {
-//            System.out.println(u.toString());
-//            u.setPassword(encoder.encode(u.getPassword()));
-//            userRepository.save(u);
-//        }
+        String code = generateCode(123);
+        System.out.println(code);
+        System.out.println(decode(code));
     }
-
+    private String generateCode(int number){
+        int offset = (int) ((Math.random()*10)%10);
+        StringBuffer sub = new StringBuffer();
+        sub.append((char)(offset+65));
+        for(int i = 1;i<18;i++){
+            char c = (char) (Math.random()*26+65);
+            sub.append(c);
+        }
+        String str = String.format("%06d",number);
+        for(int i=1;i<=6;i++)
+            sub.setCharAt(offset+i, (char) (str.charAt(i-1)+17+offset));
+        return String.valueOf(sub);
+    }
+    private int decode(String s){
+        int offset = s.charAt(0)-65;
+        int result=0;
+        for(int i=1;i<=6;i++)
+        {
+            result*=10;
+            int n = s.charAt(offset+i)-65-offset;
+            result+=n;
+        }
+        return result;
+    }
 }

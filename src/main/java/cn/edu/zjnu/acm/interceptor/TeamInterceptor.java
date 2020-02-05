@@ -4,6 +4,7 @@ import cn.edu.zjnu.acm.entity.User;
 import cn.edu.zjnu.acm.entity.oj.Team;
 import cn.edu.zjnu.acm.entity.oj.Teammate;
 import cn.edu.zjnu.acm.exception.ForbiddenException;
+import cn.edu.zjnu.acm.exception.NotFoundException;
 import cn.edu.zjnu.acm.service.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
@@ -32,6 +33,8 @@ public class TeamInterceptor implements HandlerInterceptor {
                 throw new ForbiddenException();
         } catch (NumberFormatException e) {
             return true;
+        }catch (NullPointerException e){
+            throw new NotFoundException();
         }
         return true;
     }
