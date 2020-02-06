@@ -1,80 +1,58 @@
-<!--
-  ~ Copyright (c) 2019. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-  ~ Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
-  ~ Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
-  ~ Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
-  ~ Vestibulum commodo. Ut rhoncus gravida arcu.
-  -->
-
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <th:block th:insert="~{fragment/header :: header}"></th:block>
     <meta charset="UTF-8">
-    <title>Teams</title>
-
+    <title>创建队伍</title>
 </head>
 <body>
-<main class="container-fluid" height="100%" width="100%">
-    <form class="container" id="team-form" method="post">
-        <span class="font-weight-bold  alert alert-danger" id="input-name" style="display: none"></span>
-        <div class="form-inline">
-            Name: <input class="form-control" id="name" name="name" type="text" required>
+<main class="ui fluid container" id="cteam">
+    <div class="ui form">
+        <div class="field">
+            <label for="name">
+                Team Name，队伍名（设置后不可修改）
+            </label>
+            <input id="name" placeholder="Team Name" type="text" v-model="name">
         </div>
-        <div class="form-group">
-            Introduction: <textarea class="form-control" cols="30" id="introduction" name="introduction"
-                                    rows="10"></textarea>
+        <div class="field">
+            <label for="description">简介,设置后不可修改</label>
+            <input id="description" type="text" v-model="description">
         </div>
-        <div class="form-inline">
-            Join Policy:
-            <select class="form-control" id="joinPolicy" name="joinPolicy">
-                <option value="invite">invite</option>
-                <option value="apply">apply</option>
-                <option value="free">free</option>
+        <div class="field">
+            <label for="attend">加入方式</label>
+            <select id="attend" name="attend" v-model="attend">
+                <option value="public">Public</option>
+                <option value="private">Private</option>
             </select>
         </div>
-        <button class="btn btn-primary" onclick="return false" id="submit-btn">Create</button>
-    </form>
+        <div @click="submit()" class="ui inverted primary button">提交</div>
+    </div>
 </main>
 <script>
-    $(function () {
-        $("#submit-btn").click(function () {
-            createTeam();
-        });
-        $("#name").change(function () {
-            var tname = $(this).val();
-            $.get({
-                url: "/oj/team/api/checkname",
-                data: {
-                    name: tname
-                },
-                success: function (res) {
-                    if (res != "success") {
-                        $("#input-name").text(res);
-                        $("#input-name").show();
-                    } else {
-                        $("#input-name").hide();
+    cteam = new Vue({
+        el: "#cteam",
+        data: {
+            name: "",
+            description: "",
+            attend: "private"
+        },
+        methods: {
+            submit() {
+                axios.post("/api/team/create", {
+                    name: this.name,
+                    description: this.description,
+                    attend: this.attend
+                }).then(function (res) {
+                    if (res.data != "success") {
+                        alert(res.data);
+                } else {
+                        alert("success");
+                        location.href = "/team";
                     }
-                }
-            });
-        });
-    });
-
-    function createTeam() {
-        $.post({
-            url: "/oj/team/api/create",
-            data: $("#team-form").serialize(),
-            cache: false,
-            dataType: 'text',
-            success: function (res) {
-                console.log(res);
-                if (res == "success") {
-                    alert("Success");
-                    location.href = "/oj/team";
-                }
+                })
             }
-        });
     }
+    })
 </script>
 <footer th:replace="~{fragment/footer :: footer}"></footer>
 </body>

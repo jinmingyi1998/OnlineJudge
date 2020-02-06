@@ -27,6 +27,13 @@
                 <h3>成员管理</h3>
                 <div>
                     <h4>加入申请</h4>
+                    <div class="ui field">
+                        <label for="attend">加入方式</label>
+                        <select @change="update_attend()" id="attend" name="attend" v-model="attend">
+                            <option value="public">Public</option>
+                            <option value="private">Private</option>
+                        </select>
+                    </div>
                     <h3>邀请码</h3>
                     <p>{{inviteCode}}</p>
                     <div class="ui middle aligned divided list selection">
@@ -84,7 +91,7 @@
             normalCreateTime: "",
             createTime: "",
             apply: [],
-            dim: false
+            dim: true
         },
         methods: {
             set_manager(id) {
@@ -98,8 +105,9 @@
                     }
                 }).catch(function (res) {
                     alert("denied");
+                }).finally(function () {
+                    that.dim = false;
                 });
-                that.dim = false;
             },
             remove_manager(id) {
                 var that = this;
@@ -112,8 +120,9 @@
                     }
                 }).catch(function (res) {
                     alert("denied");
+                }).finally(function () {
+                    that.dim = false;
                 });
-                that.dim = false;
             },
             delete_member(id, uid) {
                 var that = this;
@@ -131,11 +140,13 @@
                         }
                     }).catch(function (res) {
                         alert("denied");
+                    }).finally(function () {
+                        that.dim = false;
                     });
                 }
-                that.dim = false;
             },
             do_apply(id, option) {
+                var that = this;
                 that.dim = true;
                 axios.post("/api/team/apply/" + option + "/" + id + "/" + tid)
                     .then(function (res) {
@@ -147,8 +158,24 @@
                     })
                     .catch(function (res) {
                         alert("denied");
-                    });
-                that.dim = false;
+                    }).finally(function () {
+                    that.dim = false;
+                });
+            },
+            update_attend() {
+                var that = this;
+                that.dim = true;
+                console.log(this.attend);
+                axios.get("/api/team/update/attend/" + tid + "?attend=" + this.attend)
+                    .then(function (res) {
+                        if (res.data != "success") {
+                            alert(res.data);
+                        }
+                    }).catch(function (e) {
+                    alert("Unknown error");
+                }).finally(function () {
+                    that.dim = false;
+                });
             }
         },
         created() {
@@ -178,6 +205,9 @@
                 .then(function (res) {
                     that.inviteCode = res.data;
                 });
+            setTimeout(function () {
+                that.dim = false
+            }, 500);
         }
     })
 </script>

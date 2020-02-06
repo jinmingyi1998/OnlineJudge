@@ -30,6 +30,14 @@ public class TeamService {
         return teamRepository.findAll(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")));
     }
 
+    public Team addTeam(Team team) {
+        return teamRepository.save(team);
+    }
+
+    public void updateTeamAttend(String attend, Team team) {
+        teamRepository.updateAttendById(attend, team.getId());
+    }
+
     public Team fillTeamTeammate(Team team) {
         List<Teammate> teammateList = teammateRepository.findAllByTeam(team);
         for (Teammate t : teammateList) {
@@ -60,12 +68,18 @@ public class TeamService {
         teammateRepository.save(teammate);
     }
 
-    public Teammate addTeammate(User user, Team team) {
+    public Teammate addTeammate(User user, Team team, Integer... level) {
         if (getUserInTeam(user, team) == null) {
             Teammate teammate = new Teammate(user, team);
+            if (level.length == 1)
+                teammate.setLevel(level[0]);
             return teammateRepository.save(teammate);
         }
         return null;
+    }
+
+    public Boolean isTeamNameExist(String name) {
+        return teamRepository.findByName(name).isPresent();
     }
 
     public TeamApply resolveApply(TeamApply teamApply, boolean approve) {

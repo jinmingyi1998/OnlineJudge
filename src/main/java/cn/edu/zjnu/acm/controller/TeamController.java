@@ -1,6 +1,7 @@
 package cn.edu.zjnu.acm.controller;
 
 import cn.edu.zjnu.acm.entity.User;
+import cn.edu.zjnu.acm.entity.oj.Contest;
 import cn.edu.zjnu.acm.entity.oj.Team;
 import cn.edu.zjnu.acm.entity.oj.TeamApply;
 import cn.edu.zjnu.acm.entity.oj.Teammate;
@@ -13,9 +14,12 @@ import cn.edu.zjnu.acm.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -222,6 +226,43 @@ public class TeamController {
         return "success";
     }
 
+    @GetMapping("/update/attend/{teamid:[0-9]+}")
+    public String updateTeamAttendStrategy(@PathVariable(value = "teamid") Long teamid,
+                                           @RequestParam(value = "attend") String attend) {
+        if (isUserPermitted(teamid, Teammate.MASTER)) {
+            try {
+                assert attend.equals(Team.PRIVATE) || attend.equals(Team.PUBLIC);
+                Team team = teamService.getTeamById(teamid);
+                teamService.updateTeamAttend(attend, team);
+            } catch (AssertionError | NullPointerException ne) {
+                throw new NotFoundException();
+            }
+        }
+        return "success";
+    }
+
+    @PostMapping("/create")
+    public String createTeam(@SessionAttribute User currentUser, @Validated @RequestBody Team team) {
+        if (currentUser == null) {
+            throw new NeedLoginException();
+        }
+        try {
+            currentUser = userService.getUserById(currentUser.getId());
+        } catch (NullPointerException e) {
+            return "failed";
+        }
+        if (teamService.isTeamNameExist(team.getName())) {
+            return "name existed!";
+        }
+        team.setCreator(currentUser);
+        team.setTeammates(new ArrayList<Teammate>());
+        team.setContests(new ArrayList<Contest>());
+        team.setCreateTime(Instant.now());
+        team = teamService.addTeam(team);
+        teamService.addTeammate(currentUser, team, Teammate.MASTER);
+        return "success";
+    }
+
 }
 
 @Controller
@@ -240,5 +281,10 @@ class TeamViewController {
     @GetMapping("/manage/{id:[0-9]+}")
     public String teamManage(@PathVariable(value = "id") Long id) {
         return "team/team_manage";
+    }
+
+    @GetMapping("/create")
+    public String teamTeam() {
+        return "team/team_create";
     }
 }

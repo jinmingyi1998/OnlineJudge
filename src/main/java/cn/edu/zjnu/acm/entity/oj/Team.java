@@ -6,6 +6,7 @@ import lombok.Data;
 import org.hibernate.LazyInitializationException;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Date;
@@ -21,6 +22,7 @@ public class Team {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Size(min = 1, max = 99)
     @Column(nullable = false, unique = true, columnDefinition = "varchar(100) default ''")
     private String name;
     @Column(nullable = false, columnDefinition = "LONGTEXT default ''")
