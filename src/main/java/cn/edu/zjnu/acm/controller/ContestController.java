@@ -115,6 +115,8 @@ public class ContestController {
     @GetMapping("/gate/{cid:[0-9+]}")
     public String contestReady(@PathVariable("cid") Long cid) {
         Contest contest = contestService.getContestById(cid);
+        if (contest == null)
+            throw new NotFoundException();
         if (!contest.isStarted())
             return "未开始 not started";
         if (contest.getPrivilege().equals(Contest.TEAM)) {
@@ -361,7 +363,14 @@ public class ContestController {
                     postContest.getPassword(),
                     startTime, endTime, Instant.now());
             contest.setCreator(currentUser);
-            contest.setTeam(null);
+            if (postContest.getPrivilege().equals(Contest.TEAM)) {
+                Team team = teamService.getTeamById(postContest.getTid());
+                if (team == null)
+                    throw new NotFoundException();
+                contest.setTeam(team);
+            } else {
+                contest.setTeam(null);
+            }
             contest.setSolutions(null);
             contest = contestService.insertContest(contest);
             for (ContestProblem cp : contestProblems) {
@@ -370,7 +379,7 @@ public class ContestController {
             }
             return "success";
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         }
         return "failed";
     }
@@ -383,6 +392,7 @@ public class ContestController {
         private String password;
         private String startTime;
         private Long length;
+        private Long tid;
         private ArrayList<CreateProblem> problems;
 
         public CreateContest() {

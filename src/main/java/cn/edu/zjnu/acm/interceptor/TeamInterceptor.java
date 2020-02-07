@@ -4,6 +4,7 @@ import cn.edu.zjnu.acm.entity.User;
 import cn.edu.zjnu.acm.entity.oj.Team;
 import cn.edu.zjnu.acm.entity.oj.Teammate;
 import cn.edu.zjnu.acm.exception.ForbiddenException;
+import cn.edu.zjnu.acm.exception.NeedLoginException;
 import cn.edu.zjnu.acm.exception.NotFoundException;
 import cn.edu.zjnu.acm.service.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ public class TeamInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         User user = (User) request.getSession().getAttribute("currentUser");
         if (user == null)
-            return false;
+            throw new NeedLoginException();
         String url = String.valueOf(request.getRequestURL());
         String[] sp = url.split("/");
         try {
