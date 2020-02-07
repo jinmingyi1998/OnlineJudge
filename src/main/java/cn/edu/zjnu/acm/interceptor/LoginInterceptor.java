@@ -1,6 +1,6 @@
 package cn.edu.zjnu.acm.interceptor;
 
-import cn.edu.zjnu.acm.exception.ForbiddenException;
+import cn.edu.zjnu.acm.exception.NeedLoginException;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -15,7 +15,7 @@ public class LoginInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         if (request.getSession().getAttribute("currentUser") == null)
-            throw new ForbiddenException();
+            throw new NeedLoginException();
         return true;
     }
 

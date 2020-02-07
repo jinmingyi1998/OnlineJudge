@@ -53,6 +53,7 @@ public class MvcConfigurer implements WebMvcConfigurer {
         registry.addInterceptor(getTeamInterceptor())
                 .addPathPatterns("/team/manage/**")
                 .addPathPatterns("/api/team/**")
+                .excludePathPatterns("/api/team")
                 .excludePathPatterns("/api/team/*")
                 .excludePathPatterns("/api/team/apply/*")
                 .excludePathPatterns("/api/team/invite/**");
