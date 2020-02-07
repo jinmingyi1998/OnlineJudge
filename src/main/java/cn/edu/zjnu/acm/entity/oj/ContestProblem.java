@@ -23,9 +23,9 @@ public class ContestProblem {
     @Column(nullable = false)
     private String tempTitle;
     @Column(nullable = false, columnDefinition = "integer default 0")
-    private Integer submitted;
+    private Integer submitted = 0;
     @Column(nullable = false, columnDefinition = "integer default 0")
-    private Integer accepted;
+    private Integer accepted = 0;
 
     public ContestProblem(Problem problem, Contest contest, Long tempId, String tempTitle) {
         this.problem = problem;

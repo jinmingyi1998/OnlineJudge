@@ -57,10 +57,13 @@ public class Contest implements Cloneable {
     @ManyToOne
     private Team team;
 
-    public Contest(String title, String description, String privilege, String password, Instant startTime,
-                   Instant endTime, Instant createTime,
-                   List<ContestProblem> contestProblems,
-                   List<Comment> contestComments) {
+    public Contest(String title,
+                   String description,
+                   String privilege,
+                   String password,
+                   Instant startTime,
+                   Instant endTime,
+                   Instant createTime) {
         this.title = title;
         this.description = description;
         this.privilege = privilege;
@@ -70,8 +73,6 @@ public class Contest implements Cloneable {
         this.createTime = createTime;
         this.pattern = "acm";
         this.freezeRank = false;
-        this.problems = contestProblems;
-        this.contestComments = contestComments;
     }
 
     public Contest() {

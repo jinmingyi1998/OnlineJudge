@@ -44,6 +44,7 @@ public class MvcConfigurer implements WebMvcConfigurer {
                 .addPathPatterns("/contest/*/**")
                 .excludePathPatterns("/contest/*")
                 .excludePathPatterns("/contest/problem/*")
+                .excludePathPatterns("/contest/create/**")
                 .addPathPatterns("/api/contest/*/**")
                 .excludePathPatterns("/api/contest/gate/*")
                 .excludePathPatterns("/api/contest/*");

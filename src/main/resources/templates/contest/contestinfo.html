@@ -25,6 +25,10 @@
 <body>
 <main class="ui container fluid" id="contest-content">
     <div v-if="attend">
+        <div class="ui segment content">
+            <h1 class=" ui center aligned header">{{contest.title}}</h1>
+            <p class="ui description">{{contest.description}}</p>
+        </div>
         <header-tab loc="problem" v-bind:cid="contest.id"></header-tab>
         <div class="ui grid two column row">
             <div class="ui four wide column">

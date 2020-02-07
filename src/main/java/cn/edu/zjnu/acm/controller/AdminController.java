@@ -108,6 +108,11 @@ public class AdminController {
 @Controller
 @RequestMapping("/admin")
 class AdminViewController {
+    @GetMapping
+    public String adminHome() {
+        return "admin/index";
+    }
+
     @GetMapping("/problem")
     public String getAllProblem() {
         return "admin/admin";

@@ -19,10 +19,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 @Slf4j
 @Controller
@@ -57,6 +57,12 @@ class ContestViewController {
     public String contestGate(@PathVariable(value = "id") Long id) {
         return "contest/contestgate";
     }
+
+    @GetMapping("/create/{tid:[0-9]+}")
+    public String createContest() {
+        return "contest/create_contest";
+    }
+
 }
 
 @Slf4j
@@ -98,8 +104,10 @@ public class ContestController {
             c.setCreator(null);
             c.setFreezeRank(null);
             c.setCreateTime(null);
-            c.getTeam().setCreator(null);
-            c.getTeam().clearLazyRoles();
+            if (c.getTeam() != null) {
+                c.getTeam().setCreator(null);
+                c.getTeam().clearLazyRoles();
+            }
         }
         return currentPage;
     }
@@ -329,43 +337,67 @@ public class ContestController {
         }
     }
 
-    /*@PostMapping("/background/edit/{cid}")
-    public String insertContestAction(@PathVariable Long cid,
-                                      @RequestParam(value = "title") String title,
-                                      @RequestParam(value = "description") String description,
-                                      @RequestParam(value = "privilege", defaultValue = "public") String privilege,
-                                      @RequestParam(value = "password", defaultValue = "") String password,
-                                      @RequestParam(value = "startTime") String startTime,
-                                      @RequestParam(value = "lastTime") String lastTime,
-                                      @RequestParam(value = "list[]") String[] ids) {
+    @PostMapping("/create")
+    public String insertContestAction(@RequestBody CreateContest postContest
+            , @SessionAttribute User currentUser) {
         try {
-            @NotNull Contest contest = contestService.getContestById(cid);
-            contest.setTitle(title);
-            contest.setCreateTime(Instant.now());
-            contest.setDescription(description);
-            contest.setPrivilege(privilege);
-            contest.setStartTime(startTime);
-            contest.setEndTime(startTime, lastTime);
-            contest.setPassword(password);
+            if (currentUser == null)
+                throw new NeedLoginException();
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            LocalDateTime localDateTime = LocalDateTime.parse(postContest.getStartTime(), dtf);
+            Instant startTime = Instant.from(localDateTime.atZone(ZoneId.systemDefault()));
+            Instant endTime = startTime.plusSeconds(60 * postContest.getLength());
             List<ContestProblem> contestProblems = new ArrayList<>();
-            Long _cnt = 1L;
-            for (int i = 0; i < ids.length; i++) {
-                String[] _s = ids[i].split("&", 2);
-                Long id = Long.parseLong(_s[0]);
-                Problem p = problemService.getProblemById(id);
-                if (p != null) {
-                    contestProblems.add(new ContestProblem(p, _s[1], _cnt++));
-                }
+            Long cnt = 1L;
+            for (CreateContest.CreateProblem cp : postContest.getProblems()) {
+                Problem p = problemService.getProblemById(cp.getId());
+                if (p == null)
+                    return "problem error";
+                contestProblems.add(new ContestProblem(p, cp.getTempTitle(), cnt++));
             }
+            Contest contest = new Contest(postContest.getTitle(),
+                    postContest.getDescription(),
+                    postContest.getPrivilege(),
+                    postContest.getPassword(),
+                    startTime, endTime, Instant.now());
+            contest.setCreator(currentUser);
+            contest.setTeam(null);
+            contest.setSolutions(null);
+            contest = contestService.insertContest(contest);
             for (ContestProblem cp : contestProblems) {
                 cp.setContest(contest);
                 contestProblemRepository.save(cp);
             }
             return "success";
         } catch (Exception e) {
+            e.printStackTrace();
         }
-        return null;
-    }*/
+        return "failed";
+    }
+
+    @Data
+    static class CreateContest {
+        private String title;
+        private String description;
+        private String privilege;
+        private String password;
+        private String startTime;
+        private Long length;
+        private ArrayList<CreateProblem> problems;
+
+        public CreateContest() {
+        }
+
+        @Data
+        static class CreateProblem {
+            private Long id;
+            private String tempTitle;
+            private String name;
+
+            public CreateProblem() {
+            }
+        }
+    }
   /*  @GetMapping("/rejudge/{cid}")
     public String Rejudge(@PathVariable Long cid) {
         Contest contest = contestService.getContestById(cid);

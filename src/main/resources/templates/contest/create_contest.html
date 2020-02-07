@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Insert</title>
+    <meta charset="UTF-8">
+    <th:block th:insert="~{fragment/header :: header}"></th:block>
+    <style>
+        .ui.fluid.container {
+            max-width: 85% !important;
+        }
+    </style>
+</head>
+<body>
+<div class="ui container" id="contest">
+    <form class="ui form segment" v-on:submit.prevent>
+        <div class="required field">
+            <label>Title:</label><input name="title" required type="text" v-model="content.title">
+        </div>
+        <div class="field">
+            <label>Description:</label><input name="description" type="text" v-model="content.description">
+        </div>
+        <div class="field">
+            <label>Privilege:</label>
+            <select name="privilege" v-model="content.privilege">
+                <option value="public">Public</option>
+                <option value="private">Private</option>
+            </select>
+        </div>
+        <div class="field">
+            <label>Password:(Private 填写)</label>
+            <input name="password" type="text" v-model="content.password">
+        </div>
+        <div class="required field">
+            <label>开始时间Start Time(yyyy-MM-dd HH:mm):</label>
+            <input name="startTime" placeholder="2020-02-20 02:02" required
+                   type="text" v-model="content.startTime">
+        </div>
+        <div class="required field">
+            长度Length(分钟minutes):
+            <input name="lastTime" placeholder="300" required type="number" v-model="content.length">
+        </div>
+        Problems :
+        <div class="ui icon mini buttons">
+            <button @click="update_problem(1)" class="ui green inverted button"><i class="ui plus icon"></i></button>
+            <button @click="update_problem(0)" class="ui red inverted button"><i class="ui minus icon"></i></button>
+        </div>
+        <div class="two inline fields" v-for="(p,i) in content.problems">
+            <div class="required field"><label>id:</label><input @change="get_problem(p.id,i)" required type="number"
+                                                                 v-model="p.id"></div>
+            <div class="field" v-html="p.name"></div>
+            <div class="required field">alias:<input type="text" v-model="p.tempTitle"></div>
+        </div>
+        <a @click="submit_form()" class="ui button green" id="submit-contest">提交Submit</a>
+    </form>
+</div>
+<script type="text/javascript">
+    var contest = new Vue({
+        el: "#contest",
+        data: {
+            content: {
+                title: "",
+                description: "",
+                privilege: "",
+                password: "",
+                startTime: "",
+                length: 300,
+                problems: [{id: "", tempTitle: "", name: ""}]
+            }
+        },
+        methods: {
+            get_problem(id, ind) {
+                var that = this;
+                console.log(id);
+                axios.get("/api/problems/name/" + id)
+                    .then(function (res) {
+                        that.content.problems[ind].name = res.data == null ? "" : res.data;
+                        that.content.problems[ind].tempTitle = that.content.problems[ind].name;
+                    });
+            },
+            update_problem(opt) {
+                if (opt === 1) {
+                    this.content.problems.push({id: "", tempTitle: "", name: ""})
+                } else {
+                    this.content.problems.pop();
+                }
+            },
+            submit_form() {
+                console.log(this.content);
+                axios.post("/api/contest/create", this.content)
+                    .then(function (res) {
+                        res = res.data;
+                        if (res == "success") {
+                            alert("success");
+                            location.href = "/contest"
+                        } else {
+                            alert(res);
+                        }
+                    })
+                    .catch(function () {
+                        alert("Error");
+                    });
+            }
+        }
+    })
+</script>
+</body>
+</html>
