@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -45,6 +46,18 @@ public class TeamService {
         }
         team.setTeammates(teammateList);
         return team;
+    }
+
+    public List<Team> teamsOfUser(User user) {
+        List<Teammate> teammates = teammateRepository.findByUser(user);
+        List<Team> teams = new ArrayList<>();
+        for (Teammate tm :
+                teammates) {
+            tm.getTeam().clearLazyRoles();
+            tm.getTeam().hideInfo();
+            teams.add(tm.getTeam());
+        }
+        return teams;
     }
 
     public Boolean isUserInTeam(User u, Team t) {

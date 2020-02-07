@@ -6,10 +6,9 @@
     <title>Teams</title>
 </head>
 <body>
-
-<main class="ui fluid container" id="vue-team">
+<main class="ui fluid container">
     <div class="ui grid">
-        <div class="ten wide column">
+        <div class="ten wide column" id="vue-team">
             <div class="ui segment raised">
                 <div class="ui icon input">
                     <input type="text" placeholder="邀请码" v-model="inviteCode">
@@ -43,11 +42,17 @@
                     </tr>
                     </tbody>
                 </table>
-
             </div>
         </div>
         <div class="six wide column">
-<!--            My teams-->
+            <div class="ui segment raised">
+                <a class="ui button inverted blue small" href="./create">创建队伍</a>
+                <div class="ui list selection" id="my-team">
+                    <a :href="'/team/'+t.id" class="item link" v-for="t in myteams">
+                        {{t.name}}
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </main>
@@ -112,5 +117,20 @@
             });
         }
     });
+    my_team = new Vue({
+        el: "#my-team",
+        data: {
+            myteams: [{id: 0, name: ""}]
+        },
+        created() {
+            var that = this;
+            axios.get("/api/team/myteams")
+                .then(function (res) {
+                    if (res.data != undefined) {
+                        that.myteams = res.data;
+                    }
+                });
+        }
+    })
 </script>
 </html>

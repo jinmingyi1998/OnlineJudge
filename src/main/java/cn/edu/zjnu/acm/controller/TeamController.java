@@ -28,8 +28,16 @@ import java.util.List;
 public class TeamController {
     private static final int PAGE_SIZE = 120;
     private final TeamService teamService;
-    private final
-    HttpSession session;
+    private final UserService userService;
+    private final ContestService contestService;
+    private final HttpSession session;
+
+    public TeamController(TeamService teamService, HttpSession session, UserService userService, ContestService contestService) {
+        this.teamService = teamService;
+        this.session = session;
+        this.userService = userService;
+        this.contestService = contestService;
+    }
 
     @GetMapping
     public Page<Team> teamPage(@RequestParam(value = "page", defaultValue = "0") int page) {
@@ -43,16 +51,12 @@ public class TeamController {
         return return_page;
     }
 
-    private final
-    UserService userService;
-    private final
-    ContestService contestService;
-
-    public TeamController(TeamService teamService, HttpSession session, UserService userService, ContestService contestService) {
-        this.teamService = teamService;
-        this.session = session;
-        this.userService = userService;
-        this.contestService = contestService;
+    @GetMapping("/myteams")
+    public List<Team> getMyTeam(@SessionAttribute User currentUser) {
+        if (currentUser == null) {
+            return null;
+        }
+        return teamService.teamsOfUser(currentUser);
     }
 
     private boolean isUserPermitted(Long tid, Integer require_level) {
