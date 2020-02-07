@@ -19,11 +19,12 @@
         <div class="field">
             <label>Description:</label><input name="description" type="text" v-model="content.description">
         </div>
-        <div class="field">
+        <div class="field" :class="{disabled:tid!=0}">
             <label>Privilege:</label>
             <select name="privilege" v-model="content.privilege">
                 <option value="public">Public</option>
                 <option value="private">Private</option>
+                <option value="team" v-if="tid!=0">Team</option>
             </select>
         </div>
         <div class="field">
@@ -54,13 +55,17 @@
     </form>
 </div>
 <script type="text/javascript">
+    var gid = location.pathname.split('/');
+    gid = gid[gid.length - 1];
     var contest = new Vue({
         el: "#contest",
         data: {
+            tid:gid,
             content: {
                 title: "",
+                tid:gid,
                 description: "",
-                privilege: "",
+                privilege: gid==0?"public":"team",
                 password: "",
                 startTime: "",
                 length: 300,

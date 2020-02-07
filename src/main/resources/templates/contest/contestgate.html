@@ -23,19 +23,25 @@
     var cont = new Vue({
         el: "#contest-content",
         data: {
-            info:""
+            info: ""
         },
         created() {
             var that = this;
             axios.get('/api/contest/gate/' + cid)
                 .then(function (response) {
                     let res = response.data;
-                    if (res=="success"){
-                        location.href="/contest/problem/"+cid;
+                    if (res == "success") {
+                        location.href = "/contest/problem/" + cid;
                         return;
                     }
                     alert(res);
                     that.info = res;
+                })
+                .catch(function (e) {
+                    console.log(e);
+                    if (e.response.status == 404) {
+                        location.href="/4O4";
+                    }
                 });
         }
     });

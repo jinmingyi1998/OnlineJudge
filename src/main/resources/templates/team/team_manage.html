@@ -11,7 +11,7 @@
         <div class="ten wide column">
             <div class="ui raised segments">
                 <h2 class="ui header">比赛</h2>
-                <div class="ui button"><i class="ui plus green inverted icon"></i>添加比赛</div>
+                <a :href="'/contest/create/'+id" class="ui button"><i class="ui plus green inverted icon"></i>添加比赛</a>
                 <div class="ui segment" v-for="c in contests">
                     <div class="content">
                         <a :href="'/contest/'+c.id" class="ui header" v-html="c.title"></a>
