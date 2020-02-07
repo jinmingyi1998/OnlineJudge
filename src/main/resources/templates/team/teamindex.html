@@ -47,6 +47,7 @@
         <div class="six wide column">
             <div class="ui segment raised">
                 <a class="ui button inverted blue small" href="./create">创建队伍</a>
+                <h2>我的队伍</h2>
                 <div class="ui list selection" id="my-team">
                     <a :href="'/team/'+t.id" class="item link" v-for="t in myteams">
                         {{t.name}}
