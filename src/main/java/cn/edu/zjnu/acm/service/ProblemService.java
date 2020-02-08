@@ -77,24 +77,31 @@ public class ProblemService {
         return tagRepository.findAll();
     }
 
-    public Problem insertNewProblem(Problem problem){
+    public Problem insertNewProblem(Problem problem) {
         return problemRepository.save(problem);
     }
-    public Boolean isProblemRepeated(String title){
+
+    public Boolean isProblemRepeated(String title) {
         return problemRepository.findByTitle(title).isPresent();
     }
-    public Problem getProblemById(Long id){
+
+    public Problem getProblemById(Long id) {
         return problemRepository.findById(id).orElse(null);
     }
-    public List<Tag> convertString2Tag(String s){
-        String[]ts = s.split("[,，]");
+
+    public List<Tag> convertString2Tag(String s) {
+        String[] ts = s.split("[,，]");
         ArrayList<Tag> tags = new ArrayList<>();
         for (int i = 0; i < ts.length; i++) {
-            Tag t =tagRepository.findByName(ts[i]).orElse(null);
-            if (t!=null){
+            Tag t = tagRepository.findByName(ts[i]).orElse(null);
+            if (t != null) {
                 tags.add(t);
             }
         }
         return tags;
+    }
+
+    public Tag getTagByName(String name) {
+        return tagRepository.findByName(name).orElse(null);
     }
 }

@@ -74,6 +74,23 @@ public interface SolutionRepository extends JpaRepository<Solution, Long> {
     void updateResultInfo(@Param("id") Long id, @Param("result") String result, @Param("info") String info);
     //   Page<Solution> findAllByUserAndProblemAndResult( Pageable pageable, User user, Problem problem, String result);
 
+    @Query(value = "SELECT SUM(score) FROM " +
+            "(SELECT DISTINCT p.id, p.score FROM problem AS p, solution AS s ,problem_tags AS pt " +
+            "WHERE pt.problem_id = s.problem_id " +
+            "AND s.user_id = :uid " +
+            "AND pt.tags_id=:tid " +
+            "AND s.result='Accepted') tbl", nativeQuery = true)
+    Integer userSolveTagScore(@Param(value = "uid") Long user_id, @Param(value = "tid") Long tag_id);
+
+    @Query(value = "SELECT COUNT(DISTINCT s.id) " +
+            "FROM solution AS s, problem_tags AS pt " +
+            "WHERE pt.problem_id=s.problem_id " +
+            "AND s.user_id = :uid " +
+            "AND pt.tags_id=:tid " +
+            "AND s.result='Accepted'", nativeQuery = true)
+    Integer userSolveTagCount(@Param(value = "uid") Long user_id, @Param(value = "tid") Long tag_id);
+
+
     Page<Solution> findAllByContestAndUser(Pageable pageable, Contest contest, User user);
 
     List<Solution> findAllByContestOrderByIdDesc(Contest contest);

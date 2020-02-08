@@ -39,14 +39,21 @@ public class UserService {
         return u;
     }
 
-    public User loginUser(User user) {
-        User u=userRepository.findByUsername(user.getUsername()).orElse(null);
-        if(u==null)
-            return null;
+    public void updateUserInfo(User user) {
+        userRepository.updateUser(user.getId(), user.getName(), user.getPassword(), user.getEmail(), user.getIntro());
+    }
+
+    public boolean checkPassword(String password, String correct) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        if( encoder.matches(user.getPassword(),u.getPassword()))
+        return encoder.matches(password, correct);
+    }
+
+    public User loginUser(User user) {
+        User u = userRepository.findByUsername(user.getUsername()).orElse(null);
+        if (u == null)
+            return null;
+        if (checkPassword(user.getPassword(), u.getPassword()))
             return u;
         return null;
-//        return userRepository.findByUsernameAndPassword(user.getUsername(), user.getPassword()).orElse(null);
     }
 }
