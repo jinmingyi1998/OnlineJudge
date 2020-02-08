@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragment/header :: header}"></th:block>
+    <meta charset="UTF-8">
+    <title>用户排行</title>
+</head>
+<body>
+<main class="container ui" id="userlist">
+    <div class="segment" >
+        <table class="ui table striped selectable center aligned very compact" :class="{loading:!ready}">
+            <thead>
+            <th>Rank</th>
+            <th>Name</th>
+            <th>Submitted</th>
+            <th>Accepted</th>
+            <th>Score</th>
+            </thead>
+            <tbody>
+            <tr v-if="isLogin" class="positive">
+                <td>{{userself.rank}}</td>
+                <td>{{userself.name}}</td>
+                <td>{{userself.submitted}}</td>
+                <td>{{userself.accepted}}</td>
+                <td>{{userself.score}}</td>
+            </tr>
+            <tr v-for="u in users">
+                <td>{{u.rank}}</td>
+                <td><a :href="'/user/'+u.id">{{u.name}}</a></td>
+                <td>{{u.submitted}}</td>
+                <td>{{u.accepted}}</td>
+                <td>{{u.score}}</td>
+            </tr>
+            </tbody>
+        </table>
+        <script src="/js/pagination.js"></script>
+        <div class="ui center aligned pagination menu">
+            <pagination :class="{disabled:first}" content='<i class="angle double left icon"></i>'
+                        v-on:change_page="get_page" v-bind:to_page="0"></pagination>
+            <pagination :class="{disabled:first}" content="<i class='angle left icon'></i>"
+                        v-on:change_page="get_page" v-bind:to_page="number-1"></pagination>
+            <pagination v-for="n in npage" :class="{active:number == n}" v-bind:content="n+1"
+                        v-on:change_page="get_page" v-bind:to_page="n"></pagination>
+            <pagination :class="{disabled:last}" content='<i class="angle  right icon"></i>'
+                        v-on:change_page="get_page" v-bind:to_page="number+1"></pagination>
+            <pagination :class="{disabled:last}" content='<i class="angle double right icon"></i>'
+                        v-on:change_page="get_page" v-bind:to_page="totalPages-1"></pagination>
+        </div>
+    </div>
+</main>
+<script>
+    var userlist = new Vue({
+        el: "#userlist",
+        data: {
+            ready: false,
+            userself: {},
+            isLogin: false,
+            users: [],
+            number: 0,
+            first: true,
+            last: true,
+            totalPages: 1,
+            npage: []
+        },
+        methods: {
+            get_page(page) {
+                var that = this;
+                axios.get("/api/user/list?page=" + page)
+                    .then(function (res) {
+                        if (res.data.userself != undefined) {
+                            that.isLogin = true;
+                            that.userself = res.data.userself;
+                        }
+                        that.users = res.data.page.content;
+                        that.number = res.data.page.number;
+                        that.first = res.data.page.first;
+                        that.last = res.data.page.last;
+                        that.totalPages = res.data.page.totalPages;
+                        that.npage = [];
+                        for (var i = Math.max(0, that.number - 3); i < Math.min(that.totalPages, that.number + 3); i++) {
+                            that.npage.push(i)
+                        }
+                        that.ready = true;
+                    })
+                    .catch(function (e) {
+                        console.log(e);
+                    })
+            }
+        },
+        created() {
+            this.get_page(0);
+        }
+    })
+</script>
+<footer th:replace="~{fragment/footer :: footer}"></footer>
+</body>
+</html>
