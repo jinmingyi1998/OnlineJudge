@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragment/header :: header}"></th:block>
+    <meta charset="UTF-8">
+    <title>更新个人信息</title>
+    <style type="text/css">
+        body {
+            background-color: #EEEEEE;
+            margin: -5rem;
+        }
+        body > .grid {
+            height: 100%;
+        }
+        .image {
+            margin-top: -100px;
+        }
+        .column {
+            max-width: 450px;
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+            $('.ui.form')
+                .form({
+                    inline: true,
+                    on: "blur",
+                    fields: {
+                        username: {
+                            identifier: 'username',
+                            rules: [
+                                {
+                                    type: 'empty',
+                                    prompt: 'Please enter your username'
+                                },
+                                {
+                                    type: 'regExp[/^[a-zA-Z0-9_]{6,16}$/]',
+                                    prompt: 'Please enter a 6-16 letter username'
+                                }
+                            ]
+                        },
+                        oldpassword: {
+                            identifier: 'oldpassword',
+                            rules: [
+                                {
+                                    type: 'empty',
+                                    prompt: 'Please enter your old password'
+                                },
+                                {
+                                    type: 'length[6]',
+                                    prompt: 'Your password must be at least 6 characters'
+                                }
+                            ]
+                        },
+                        password: {
+                            identifier: 'password',
+                            rules: [
+                                {
+                                    type: 'empty',
+                                    prompt: 'Please enter your password'
+                                },
+                                {
+                                    type: 'length[6]',
+                                    prompt: 'Your password must be at least 6 characters'
+                                }
+                            ]
+                        },
+                        password2: {
+                            identifier: 'password2',
+                            rules: [
+                                {
+                                    type: 'empty',
+                                    prompt: 'Please enter your password'
+                                },
+                                {
+                                    type: 'match[password]',
+                                    prompt: 'Your password must be at least 6 characters'
+                                }
+                            ]
+                        },
+                        name: {
+                            identifier: 'name',
+                            rules: [
+                                {
+                                    type: 'empty',
+                                    prompt: 'Please enter your name'
+                                }
+                            ]
+                        },
+                        email: {
+                            identifier: 'email',
+                            rules: [
+                                {
+                                    type: 'email',
+                                    prompt: 'Please enter your email'
+                                }
+                            ]
+                        }
+                    }
+                })
+            ;
+        });
+    </script>
+</head>
+<body>
+<div class="ui middle aligned center aligned grid">
+    <div class="column" id="vue-register">
+        <h2 class="ui blue image header">
+            <div class="content">
+                更新个人信息,不修改密码则新密码与旧密码同样。
+            </div>
+        </h2>
+        <form class="ui form" onsubmit="return false">
+            <div class="ui stacked segment">
+                <div class="disabled field">
+                    <div class="ui left icon input">
+                        <i class="user icon"></i>
+                        <input type="text" name="username" v-model="username" placeholder="Username">
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="ui left icon input">
+                        <i class="lock icon"></i>
+                        <input type="password" name="oldpassword" v-model="oldpassword" placeholder="Old Password">
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="ui left icon input">
+                        <i class="lock icon"></i>
+                        <input type="password" name="password" v-model="password" placeholder="New Password">
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="ui left icon input">
+                        <i class="lock icon"></i>
+                        <input type="password" name="password2" placeholder="Repeat Password">
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="ui left icon input">
+                        <i class="envelope icon"></i>
+                        <input type="email" name="email" v-model="email" placeholder="Email">
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="ui left icon input">
+                        <i class="smile icon"></i>
+                        <input type="text" name="name" v-model="name" placeholder="Name">
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="ui left icon input">
+                        <i class="address card icon"></i>
+                        <input type="text" name="intro" v-model="intro" placeholder="Introduction">
+                    </div>
+                </div>
+                <div class="ui fluid large green inverted button" :class="{disabled:!ready,loading:!ready}"
+                     @click.prevent="userlogin">Submit
+                </div>
+            </div>
+            <div class="ui error message"></div>
+        </form>
+    </div>
+</div>
+<script>
+    uid = location.pathname.split('/');
+    uid = uid[uid.length - 1];
+    vregister = new Vue({
+        el: "#vue-register",
+        data: {
+            username: "",
+            password: "",
+            oldpassword:"",
+            name: "",
+            email: "",
+            intro: "",
+            ready: false
+        },
+        methods: {
+            userlogin() {
+                if (!$('form').form('validate form'))
+                    return;
+                this.ready = false;
+                var that = this;
+                axios.post('/api/user/edit/'+uid, {
+                    oldpassword:this.oldpassword,
+                    password: this.password,
+                    name: this.name,
+                    email: this.email,
+                    intro: this.intro
+                })
+                    .then(function (response) {
+                        $('form').form('reset')
+                        console.log(response);
+                        if (response.data == "success") {
+                            alert("完成Done")
+                            location.reload();
+                        }
+                        setTimeout(function () {
+                            that.ready = true;
+                        }, 1500)
+                        alert(response.data);
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+            }
+        },
+        created(){
+            var that = this;
+            axios.get("/api/user/"+uid)
+                .then(function (res) {
+                     res = res.data;
+                     that.username = res.username;
+                     that.name=res.name;
+                     that.email = res.email;
+                     that.intro=res.intro;
+                     that.id=res.id;
+                     that.ready=true;
+                });
+        }
+    })
+</script>
+</body>
+</html>
