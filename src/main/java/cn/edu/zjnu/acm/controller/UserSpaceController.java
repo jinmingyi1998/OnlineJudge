@@ -6,9 +6,11 @@ import cn.edu.zjnu.acm.exception.NotFoundException;
 import cn.edu.zjnu.acm.service.ProblemService;
 import cn.edu.zjnu.acm.service.SolutionService;
 import cn.edu.zjnu.acm.service.UserService;
+import cn.edu.zjnu.acm.util.PageHolder;
 import cn.edu.zjnu.acm.util.UserGraph;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +18,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpSession;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Size;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/user")
@@ -105,6 +111,55 @@ public class UserSpaceController {
         @Size(min = 4, max = 200)
         String email;
     }
+
+    @GetMapping("/list")
+    public Map userList(@RequestParam(value = "page", defaultValue = "0") int page) {
+        List<User> userList = userService.userList();
+        User cu = (User) session.getAttribute("currentUser");
+        userList.sort((o1, o2) -> (o1.getUserProfile().getScore() - o2.getUserProfile().getScore()) * -1);
+        int rank = 1;
+        List<RankUser> users = new LinkedList<>();
+        RankUser cuser = null;
+        for (int i = 0; i < userList.size(); i++) {
+            User u = userList.get(i);
+            if (i > 0 && u.getUserProfile().getScore() < userList.get(i - 1).getUserProfile().getScore()) {
+                rank += 1;
+            }
+            users.add(new RankUser(u.getId(), u.getUsername(), u.getName(), u.getUserProfile().getScore(),
+                    u.getUserProfile().getAccepted(), u.getUserProfile().getSubmitted(), rank));
+            if (cu != null && cu.getId() == u.getId()) {
+                cuser = users.get(users.size() - 1);
+            }
+        }
+        PageHolder pageHolder = new PageHolder(users, PageRequest.of(page, 30));
+        Map<String, Object> map = new HashMap<>();
+        map.put("page", pageHolder);
+        if (cuser != null) {
+            map.put("userself", cuser);
+        }
+        return map;
+    }
+
+    @Data
+    class RankUser {
+        private Long id;
+        private String username;
+        private String name;
+        private Integer score;
+        private Integer accepted;
+        private Integer submitted;
+        private Integer rank;
+
+        public RankUser(Long id, String username, String name, Integer score, Integer accepted, Integer submitted, Integer rank) {
+            this.id = id;
+            this.username = username;
+            this.name = name;
+            this.score = score;
+            this.accepted = accepted;
+            this.submitted = submitted;
+            this.rank = rank;
+        }
+    }
 }
 
 @Controller
@@ -118,5 +173,10 @@ class UserSpaceViewController {
     @GetMapping("/edit/{uid:[0-9]+}")
     public String editUser() {
         return "user/update_user";
+    }
+
+    @GetMapping("/standing")
+    public String userStanding() {
+        return "user/standing";
     }
 }
