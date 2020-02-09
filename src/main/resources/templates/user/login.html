@@ -73,7 +73,7 @@
             </div>
         </h2>
         <form class="ui form" @submit.prevent="userlogin" onsubmit="return false" v-on:keyup.enter="userlogin">
-            <div class="ui stacked segment">
+            <div class="ui stacked segment" :class="{loading:!ready}">
                 <div class="field">
                     <div class="ui left icon focus input">
                         <i class="user icon"></i>

@@ -37,6 +37,9 @@ public class MainController {
             if (solution == null) {
                 return "no this id";
             }
+            if (!solution.getResult().equals(Solution.PENDING)){
+                return "success";
+            }
             if (callback.getErr() != null) {
                 if (callback.getErr().equals("CE")) {
                     solution.setResult(Solution.CE);
