@@ -18,7 +18,7 @@
         <button class="ui button mini red icon" @click="remove_host()"><i class="ui minus icon"></i></button>
         <div class="field" v-for="host in judgerhost">
             <label>judger service host:</label>
-            <input type="text" placeholder="http://localhost:12345/judge" v-model="host">
+            <input type="text" placeholder="http://localhost:12345/judge" v-model="host.str">
         </div>
         <div class="ui divider"></div>
         <div class="ui header">Language</div>
@@ -152,7 +152,7 @@
         el: "#setting",
         data: {
             leastScoreToSeeOthersCode: 1000,
-            judgerhost: [""],
+            judgerhost: [{str: ""}],
             c: language_config,
             cpp: language_config,
             java: language_config,
@@ -162,15 +162,19 @@
         },
         methods: {
             add_host() {
-                this.judgerhost.push("");
+                this.judgerhost.push({str: ""});
             },
             remove_host() {
                 this.judgerhost.pop();
             },
             submit() {
+                let hosts = [];
+                for (host of this.judgerhost) {
+                    hosts.push(host.str);
+                }
                 axios.post("/api/admin/config", {
                     leastScoreToSeeOthersCode: this.leastScoreToSeeOthersCode,
-                    judgerhost: this.judgehost,
+                    judgerhost: hosts,
                     c: this.c,
                     cpp: this.cpp,
                     java: this.java,
@@ -194,7 +198,10 @@
             axios.get("/api/admin/config")
                 .then(function (res) {
                     that.leastScoreToSeeOthersCode = res.data.leastScoreToSeeOthersCode;
-                    that.judgerhost = res.data.judgerhost;
+                    that.judgerhost = [];
+                    for (host of res.data.judgerhost) {
+                        that.judgerhost.push({str: host});
+                    }
                     that.c = res.data.c;
                     that.cpp = res.data.cpp;
                     that.java = res.data.java;
