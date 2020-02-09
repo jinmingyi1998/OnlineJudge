@@ -31,7 +31,7 @@ public class Team {
     private List<Teammate> teammates;
     @ManyToOne(optional = false)
     private User creator;
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "team")
     private List<Contest> contests;
     @Column(nullable = false, columnDefinition = "varchar(50) default 'public'")
     private String attend = PUBLIC;
