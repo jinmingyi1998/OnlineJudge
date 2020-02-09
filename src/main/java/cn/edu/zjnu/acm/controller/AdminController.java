@@ -1,31 +1,95 @@
 package cn.edu.zjnu.acm.controller;
 
+import cn.edu.zjnu.acm.config.Config;
 import cn.edu.zjnu.acm.entity.oj.Problem;
 import cn.edu.zjnu.acm.exception.NotFoundException;
 import cn.edu.zjnu.acm.service.ContestService;
 import cn.edu.zjnu.acm.service.ProblemService;
 import cn.edu.zjnu.acm.service.UserService;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/api/admin")
+@Slf4j
 public class AdminController {
-    @Autowired
-    ProblemService problemService;
-    @Autowired
-    ContestService contestService;
-    @Autowired
-    UserService userService;
-    @Autowired
-    HttpSession session;
+    private final ProblemService problemService;
+    private final ContestService contestService;
+    private final UserService userService;
+    private final HttpSession session;
+    private final Config config;
 
     public static final int PAGE_SIZE = 50;
+
+    public AdminController(ProblemService problemService, ContestService contestService, UserService userService, HttpSession session, Config config) {
+        this.problemService = problemService;
+        this.contestService = contestService;
+        this.userService = userService;
+        this.session = session;
+        this.config = config;
+    }
+
+    @GetMapping("/config")
+    public UpdateConfig getConfig() {
+        return new UpdateConfig(config);
+    }
+
+    @PostMapping("/config")
+    public String updateConfig(@RequestBody UpdateConfig updateConfig) {
+        log.info(updateConfig.toString());
+        config.setLeastScoreToSeeOthersCode(updateConfig.getLeastScoreToSeeOthersCode());
+        config.setJudgerhost(updateConfig.getJudgerhost());
+        config.setC(updateConfig.getC());
+        config.setCpp(updateConfig.getCpp());
+        config.setJava(updateConfig.getJava());
+        config.setPython2(updateConfig.getPython2());
+        config.setPython3(updateConfig.getPython3());
+        config.setGo(updateConfig.getGo());
+        return "success";
+    }
+
+    @Data
+    static class UpdateConfig {
+        private Integer leastScoreToSeeOthersCode = 1000;
+        private ArrayList<String> judgerhost;
+        private Config.LanguageConfig c;
+        private Config.LanguageConfig cpp;
+        private Config.LanguageConfig java;
+        private Config.LanguageConfig python2;
+        private Config.LanguageConfig python3;
+        private Config.LanguageConfig go;
+
+        public UpdateConfig() {
+        }
+
+        public UpdateConfig(Integer leastScoreToSeeOthersCode, ArrayList<String> judgerhost, Config.LanguageConfig c, Config.LanguageConfig cpp, Config.LanguageConfig java, Config.LanguageConfig python2, Config.LanguageConfig python3, Config.LanguageConfig go) {
+            this.leastScoreToSeeOthersCode = leastScoreToSeeOthersCode;
+            this.judgerhost = judgerhost;
+            this.c = c;
+            this.cpp = cpp;
+            this.java = java;
+            this.python2 = python2;
+            this.python3 = python3;
+            this.go = go;
+        }
+
+        public UpdateConfig(Config config) {
+            setLeastScoreToSeeOthersCode(config.getLeastScoreToSeeOthersCode());
+            setJudgerhost(config.getJudgerhost());
+            setC(config.getC());
+            setCpp(config.getCpp());
+            setJava(config.getJava());
+            setPython2(config.getPython2());
+            setPython3(config.getPython3());
+            setGo(config.getGo());
+        }
+    }
 
     @GetMapping("/problem")
     public Page<Problem> getAllProblems(@RequestParam(value = "page", defaultValue = "0") int page,
@@ -126,5 +190,10 @@ class AdminViewController {
     @GetMapping("/problem/add")
     public String addProblem() {
         return "admin/insert";
+    }
+
+    @GetMapping("/settings")
+    public String setting() {
+        return "admin/setting";
     }
 }

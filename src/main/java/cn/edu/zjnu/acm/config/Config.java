@@ -10,15 +10,6 @@ import java.util.ArrayList;
 @Configuration
 @ConfigurationProperties(prefix = "onlinejudge")
 public class Config {
-    //    private String rootDir;
-//    private String srcDir;
-//    private String dataDir;
-//    private String excDir;
-//    private String outDir;
-//    private String tmpDir;
-//    private String judgerDir;
-//    private String uid;
-//    private String gid;
     //TODO score should be a threshold which can be set by admin
     private Integer leastScoreToSeeOthersCode = 1000;
     private ArrayList<String> judgerhost;
@@ -48,6 +39,5 @@ public class Config {
                     '}';
         }
     }
-
 }
 

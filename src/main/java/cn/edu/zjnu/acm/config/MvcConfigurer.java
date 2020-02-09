@@ -36,6 +36,7 @@ public class MvcConfigurer implements WebMvcConfigurer {
         registry.addInterceptor(getTeacherCheckInterceptor())
                 .addPathPatterns("/admin/**")
                 .addPathPatterns("/contest/create/0");
+        //TODO add /api/admin/**
         registry.addInterceptor(getContestInterceptor())
                 .addPathPatterns("/contest/*/**")
                 .excludePathPatterns("/contest/*")
