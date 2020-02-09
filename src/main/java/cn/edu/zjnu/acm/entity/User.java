@@ -8,6 +8,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
+import java.time.Instant;
 
 @Data
 @Entity
@@ -45,6 +46,9 @@ public class User implements Cloneable, Comparable {
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
     private UserProfile userProfile;
+
+    @Column(nullable =  false,columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
+    Instant createtime = Instant.now();
 
     public User() {
         this.username = "";
