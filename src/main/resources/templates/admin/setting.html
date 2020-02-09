@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <th:block th:insert="~{fragment/header :: header}"></th:block>
+    <meta charset="UTF-8">
+    <title>Setting</title>
+</head>
+<body>
+<main class="ui container" id="setting">
+    <div class="ui form">
+        <div class="field">
+            <label>least-score-to-see-others-code</label>
+            <input type="text" v-model="leastScoreToSeeOthersCode">
+        </div>
+        <div class="ui divider"></div>
+        <div class="ui header">judger services</div>
+        <button class="ui button mini green icon" @click="add_host()"><i class="ui plus icon"></i></button>
+        <button class="ui button mini red icon" @click="remove_host()"><i class="ui minus icon"></i></button>
+        <div class="field" v-for="host in judgerhost">
+            <label>judger service host:</label>
+            <input type="text" placeholder="http://localhost:12345/judge" v-model="host">
+        </div>
+        <div class="ui divider"></div>
+        <div class="ui header">Language</div>
+        <h3>C</h3>
+        <div class="fields">
+            <div class="field">
+                <label>src</label>
+                <input type="text" v-model="c.src">
+            </div>
+            <div class="field">
+                <label>seccomp_rule</label>
+                <input type="text" v-model="c.seccomp_rule">
+            </div>
+            <div class="field">
+                <label>run_command</label>
+                <input type="text" v-model="c.run_command">
+            </div>
+            <div class="field">
+                <label>compile_command</label>
+                <input type="text" v-model="c.compile_command">
+            </div>
+            <div class="field">
+                <label>memory_limit_check_only</label>
+                <input type="text" v-model="c.memory_limit_check_only">
+            </div>
+        </div>
+        <h3>C++</h3>
+        <div class="fields">
+            <div class="field">
+                <label>src</label>
+                <input type="text" v-model="cpp.src">
+            </div>
+            <div class="field"><label>seccomp_rule</label>
+                <input type="text" v-model="cpp.seccomp_rule">
+            </div>
+            <div class="field"><label>run_command</label>
+                <input type="text" v-model="cpp.run_command">
+            </div>
+            <div class="field"><label>compile_command</label>
+                <input type="text" v-model="cpp.compile_command">
+            </div>
+            <div class="field"><label>memory_limit_check_only</label>
+                <input type="text" v-model="cpp.memory_limit_check_only">
+            </div>
+        </div>
+        <h3>Java</h3>
+        <div class="fields">
+            <div class="field"><label>src</label>
+                <input type="text" v-model="java.src">
+            </div>
+            <div class="field"><label>seccomp_rule</label>
+                <input type="text" v-model="java.seccomp_rule">
+            </div>
+            <div class="field"><label>run_command</label>
+                <input type="text" v-model="java.run_command">
+            </div>
+            <div class="field"><label>compile_command</label>
+                <input type="text" v-model="java.compile_command">
+            </div>
+            <div class="field"><label>memory_limit_check_only</label>
+                <input type="text" v-model="java.memory_limit_check_only">
+            </div>
+        </div>
+        <h3>Python2</h3>
+        <div class="fields">
+            <div class="field"><label>src</label>
+                <input type="text" v-model="python2.src">
+            </div>
+            <div class="field"><label>seccomp_rule</label>
+                <input type="text" v-model="python2.seccomp_rule">
+            </div>
+            <div class="field"><label>run_command</label>
+                <input type="text" v-model="python2.run_command">
+            </div>
+            <div class="field"><label>compile_command</label>
+                <input type="text" v-model="python2.compile_command">
+            </div>
+            <div class="field"><label>memory_limit_check_only</label>
+                <input type="text" v-model="python2.memory_limit_check_only">
+            </div>
+        </div>
+        <h3>Python3</h3>
+        <div class="fields">
+            <div class="field">
+                <label>src</label>
+                <input type="text" v-model="python3.src">
+            </div>
+            <div class="field"><label>seccomp_rule</label>
+                <input type="text" v-model="python3.seccomp_rule">
+            </div>
+            <div class="field"><label>run_command</label>
+                <input type="text" v-model="python3.run_command">
+            </div>
+            <div class="field"><label>compile_command</label>
+                <input type="text" v-model="python3.compile_command">
+            </div>
+            <div class="field"><label>memory_limit_check_only</label>
+                <input type="text" v-model="python3.memory_limit_check_only">
+            </div>
+        </div>
+        <h3>Golang</h3>
+        <div class="fields">
+            <div class="field"><label>src</label>
+                <input type="text" v-model="go.src">
+            </div>
+            <div class="field"><label>seccomp_rule</label>
+                <input type="text" v-model="go.seccomp_rule">
+            </div>
+            <div class="field"><label>run_command</label>
+                <input type="text" v-model="go.run_command">
+            </div>
+            <div class="field"><label>compile_command</label>
+                <input type="text" v-model="go.compile_command">
+            </div>
+            <div class="field"><label>memory_limit_check_only</label>
+                <input type="text" v-model="go.memory_limit_check_only">
+            </div>
+        </div>
+        <button class="ui button inverted green small" @click="submit()">Submit</button>
+    </div>
+</main>
+<script>
+    var language_config = {
+        src: "",
+        seccomp_rule: "",
+        run_command: "",
+        compile_command: "",
+        memory_limit_check_only: ""
+    };
+    var setting = new Vue({
+        el: "#setting",
+        data: {
+            leastScoreToSeeOthersCode: 1000,
+            judgerhost: [""],
+            c: language_config,
+            cpp: language_config,
+            java: language_config,
+            python2: language_config,
+            python3: language_config,
+            go: language_config
+        },
+        methods: {
+            add_host() {
+                this.judgerhost.push("");
+            },
+            remove_host() {
+                this.judgerhost.pop();
+            },
+            submit() {
+                axios.post("/api/admin/config", {
+                    leastScoreToSeeOthersCode: this.leastScoreToSeeOthersCode,
+                    judgerhost: this.judgehost,
+                    c: this.c,
+                    cpp: this.cpp,
+                    java: this.java,
+                    python2: this.python2,
+                    python3: this.python3,
+                    go: this.go
+                }).then(function (res) {
+                    if (res.data == "success") {
+                        alert("success");
+                        location.reload();
+                        return;
+                    }
+                    alert(res.data);
+                }).catch(function (e) {
+                    console.log(e);
+                });
+            }
+        },
+        created() {
+            var that = this;
+            axios.get("/api/admin/config")
+                .then(function (res) {
+                    that.leastScoreToSeeOthersCode = res.data.leastScoreToSeeOthersCode;
+                    that.judgerhost = res.data.judgerhost;
+                    that.c = res.data.c;
+                    that.cpp = res.data.cpp;
+                    that.java = res.data.java;
+                    that.python2 = res.data.python2;
+                    that.python3 = res.data.python3;
+                    that.go = res.data.go;
+                })
+        }
+    })
+</script>
+</body>
+</html>

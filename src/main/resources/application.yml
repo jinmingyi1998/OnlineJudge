@@ -82,6 +82,7 @@ onlinejudge:
     compile_command: /usr/bin/python3 -m py_compile main.py
     memory_limit_check_only: 0
     seccomp_rule: general
+  least-score-to-see-others-code: 1000
 
 server:
   tomcat:
