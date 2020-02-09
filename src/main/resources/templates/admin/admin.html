@@ -7,40 +7,50 @@
     <script src="/js/pagination.js"></script>
 </head>
 <body>
-<main class="ui fluid container">
+<main class="ui container">
     <div id="problem-list">
-        <div class="ui ">
-            <div class="ui container">
-                <form class="ui icon input" v-on:submit.prevent="search_problem()">
-                    <input type="text" v-model="search_string" placeholder="搜索题目名">
-                    <i class="search link icon" v-on:click="search_problem()"></i>
-                </form>
-                <a class="ui green button" href="/admin/problem/add">New Problem</a>
-            </div>
-            <div class="ui selection vertically list celled segment" :class="{loading:!ready}">
-                <div class="ui item" target="_blank" v-for="p in problems" >
-                    <a :href="'/problems/'+p.id"><h3>{{p.id}} - {{p.title}}</h3></a>
-                    <div class="right floated">
-                        <div class="ui inverted red button small">Delete</div>
-                        <a class="ui button brown inverted small" :href="'/admin/problem/edit/'+p.id">Update</a>
-                    </div>
-                    <div class="ui small horizontal labels">
-                        <div class="ui label" v-for="pt in p.tags" v-html="pt.name"></div>
-                    </div>
+        <div class="ui segment">
+            <form class="ui icon input" v-on:submit.prevent="search_problem()">
+                <input type="text" v-model="search_string" placeholder="搜索题目名">
+                <i class="search link icon" v-on:click="search_problem()"></i>
+            </form>
+            <a class="ui green button" href="/admin/problem/add">New Problem</a>
+        </div>
+        <div class="ui center aligned pagination menu">
+            <pagination :class="{disabled:first}" content='<i class="angle double left icon"></i>'
+                        v-on:change_page="get_page" v-bind:to_page="0"></pagination>
+            <pagination :class="{disabled:first}" content="<i class='angle left icon'></i>"
+                        v-on:change_page="get_page" v-bind:to_page="number-1"></pagination>
+            <pagination v-for="n in npage" :class="{active:number == n}" v-bind:content="n+1"
+                        v-on:change_page="get_page" v-bind:to_page="n"></pagination>
+            <pagination :class="{disabled:last}" content='<i class="angle  right icon"></i>'
+                        v-on:change_page="get_page" v-bind:to_page="number+1"></pagination>
+            <pagination :class="{disabled:last}" content='<i class="angle double right icon"></i>'
+                        v-on:change_page="get_page" v-bind:to_page="totalPages-1"></pagination>
+        </div>
+        <div class="ui selection vertically list celled segment" :class="{loading:!ready}">
+            <div class="ui item" target="_blank" v-for="p in problems">
+                <a :href="'/problems/'+p.id"><h3>{{p.id}} - {{p.title}} - {{p.score}}积分</h3></a>
+                <div class="right floated">
+<!--                    <div class="ui inverted red button small">Delete</div>-->
+                    <a class="ui button brown inverted small" :href="'/admin/problem/edit/'+p.id">Update</a>
+                </div>
+                <div class="ui small horizontal labels">
+                    <div class="ui label" v-for="pt in p.tags" v-html="pt.name"></div>
                 </div>
             </div>
-            <div class="ui center aligned pagination menu">
-                <pagination :class="{disabled:first}" content='<i class="angle double left icon"></i>'
-                            v-on:change_page="get_page" v-bind:to_page="0"></pagination>
-                <pagination :class="{disabled:first}" content="<i class='angle left icon'></i>"
-                            v-on:change_page="get_page" v-bind:to_page="number-1"></pagination>
-                <pagination v-for="n in npage" :class="{active:number == n}" v-bind:content="n+1"
-                            v-on:change_page="get_page" v-bind:to_page="n"></pagination>
-                <pagination :class="{disabled:last}" content='<i class="angle  right icon"></i>'
-                            v-on:change_page="get_page" v-bind:to_page="number+1"></pagination>
-                <pagination :class="{disabled:last}" content='<i class="angle double right icon"></i>'
-                            v-on:change_page="get_page" v-bind:to_page="totalPages-1"></pagination>
-            </div>
+        </div>
+        <div class="ui center aligned pagination menu">
+            <pagination :class="{disabled:first}" content='<i class="angle double left icon"></i>'
+                        v-on:change_page="get_page" v-bind:to_page="0"></pagination>
+            <pagination :class="{disabled:first}" content="<i class='angle left icon'></i>"
+                        v-on:change_page="get_page" v-bind:to_page="number-1"></pagination>
+            <pagination v-for="n in npage" :class="{active:number == n}" v-bind:content="n+1"
+                        v-on:change_page="get_page" v-bind:to_page="n"></pagination>
+            <pagination :class="{disabled:last}" content='<i class="angle  right icon"></i>'
+                        v-on:change_page="get_page" v-bind:to_page="number+1"></pagination>
+            <pagination :class="{disabled:last}" content='<i class="angle double right icon"></i>'
+                        v-on:change_page="get_page" v-bind:to_page="totalPages-1"></pagination>
         </div>
     </div>
 </main>
