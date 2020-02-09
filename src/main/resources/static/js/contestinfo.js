@@ -72,7 +72,7 @@ var cont = new Vue({
                     autoFocus: false,
                     value: "",
                     placeholder: "Enjoy coding!",
-                    editorTheme: "tomorrow-night-bright",
+                    editorTheme: "mdn-like",
                     previewTheme: "dark",
                     theam: "dark",
                     mode: "clike",

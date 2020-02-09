@@ -15,11 +15,6 @@
     <link rel="stylesheet" href="/js/prettify/skins/sunburst.css">
     <title></title>
     <script src="/js/submit_button.js"></script>
-    <style>
-        .ui.fluid.container {
-            max-width: 85% !important;
-        }
-    </style>
 </head>
 <body>
 <main class="ui container fluid">
@@ -53,7 +48,7 @@
             </div>
         </div>
         <div class="ui container twelve wide column" id="vue-problem">
-            <div class="ui raised piled segments fluid" style="opacity: 0.8;background-color: white; padding: 1rem">
+            <div class="ui raised piled segments fluid">
                 <div class="ui secondary center aligned segment" v-bind:class="{loading:!dataready}">
                     <h1>{{problem.title}}</h1>
                     <table class="ui center aligned celled table very compact">
@@ -121,7 +116,7 @@
                     </div>
                 </div>
             </div>
-            <div class="ui container fluid" style="opacity: 0.8;background-color: white;padding: 1rem">
+            <div class="ui container fluid">
                 <form id="form" class="ui form">
                     <div>
                         <label for="language">语言 :</label>

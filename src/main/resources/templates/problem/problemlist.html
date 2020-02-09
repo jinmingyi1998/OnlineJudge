@@ -9,10 +9,6 @@
         .ui.statistic {
             margin-bottom: 0px;
         }
-
-        .ui.fluid.container {
-            max-width: 85% !important;
-        }
     </style>
 </head>
 <body>
@@ -42,12 +38,14 @@
                             v-on:change_page="get_page" v-bind:to_page="totpage-1"></pagination>
             </div>
             <div class="ui segment" :class="{loading:!ready}">
-                <div class="ui animated huge selection vertically list">
+                <div class="ui animated selection list">
                     <a class="ui link item" v-for="p in problems" :href="'/problems/'+p.id">
-                        <div class="ui header">{{p.id}} - {{p.title}}</div>
-                        <div class="meta">{{p.description.substring(0,35)}}
-                            <div class="ui small horizontal labels">
-                                <div class="ui label" v-for="pt in p.tags" v-html="pt.name"></div>
+                        <div class="ui content">
+                            <div class="ui header">{{p.id}} - {{p.title}}</div>
+                            <div class="meta">{{p.description.substring(0,35)}}
+                                <div class="ui small horizontal labels">
+                                    <div class="ui label" v-for="pt in p.tags" v-html="pt.name"></div>
+                                </div>
                             </div>
                             <div class="right relaxed floated content">
                                 <div class="ui container right aligned">

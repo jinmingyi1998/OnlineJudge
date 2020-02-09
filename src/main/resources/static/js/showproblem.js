@@ -10,7 +10,7 @@ $(function () {
         searchReplace: true,
         autoFocus: false,
         placeholder: "Enjoy coding!",
-        editorTheme: "tomorrow-night-bright",
+        editorTheme: "mdn-like",
         previewTheme: "dark",
         theam: "dark",
         mode: "clike",
