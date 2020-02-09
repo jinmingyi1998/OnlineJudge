@@ -94,11 +94,11 @@ public class SolutionService {
         return solutionRepository.findAllByUserAndProblemOrderByIdDesc(user, problem);
     }
 
-    public Solution updateSolutionResultTimeMemory(Solution solution) {
-        solutionRepository.updateResultTimeMemory(solution.getId(),
+    public Solution updateSolutionResultTimeMemoryCase(Solution solution) {
+        solutionRepository.updateResultTimeMemoryCase(solution.getId(),
                 solution.getResult(),
                 solution.getTime(),
-                solution.getMemory());
+                solution.getMemory(),solution.getCaseNumber());
         return solution;
     }
 

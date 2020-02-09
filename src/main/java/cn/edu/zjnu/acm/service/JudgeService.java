@@ -79,7 +79,7 @@ public class JudgeService {
 
     @Transactional
     public void update(Solution solution) {
-        solutionService.updateSolutionResultTimeMemory(solution);
+        solutionService.updateSolutionResultTimeMemoryCase(solution);
         userProfileRepository.updateUserSubmitted(solution.getUser().getUserProfile().getId(), 1);
         problemRepository.updateSubmittedNumber(solution.getProblem().getId(), 1);
         if (solution.getContest() != null) {

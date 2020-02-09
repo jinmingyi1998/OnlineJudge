@@ -36,6 +36,8 @@ logging:
     max-size: 50MB
     path: /onlinejudge/log
     max-history: 14
+  level:
+    cn.edu.zjnu.acm: INFO
 
 onlinejudge:
   judgerhost:
