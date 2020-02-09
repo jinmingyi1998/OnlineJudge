@@ -114,6 +114,7 @@ public class UserSpaceController {
 
     @GetMapping("/list")
     public Map userList(@RequestParam(value = "page", defaultValue = "0") int page) {
+        final int SIZE=50;
         List<User> userList = userService.userList();
         User cu = (User) session.getAttribute("currentUser");
         userList.sort((o1, o2) -> (o1.getUserProfile().getScore() - o2.getUserProfile().getScore()) * -1);
@@ -131,7 +132,7 @@ public class UserSpaceController {
                 cuser = users.get(users.size() - 1);
             }
         }
-        PageHolder pageHolder = new PageHolder(users, PageRequest.of(page, 30));
+        PageHolder pageHolder = new PageHolder(users, PageRequest.of(page, SIZE));
         Map<String, Object> map = new HashMap<>();
         map.put("page", pageHolder);
         if (cuser != null) {

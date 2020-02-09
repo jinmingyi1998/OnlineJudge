@@ -14,7 +14,7 @@
                     <input type="text" placeholder="邀请码" v-model="inviteCode">
                     <i class="circular arrow right link icon" @click="invite()"></i>
                 </div>
-                <table class="ui selectable blue table center aligned">
+                <table class="ui selectable blue table very compact center aligned">
                     <thead>
                     <tr>
                         <th>Number</th>
@@ -27,16 +27,20 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr v-for="vt in vteams">
+                    <tr v-for="vt in vteams" :class="{negative:vt.attend=='private'}">
                         <td v-html="vt.id"></td>
                         <td><a :href="'/team/'+vt.id" v-html="vt.name"></a></td>
                         <td>{{vt.creator.name}}</td>
                         <td>{{vt.normalCreateTime}}</td>
-                        <td :class="{negative:vt.attend=='private'}">{{vt.attend}}</td>
+                        <td >{{vt.attend}}</td>
                         <td>{{vt.teammates.length}}</td>
                         <td class="link item">
-                            <button class="ui button primary" @click="apply(vt.id)"
-                                    :class="{disabled:vt.attend=='private'}">申请加入
+                            <button class="ui button red inverted mini animated" @click="apply(vt.id)"
+                                    :class="{disabled:vt.attend=='private'}">
+                                <div class="visible content">申请加入</div>
+                                <div class="hidden content">
+                                    <i class="right arrow icon"></i>
+                                </div>
                             </button>
                         </td>
                     </tr>
