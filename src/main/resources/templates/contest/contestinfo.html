@@ -53,7 +53,7 @@
                 </div>
             </div>
             <div class="ui container twelve wide column">
-                <div class="ui raised piled segments fluid" style="opacity: 0.8;background-color: white; padding: 1rem">
+                <div class="ui raised piled segments fluid">
                     <div class="ui secondary center aligned segment" v-bind:class="{loading:!dataready}">
                         <h1>{{problem.tempTitle}}</h1>
                         <table class="ui center aligned table">
@@ -106,7 +106,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="ui fluid segment" style="opacity: 0.8;background-color: white;padding: 1rem">
+                <div class="ui fluid segment">
                     <form id="form" class="ui form">
                         <label for="language">语言 :</label>
                         <select class="ui search dropdown" id="language" name="language" v-model="language"
