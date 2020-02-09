@@ -3,14 +3,14 @@
 <head>
     <th:block th:insert="~{fragment/header :: header}"></th:block>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="/editor/css/editormd.css">
+    <link rel="stylesheet" href="/editor/css/editormd.min.css">
     <script src="/editor/lib/marked.min.js"></script>
     <script src="/editor/lib/raphael.min.js"></script>
     <script src="/editor/lib/underscore.min.js"></script>
     <script src="/editor/lib/sequence-diagram.min.js"></script>
     <script src="/editor/lib/flowchart.min.js"></script>
     <script src="/editor/lib/jquery.flowchart.min.js"></script>
-    <script src="/editor/editormd.js"></script>
+    <script src="/editor/editormd.min.js"></script>
     <script src="/js/clipboard.min.js"></script>
     <link rel="stylesheet" href="/js/prettify/skins/sunburst.css">
     <title></title>
@@ -56,15 +56,27 @@
             <div class="ui raised piled segments fluid" style="opacity: 0.8;background-color: white; padding: 1rem">
                 <div class="ui secondary center aligned segment" v-bind:class="{loading:!dataready}">
                     <h1>{{problem.title}}</h1>
-                    <table class="ui center aligned table">
+                    <table class="ui center aligned celled table very compact">
+                        <thead>
                         <tr>
-                            <td><i class="fa fa-clock-o"></i>时间限制</td>
-                            <td>{{problem.timeLimit}}</td>
-                            <td><i class="fa fa-database"></i>空间限制</td>
+                            <th><i class="ui clock outline icon"></i>Time Limit</th>
+                            <th><i class="ui database icon"></i>Memory Limit</th>
+                            <th><i class="ui upload icon"></i>Submitted</th>
+                            <th><i class="ui check icon"></i>Accepted</th>
+                            <th><i class="ui star icon"></i>积分</th>
+                            <th><i class="ui globe icon"></i>来源</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>{{problem.timeLimit}}ms</td>
                             <td>{{problem.memoryLimit}}B</td>
-                            <td>来源</td>
+                            <td>{{problem.submitted}}</td>
+                            <td>{{problem.accepted}}</td>
+                            <td>{{problem.score}}</td>
                             <td>{{problem.source}}</td>
                         </tr>
+                        </tbody>
                     </table>
                 </div>
                 <div class="ui padded segment" v-bind:class="{loading:!dataready}">
