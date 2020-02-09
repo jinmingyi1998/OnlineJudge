@@ -11,7 +11,6 @@ import cn.edu.zjnu.acm.service.ProblemService;
 import cn.edu.zjnu.acm.service.SolutionService;
 import cn.edu.zjnu.acm.service.UserService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -43,16 +42,19 @@ class ProblemViewController {
 @RequestMapping("/api/problems")
 public class ProblemController {
     private static final int PAGE_SIZE = 30;
-    @Autowired
-    ProblemService problemService;
-    @Autowired
-    UserService userService;
-    @Autowired
-    JudgeService judgeService;
-    @Autowired
-    SolutionService solutionService;
-    @Autowired
-    private HttpSession session;
+    private final ProblemService problemService;
+    private final UserService userService;
+    private final JudgeService judgeService;
+    private final SolutionService solutionService;
+    private final HttpSession session;
+
+    public ProblemController(ProblemService problemService, UserService userService, JudgeService judgeService, SolutionService solutionService, HttpSession session) {
+        this.problemService = problemService;
+        this.userService = userService;
+        this.judgeService = judgeService;
+        this.solutionService = solutionService;
+        this.session = session;
+    }
 
     public static String checkSubmitFrequncy(HttpSession session, String source) {
         if (session.getAttribute("last_submit") != null) {

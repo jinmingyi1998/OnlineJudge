@@ -16,14 +16,15 @@ public class Teacher {
     public static final Integer TEACHER = 0;
     @JsonIgnore
     public static final Integer ADMIN = 1;
-
+    @OneToMany(mappedBy = "creator")
+    List<Contest> contests;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @JsonIgnore
     @OneToOne(optional = false, fetch = FetchType.LAZY)
     private User user;
-    @OneToMany(mappedBy = "creator")
-    List<Contest> contests;
-    public Teacher(){}
+
+    public Teacher() {
+    }
 }

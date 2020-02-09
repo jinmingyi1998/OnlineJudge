@@ -9,7 +9,6 @@ import cn.edu.zjnu.acm.service.UserService;
 import cn.edu.zjnu.acm.util.PageHolder;
 import cn.edu.zjnu.acm.util.UserGraph;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -29,13 +28,13 @@ public class UserSpaceController {
     private final UserService userService;
     private final SolutionService solutionService;
     private final ProblemService problemService;
-    @Autowired
-    HttpSession session;
+    private final HttpSession session;
 
-    public UserSpaceController(UserService userService, SolutionService solutionService, ProblemService problemService) {
+    public UserSpaceController(UserService userService, SolutionService solutionService, ProblemService problemService, HttpSession session) {
         this.userService = userService;
         this.solutionService = solutionService;
         this.problemService = problemService;
+        this.session = session;
     }
 
     @GetMapping("/{uid:[0-9]+}")
@@ -97,24 +96,9 @@ public class UserSpaceController {
         return "success";
     }
 
-    @Data
-    static class UpdateUser {
-        @Size(min = 1, max = 30)
-        String name;
-        @Size(min = 1, max = 60)
-        String password;
-        @Size(min = 1, max = 60)
-        String oldpassword;
-        @Size(max = 250)
-        String intro;
-        @Email
-        @Size(min = 4, max = 200)
-        String email;
-    }
-
     @GetMapping("/list")
     public Map userList(@RequestParam(value = "page", defaultValue = "0") int page) {
-        final int SIZE=50;
+        final int SIZE = 50;
         List<User> userList = userService.userList();
         User cu = (User) session.getAttribute("currentUser");
         userList.sort((o1, o2) -> (o1.getUserProfile().getScore() - o2.getUserProfile().getScore()) * -1);
@@ -139,6 +123,21 @@ public class UserSpaceController {
             map.put("userself", cuser);
         }
         return map;
+    }
+
+    @Data
+    static class UpdateUser {
+        @Size(min = 1, max = 30)
+        String name;
+        @Size(min = 1, max = 60)
+        String password;
+        @Size(min = 1, max = 60)
+        String oldpassword;
+        @Size(max = 250)
+        String intro;
+        @Email
+        @Size(min = 4, max = 200)
+        String email;
     }
 
     @Data

@@ -34,7 +34,7 @@ public class TeamInterceptor implements HandlerInterceptor {
                 throw new ForbiddenException();
         } catch (NumberFormatException e) {
             return true;
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             throw new NotFoundException();
         }
         return true;

@@ -77,7 +77,7 @@ public class ContestService {
         return commentRepository.save(Comment);
     }
 
-    public List<Contest>contestsOfTeam(Team team){
+    public List<Contest> contestsOfTeam(Team team) {
         return contestRepository.findAllByTeam(team);
     }
 }

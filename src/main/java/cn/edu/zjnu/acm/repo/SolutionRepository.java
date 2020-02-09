@@ -59,10 +59,10 @@ public interface SolutionRepository extends JpaRepository<Solution, Long> {
     @Modifying
     @Query(value = "update solution set solution.result=:re , solution.time=:ti, solution.memory=:me , solution.case_number=:ca where solution.id=:id", nativeQuery = true)
     void updateResultTimeMemoryCase(@Param(value = "id") Long id,
-                                @Param(value = "re") String result,
-                                @Param(value = "ti") int time,
-                                @Param(value = "me") int memory,
-                                @Param(value = "ca") int n_case);
+                                    @Param(value = "re") String result,
+                                    @Param(value = "ti") int time,
+                                    @Param(value = "me") int memory,
+                                    @Param(value = "ca") int n_case);
 
     @Transactional
     @Modifying

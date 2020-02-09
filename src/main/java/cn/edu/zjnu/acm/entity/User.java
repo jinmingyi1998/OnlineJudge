@@ -16,39 +16,32 @@ import java.time.Instant;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class User implements Cloneable, Comparable {
 
+    @Column(nullable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
+    Instant createtime = Instant.now();
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Column(nullable = false, unique = true, updatable = false, length = 30)
     @NotEmpty
     @Size(min = 6, max = 35)
     private String username;
-
     @Column(nullable = false, length = 60)
     @NotEmpty
-    @Size(min = 6,max = 60)
+    @Size(min = 6, max = 60)
     private String password;
-
     @Column(nullable = false, columnDefinition = "VARCHAR(250) default ''")
     @NotEmpty
     @Size(min = 1, max = 30)
     private String name;
-
     @Column(nullable = false, columnDefinition = "VARCHAR(250) default ''")
     @Size(min = 4, max = 200)
     @Email
     private String email;
-
     @Column(nullable = false, columnDefinition = "VARCHAR(250) default ''")
     @Size(max = 250)
     private String intro;
-
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
     private UserProfile userProfile;
-
-    @Column(nullable =  false,columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
-    Instant createtime = Instant.now();
 
     public User() {
         this.username = "";
@@ -101,7 +94,8 @@ public class User implements Cloneable, Comparable {
                 ", intro='" + intro + '\'' +
                 '}';
     }
-    public User hideInfo(){
+
+    public User hideInfo() {
         setPassword(null);
         setEmail(null);
         setIntro(null);

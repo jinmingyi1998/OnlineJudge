@@ -37,7 +37,7 @@ public class MainController {
             if (solution == null) {
                 return "no this id";
             }
-            if (!solution.getResult().equals(Solution.PENDING)){
+            if (!solution.getResult().equals(Solution.PENDING)) {
                 return "success";
             }
             if (callback.getErr() != null) {
@@ -89,7 +89,7 @@ public class MainController {
 
         @Data
         static class RunMessage {
-            public static final String[] code = new String[]{Solution.WA,Solution.AC,
+            public static final String[] code = new String[]{Solution.WA, Solution.AC,
                     Solution.TLE,
                     Solution.TLE,
                     Solution.MLE,
@@ -102,8 +102,9 @@ public class MainController {
             private int exit_code;
             private int error;
             private int result;
-            public String getRunResult(){
-                return code[result+1];
+
+            public String getRunResult() {
+                return code[result + 1];
             }
         }
     }

@@ -9,7 +9,6 @@ import cn.edu.zjnu.acm.service.ProblemService;
 import cn.edu.zjnu.acm.service.SolutionService;
 import cn.edu.zjnu.acm.service.UserService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -35,18 +34,20 @@ class StatusViewController {
 @CrossOrigin
 @RequestMapping("/api/status")
 public class StatusController {
-    private final int PAGE_SIZE = 50;
-    @Autowired
-    Config config;
+    private static final int PAGE_SIZE = 50;
+    private final Config config;
+    private final SolutionService solutionService;
+    private final UserService userService;
+    private final ProblemService problemService;
+    private final HttpSession session;
 
-    @Autowired
-    SolutionService solutionService;
-    @Autowired
-    UserService userService;
-    @Autowired
-    ProblemService problemService;
-    @Autowired
-    HttpSession session;
+    public StatusController(Config config, SolutionService solutionService, UserService userService, ProblemService problemService, HttpSession session) {
+        this.config = config;
+        this.solutionService = solutionService;
+        this.userService = userService;
+        this.problemService = problemService;
+        this.session = session;
+    }
 
     public static Solution solutionFilter(Solution s) {
         if (s.getContest() != null && !s.getContest().isEnded()) {

@@ -19,13 +19,12 @@ import java.util.ArrayList;
 @RequestMapping("/api/admin")
 @Slf4j
 public class AdminController {
+    public static final int PAGE_SIZE = 50;
     private final ProblemService problemService;
     private final ContestService contestService;
     private final UserService userService;
     private final HttpSession session;
     private final Config config;
-
-    public static final int PAGE_SIZE = 50;
 
     public AdminController(ProblemService problemService, ContestService contestService, UserService userService, HttpSession session, Config config) {
         this.problemService = problemService;
@@ -54,43 +53,6 @@ public class AdminController {
         return "success";
     }
 
-    @Data
-    static class UpdateConfig {
-        private Integer leastScoreToSeeOthersCode = 1000;
-        private ArrayList<String> judgerhost;
-        private Config.LanguageConfig c;
-        private Config.LanguageConfig cpp;
-        private Config.LanguageConfig java;
-        private Config.LanguageConfig python2;
-        private Config.LanguageConfig python3;
-        private Config.LanguageConfig go;
-
-        public UpdateConfig() {
-        }
-
-        public UpdateConfig(Integer leastScoreToSeeOthersCode, ArrayList<String> judgerhost, Config.LanguageConfig c, Config.LanguageConfig cpp, Config.LanguageConfig java, Config.LanguageConfig python2, Config.LanguageConfig python3, Config.LanguageConfig go) {
-            this.leastScoreToSeeOthersCode = leastScoreToSeeOthersCode;
-            this.judgerhost = judgerhost;
-            this.c = c;
-            this.cpp = cpp;
-            this.java = java;
-            this.python2 = python2;
-            this.python3 = python3;
-            this.go = go;
-        }
-
-        public UpdateConfig(Config config) {
-            setLeastScoreToSeeOthersCode(config.getLeastScoreToSeeOthersCode());
-            setJudgerhost(config.getJudgerhost());
-            setC(config.getC());
-            setCpp(config.getCpp());
-            setJava(config.getJava());
-            setPython2(config.getPython2());
-            setPython3(config.getPython3());
-            setGo(config.getGo());
-        }
-    }
-
     @GetMapping("/problem")
     public Page<Problem> getAllProblems(@RequestParam(value = "page", defaultValue = "0") int page,
                                         @RequestParam(value = "search", defaultValue = "") String search) {
@@ -98,26 +60,6 @@ public class AdminController {
         Page<Problem> problemPage;
         problemPage = problemService.getAllProblems(page, PAGE_SIZE, search);
         return problemPage;
-    }
-
-    @Data
-    private static class JsonProblem {
-        public JsonProblem() {
-        }
-
-        private String title;
-        private String description;
-        private String input;
-        private String output;
-        private String sampleInput;
-        private String sampleOutput;
-        private String hint;
-        private String source;
-        private Integer time;
-        private Integer memory;
-        private Boolean active;
-        private Integer score;
-        private String tags;
     }
 
     @PostMapping("/problem/insert")
@@ -164,6 +106,63 @@ public class AdminController {
         if (problem == null)
             throw new NotFoundException();
         return problem;
+    }
+
+    @Data
+    static class UpdateConfig {
+        private Integer leastScoreToSeeOthersCode = 1000;
+        private ArrayList<String> judgerhost;
+        private Config.LanguageConfig c;
+        private Config.LanguageConfig cpp;
+        private Config.LanguageConfig java;
+        private Config.LanguageConfig python2;
+        private Config.LanguageConfig python3;
+        private Config.LanguageConfig go;
+
+        public UpdateConfig() {
+        }
+
+        public UpdateConfig(Integer leastScoreToSeeOthersCode, ArrayList<String> judgerhost, Config.LanguageConfig c, Config.LanguageConfig cpp, Config.LanguageConfig java, Config.LanguageConfig python2, Config.LanguageConfig python3, Config.LanguageConfig go) {
+            this.leastScoreToSeeOthersCode = leastScoreToSeeOthersCode;
+            this.judgerhost = judgerhost;
+            this.c = c;
+            this.cpp = cpp;
+            this.java = java;
+            this.python2 = python2;
+            this.python3 = python3;
+            this.go = go;
+        }
+
+        public UpdateConfig(Config config) {
+            setLeastScoreToSeeOthersCode(config.getLeastScoreToSeeOthersCode());
+            setJudgerhost(config.getJudgerhost());
+            setC(config.getC());
+            setCpp(config.getCpp());
+            setJava(config.getJava());
+            setPython2(config.getPython2());
+            setPython3(config.getPython3());
+            setGo(config.getGo());
+        }
+    }
+
+    @Data
+    private static class JsonProblem {
+        private String title;
+        private String description;
+        private String input;
+        private String output;
+        private String sampleInput;
+        private String sampleOutput;
+        private String hint;
+        private String source;
+        private Integer time;
+        private Integer memory;
+        private Boolean active;
+        private Integer score;
+        private String tags;
+
+        public JsonProblem() {
+        }
     }
 
 }

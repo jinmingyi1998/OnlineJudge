@@ -3,7 +3,6 @@ package cn.edu.zjnu.acm.controller;
 import cn.edu.zjnu.acm.entity.User;
 import cn.edu.zjnu.acm.exception.NeedLoginException;
 import cn.edu.zjnu.acm.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,8 +16,13 @@ import java.time.Instant;
 
 @RestController
 public class UserController {
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+    private final HttpSession session;
+
+    public UserController(UserService userService, HttpSession session) {
+        this.userService = userService;
+        this.session = session;
+    }
 
     @GetMapping("/register")
     public ModelAndView register() {
@@ -52,7 +56,7 @@ public class UserController {
     @PostMapping("/login")
     public String loginUser(@RequestBody User user, HttpSession session, Model m) {
         User login_user = userService.loginUser(user);
-        if (login_user == null ) {
+        if (login_user == null) {
             return "用户名或密码错误。";
         }
         session.setMaxInactiveInterval(6 * 60 * 60);
@@ -61,12 +65,10 @@ public class UserController {
         return "success";
     }
 
-    @Autowired
-    HttpSession session;
     @GetMapping("/user/session")
-    public User getSession(){
+    public User getSession() {
         User user = (User) session.getAttribute("currentUser");
-        if(user!=null)
+        if (user != null)
             return user.hideInfo();
         throw new NeedLoginException();
     }

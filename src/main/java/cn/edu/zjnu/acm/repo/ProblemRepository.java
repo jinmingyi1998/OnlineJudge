@@ -31,6 +31,7 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {
     List<Problem> findAllByTags(Tag tag);
 
     Optional<Problem> findByTitle(String title);
+
     Optional<Problem> findById(Long id);
 
     @Transactional

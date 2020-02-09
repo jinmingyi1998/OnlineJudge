@@ -10,7 +10,6 @@ import cn.edu.zjnu.acm.service.*;
 import cn.edu.zjnu.acm.util.Rank;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -71,24 +70,27 @@ class ContestViewController {
 @RequestMapping("/api/contest")
 public class ContestController {
     private static final int PAGE_SIZE = 30;
-    @Autowired
-    HttpSession session;
-    @Autowired
-    UserService userService;
-    @Autowired
-    ProblemService problemService;
-    @Autowired
-    SolutionService solutionService;
-    @Autowired
-    ContestService contestService;
-    @Autowired
-    JudgeService judgeService;
-    @Autowired
-    ContestProblemRepository contestProblemRepository;
-    @Autowired
-    TeamService teamService;
-    @Autowired
-    CommentRepository commentRepository;
+    private final HttpSession session;
+    private final UserService userService;
+    private final ProblemService problemService;
+    private final SolutionService solutionService;
+    private final ContestService contestService;
+    private final JudgeService judgeService;
+    private final ContestProblemRepository contestProblemRepository;
+    private final TeamService teamService;
+    private final CommentRepository commentRepository;
+
+    public ContestController(HttpSession session, UserService userService, ProblemService problemService, SolutionService solutionService, ContestService contestService, JudgeService judgeService, ContestProblemRepository contestProblemRepository, TeamService teamService, CommentRepository commentRepository) {
+        this.session = session;
+        this.userService = userService;
+        this.problemService = problemService;
+        this.solutionService = solutionService;
+        this.contestService = contestService;
+        this.judgeService = judgeService;
+        this.contestProblemRepository = contestProblemRepository;
+        this.teamService = teamService;
+        this.commentRepository = commentRepository;
+    }
 
     @GetMapping
     public Page<Contest> showContests(
@@ -326,19 +328,6 @@ public class ContestController {
         throw new NotFoundException();
     }
 
-    @Data
-    static class CommentPost {
-        String rtext = "";
-        Long rid = 0L;
-
-        public CommentPost() {
-        }
-
-        public Long getRid() {
-            return rid == null ? 0L : rid;
-        }
-    }
-
     @PostMapping("/create")
     public String insertContestAction(@RequestBody CreateContest postContest
             , @SessionAttribute User currentUser) {
@@ -382,6 +371,19 @@ public class ContestController {
 //            e.printStackTrace();
         }
         return "failed";
+    }
+
+    @Data
+    static class CommentPost {
+        String rtext = "";
+        Long rid = 0L;
+
+        public CommentPost() {
+        }
+
+        public Long getRid() {
+            return rid == null ? 0L : rid;
+        }
     }
 
     @Data

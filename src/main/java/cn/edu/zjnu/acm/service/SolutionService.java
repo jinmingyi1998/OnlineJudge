@@ -98,7 +98,7 @@ public class SolutionService {
         solutionRepository.updateResultTimeMemoryCase(solution.getId(),
                 solution.getResult(),
                 solution.getTime(),
-                solution.getMemory(),solution.getCaseNumber());
+                solution.getMemory(), solution.getCaseNumber());
         return solution;
     }
 
