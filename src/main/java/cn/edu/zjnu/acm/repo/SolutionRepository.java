@@ -73,7 +73,6 @@ public interface SolutionRepository extends JpaRepository<Solution, Long> {
     @Modifying
     @Query(value = "update solution set solution.result = :result , solution.info = :info where solution.id = :id", nativeQuery = true)
     void updateResultInfo(@Param("id") Long id, @Param("result") String result, @Param("info") String info);
-    //   Page<Solution> findAllByUserAndProblemAndResult( Pageable pageable, User user, Problem problem, String result);
 
     @Query(value = "SELECT SUM(score) FROM " +
             "(SELECT DISTINCT p.id, p.score FROM problem AS p, solution AS s ,problem_tags AS pt " +
@@ -91,9 +90,16 @@ public interface SolutionRepository extends JpaRepository<Solution, Long> {
             "AND s.result='Accepted'", nativeQuery = true)
     Integer userSolveTagCount(@Param(value = "uid") Long user_id, @Param(value = "tid") Long tag_id);
 
-
     Page<Solution> findAllByContestAndUser(Pageable pageable, Contest contest, User user);
 
     List<Solution> findAllByContestOrderByIdDesc(Contest contest);
+
+    Long countAllByProblemAndResult(Problem problem, String result);
+
+    Long countAllByProblem(Problem problem);
+
+    Long countAllByContestAndProblem(Contest contest, Problem problem);
+
+    Long countAllByContestAndProblemAndResult(Contest contest, Problem problem, String result);
 }
 

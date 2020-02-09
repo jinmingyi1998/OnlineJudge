@@ -119,4 +119,21 @@ public class SolutionService {
     public List<Solution> getSolutionsInContest(Contest contest) {
         return solutionRepository.findAllByContestOrderByIdDesc(contest);
     }
+
+    public Long countAcOfProblem(Problem problem) {
+        return solutionRepository.countAllByProblemAndResult(problem, Solution.AC);
+    }
+
+    public Long countOfProblem(Problem problem) {
+        return solutionRepository.countAllByProblemAndResult(problem, Solution.AC);
+    }
+
+    public Long countAcOfProblemContest(Problem problem, Contest contest) {
+        return solutionRepository.countAllByContestAndProblemAndResult(contest, problem, Solution.AC);
+    }
+
+    public Long countOfProblemContest(Problem problem, Contest contest) {
+        return solutionRepository.countAllByContestAndProblem(contest, problem);
+    }
+
 }
