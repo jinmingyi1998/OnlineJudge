@@ -13,7 +13,6 @@ import cn.edu.zjnu.acm.service.SolutionService;
 import cn.edu.zjnu.acm.service.UserService;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -121,6 +120,25 @@ public class AdminController {
         return problem;
     }
 
+    @GetMapping("/correctData")
+    public String calculateData() {
+        List<Problem> problemList = problemService.getAllProblems(0, 10000, "").getContent();
+        for (Problem p : problemList) {
+            problemRepository.updateAcceptedNumber(p.getId(), solutionService.countAcOfProblem(p).intValue());
+            problemRepository.updateSubmittedNumber(p.getId(), solutionService.countOfProblem(p).intValue());
+        }
+        List<Contest> contestList = contestService.getContestPage(0, 1000000, "").getContent();
+        for (Contest c : contestList) {
+            List<ContestProblem> contestProblemList = contestProblemRepository.findAllByContest(c);
+            for (ContestProblem cp : contestProblemList) {
+                cp.setSubmitted(solutionService.countOfProblemContest(cp.getProblem(), c).intValue());
+                cp.setAccepted(solutionService.countAcOfProblemContest(cp.getProblem(), c).intValue());
+                contestProblemRepository.save(cp);
+            }
+        }
+        return "success";
+    }
+
     @Data
     static class UpdateConfig {
         private Integer leastScoreToSeeOthersCode = 1000;
@@ -176,25 +194,6 @@ public class AdminController {
 
         public JsonProblem() {
         }
-    }
-
-    @GetMapping("/correctData")
-    public String calculateData() {
-        List<Problem> problemList = problemService.getAllProblems(0, 10000, "").getContent();
-        for (Problem p : problemList) {
-            problemRepository.updateAcceptedNumber(p.getId(), solutionService.countAcOfProblem(p).intValue());
-            problemRepository.updateSubmittedNumber(p.getId(), solutionService.countOfProblem(p).intValue());
-        }
-        List<Contest> contestList = contestService.getContestPage(0, 1000000, "").getContent();
-        for (Contest c : contestList) {
-            List<ContestProblem> contestProblemList = contestProblemRepository.findAllByContest(c);
-            for (ContestProblem cp : contestProblemList) {
-                cp.setSubmitted(solutionService.countOfProblemContest(cp.getProblem(), c).intValue());
-                cp.setAccepted(solutionService.countAcOfProblemContest(cp.getProblem(), c).intValue());
-                contestProblemRepository.save(cp);
-            }
-        }
-        return "success";
     }
 
 }
