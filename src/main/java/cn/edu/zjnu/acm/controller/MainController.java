@@ -58,7 +58,7 @@ public class MainController {
             for (int i = 0; i < callback.getResults().size(); i++) {
                 caseNumber = i + 1;
                 JudgeCallback.RunMessage runMessage = callback.getResults().get(i);
-                solution.setResult(JudgeCallback.RunMessage.code[runMessage.getResult()]);
+                solution.setResult(runMessage.getRunResult());
                 if (runMessage.getResult() > 3) {
                     cpu = memory = 0;
                     break;
@@ -86,7 +86,7 @@ public class MainController {
 
         @Data
         static class RunMessage {
-            public static final String[] code = new String[]{Solution.AC,
+            public static final String[] code = new String[]{Solution.WA,Solution.AC,
                     Solution.TLE,
                     Solution.TLE,
                     Solution.MLE,
@@ -99,6 +99,9 @@ public class MainController {
             private int exit_code;
             private int error;
             private int result;
+            public String getRunResult(){
+                return code[result+1];
+            }
         }
     }
 }
