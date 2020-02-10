@@ -39,7 +39,7 @@ public class TeamController {
         this.contestService = contestService;
     }
 
-    @GetMapping
+    @GetMapping("")
     public Page<Team> teamPage(@RequestParam(value = "page", defaultValue = "0") int page) {
         page = Math.max(0, page);
         Page<Team> return_page = teamService.getAll(page, PAGE_SIZE);

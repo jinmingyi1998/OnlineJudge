@@ -92,7 +92,7 @@ public class ContestController {
         this.commentRepository = commentRepository;
     }
 
-    @GetMapping
+    @GetMapping("")
     public Page<Contest> showContests(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "search", defaultValue = "") String search) {

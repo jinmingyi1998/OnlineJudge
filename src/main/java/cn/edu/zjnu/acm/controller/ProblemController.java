@@ -71,7 +71,7 @@ public class ProblemController {
         return null;
     }
 
-    @GetMapping
+    @GetMapping("")
     public Page<Problem> showProblemList(@RequestParam(value = "page", defaultValue = "0") int page,
                                          @RequestParam(value = "search", defaultValue = "") String search) {
         page = Math.max(page, 0);

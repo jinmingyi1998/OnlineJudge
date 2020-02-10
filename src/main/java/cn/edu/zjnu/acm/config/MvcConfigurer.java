@@ -1,9 +1,6 @@
 package cn.edu.zjnu.acm.config;
 
-import cn.edu.zjnu.acm.interceptor.ContestInterceptor;
-import cn.edu.zjnu.acm.interceptor.LoginInterceptor;
-import cn.edu.zjnu.acm.interceptor.TeacherCheckInterceptor;
-import cn.edu.zjnu.acm.interceptor.TeamInterceptor;
+import cn.edu.zjnu.acm.interceptor.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -14,6 +11,16 @@ public class MvcConfigurer implements WebMvcConfigurer {
     @Bean
     TeacherCheckInterceptor getTeacherCheckInterceptor() {
         return new TeacherCheckInterceptor();
+    }
+
+    @Bean
+    LoginViewInterceptor getLoginViewInterceptor() {
+        return new LoginViewInterceptor();
+    }
+
+    @Bean
+    AdminCheckInterceptor getAdminCheckInterceptor() {
+        return new AdminCheckInterceptor();
     }
 
     @Bean
@@ -33,10 +40,17 @@ public class MvcConfigurer implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        String[] needLogin = {"/contest/**", "/team/**", "/problems/**", "/user/**", "/admin/**", "/status/**"};
+        registry.addInterceptor(getLoginViewInterceptor())
+                .addPathPatterns(needLogin);
         registry.addInterceptor(getTeacherCheckInterceptor())
                 .addPathPatterns("/admin/**")
-                .addPathPatterns("/contest/create/0");
-        //TODO add /api/admin/**
+                .addPathPatterns("/contest/create/0")
+                .addPathPatterns("/api/admin/**");
+        registry.addInterceptor(getAdminCheckInterceptor())
+                .addPathPatterns("/admin/settings")
+                .addPathPatterns("/api/admin/config")
+                .addPathPatterns("/api/admin/correctData");
         registry.addInterceptor(getContestInterceptor())
                 .addPathPatterns("/contest/*/**")
                 .excludePathPatterns("/contest/*")
@@ -45,9 +59,14 @@ public class MvcConfigurer implements WebMvcConfigurer {
                 .addPathPatterns("/api/contest/*/**")
                 .excludePathPatterns("/api/contest/gate/*")
                 .excludePathPatterns("/api/contest/*");
+        String[] apiNeedLogin = {"/api/problems/submit/*",
+                "/api/status/view/*",
+                "/api/status/share/*",
+                "/api/user/edit/*",
+                "/api/team/**"};
         registry.addInterceptor(getLoginInterceptor())
-                .addPathPatterns("/team/*")
-                .addPathPatterns("/api/status/view/**");
+                .addPathPatterns(apiNeedLogin)
+                .addPathPatterns();
         registry.addInterceptor(getTeamInterceptor())
                 .addPathPatterns("/team/manage/**")
                 .addPathPatterns("/contest/create/*")

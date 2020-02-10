@@ -75,7 +75,7 @@ public class StatusController {
         return s;
     }
 
-    @GetMapping
+    @GetMapping("")
     public Page searchStatus(@RequestParam(value = "page", defaultValue = "0") Integer page,
                              @RequestParam(value = "user", defaultValue = "") String username,
                              @RequestParam(value = "pid", defaultValue = "") Long pid,

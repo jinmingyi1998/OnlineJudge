@@ -35,7 +35,7 @@ public class ContestInterceptor implements HandlerInterceptor {
             throw new NotFoundException();
         }
         Contest contest = contestService.getContestById(cid, false);
-        if (contest.isStarted() && session.getAttribute("contest" + contest.getId()) != null)
+        if (contest != null && contest.isStarted() && session.getAttribute("contest" + contest.getId()) != null)
             return true;
         else throw new NotFoundException();
     }
