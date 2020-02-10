@@ -112,8 +112,10 @@ public class Solution implements Cloneable {
                 return "Python2";
             case "py3":
                 return "Python3";
+            case "go":
+                return "Golang";
         }
-        return "";
+        return language;
     }
 
     public String getNormalSubmitTime() {

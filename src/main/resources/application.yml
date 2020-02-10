@@ -64,9 +64,8 @@ onlinejudge:
     compile_command: gccgo -g -Wall main.go -o main
     run_command: ./main
     memory_limit_check_only: 0
-    seccomp_rule: general
   java:
-    src: Main.java
+    src: Main.javals
     run_command: /usr/bin/java -Djava.security.manager -Dfile.encoding=UTF-8 -Djava.awt.headless=true Main
     compile_command: /usr/bin/javac Main.java -encoding UTF8
     memory_limit_check_only: 1
