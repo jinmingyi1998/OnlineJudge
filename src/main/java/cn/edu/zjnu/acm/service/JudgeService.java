@@ -19,20 +19,23 @@ import java.util.List;
 @Slf4j
 @Service
 public class JudgeService {
-    @Autowired
-    private Config config;
-    @Autowired
-    private RESTService restService;
-    @Autowired
-    private SolutionService solutionService;
-    @Autowired
-    private UserProfileRepository userProfileRepository;
-    @Autowired
-    private ProblemRepository problemRepository;
-    @Autowired
-    private ContestProblemRepository contestProblemRepository;
-    @Autowired
-    private ContestService contestService;
+    private final Config config;
+    private final RESTService restService;
+    private final SolutionService solutionService;
+    private final UserProfileRepository userProfileRepository;
+    private final ProblemRepository problemRepository;
+    private final ContestProblemRepository contestProblemRepository;
+    private final ContestService contestService;
+
+    public JudgeService(Config config, RESTService restService, SolutionService solutionService, UserProfileRepository userProfileRepository, ProblemRepository problemRepository, ContestProblemRepository contestProblemRepository, ContestService contestService) {
+        this.config = config;
+        this.restService = restService;
+        this.solutionService = solutionService;
+        this.userProfileRepository = userProfileRepository;
+        this.problemRepository = problemRepository;
+        this.contestProblemRepository = contestProblemRepository;
+        this.contestService = contestService;
+    }
 
     public String submitCode(Solution solution) throws Exception {
         String host = config.getJudgerhost().get(solution.getId().intValue() % config.getJudgerhost().size());

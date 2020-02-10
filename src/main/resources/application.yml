@@ -62,7 +62,7 @@ onlinejudge:
   go:
     src: main.go
     compile_command: gccgo -g -Wall main.go -o main
-    run_command: main
+    run_command: ./main
     memory_limit_check_only: 0
     seccomp_rule: general
   java:
