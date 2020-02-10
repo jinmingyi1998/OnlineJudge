@@ -21,6 +21,11 @@
             <input type="text" placeholder="http://localhost:12345/judge" v-model="host.str">
         </div>
         <div class="ui divider"></div>
+        <h3>Home Notice</h3>
+        <div class="field">
+            <input type="text" v-model="notice">
+        </div>
+        <div class="ui divider"></div>
         <div class="ui header">Language</div>
         <h3>C</h3>
         <div class="fields">
@@ -158,7 +163,8 @@
             java: language_config,
             python2: language_config,
             python3: language_config,
-            go: language_config
+            go: language_config,
+            notice: ""
         },
         methods: {
             add_host() {
@@ -180,7 +186,8 @@
                     java: this.java,
                     python2: this.python2,
                     python3: this.python3,
-                    go: this.go
+                    go: this.go,
+                    notice: this.notice
                 }).then(function (res) {
                     if (res.data == "success") {
                         alert("success");
@@ -208,6 +215,7 @@
                     that.python2 = res.data.python2;
                     that.python3 = res.data.python3;
                     that.go = res.data.go;
+                    that.notice = res.data.notice;
                 })
         }
     })

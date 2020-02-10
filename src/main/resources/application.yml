@@ -83,6 +83,12 @@ onlinejudge:
     memory_limit_check_only: 0
     seccomp_rule: general
   least-score-to-see-others-code: 1000
+  notice: |
+    C: gcc -DONLINE_JUDGE -fno-tree-ch -O2 -Wall -std=c99 main.c -lm -o main && ./main <br>
+    CPP: g++ -DONLINE_JUDGE -fno-tree-ch -O2 -Wall -std=c++14 main.cpp -lm -o main && ./main <br>
+    Java: javac Main.java -encoding UTF8 && java -Dfile.encoding=UTF-8 -Djava.awt.headless=true Main <br>
+    python(3): python(3) main.py <br>
+    go: gccgo -g -Wall main.go -o main && ./main <br>
 
 server:
   tomcat:

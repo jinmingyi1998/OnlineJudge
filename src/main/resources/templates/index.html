@@ -22,29 +22,22 @@
                     <h3>学习</h3></a></div>
         </div>
     </div>
-    <div class="container-fluid">
-        <h5 class="font-weight-bold" style="color: orangered">公告</h5>
-        <hr>
-        <div class="row">
-            <div class="col-5 p-0 m-0">
-                <img class="img-fluid w-100"
-                     src="http://12452007.s61i.faiusr.com/2/AD0Ip4H4BRACGAAg5P_WwwUon8zbvgUw4AM4rAI.jpg" alt="">
-            </div>
-            <div class="col-7 pl-3 m-0">
-                运行环境：<br>
-                C: gcc foo.c -o foo -ansi -fno-asm -O2 -Wall -lm --static -DONLINE_JUDGE <br>
-                C++: g++ foo.c -o foo -ansi -fno-asm -O2 -Wall -lm --static -DONLINE_JUDGE<br>
-                Java: No special options<br>
-                Our compiler software version:<br>
-                gcc/g++ 4.7.2 (Debian 4.7.2-5)<br>
-                GNU C Library (Debian EGLIBC 2.13-38+deb7u6)<br>
-                java version "1.8"<br>
-                Python 2.7<br>
-                Python 3.6<br>
+    <div class="ui divider"></div>
+    <div class="ui container">
+        <!--                <img class="ui fluid image" src="http://12452007.s61i.faiusr.com/2/AD0Ip4H4BRACGAAg5P_WwwUon8zbvgUw4AM4rAI.jpg" alt="">-->
+        <div class="ui content">
+            <div class="ui header center aligned">公告</div>
+            <div id="notice">
+
             </div>
         </div>
     </div>
 </main>
+<script>
+    $.get("/notice", function (data, status) {
+        $("#notice").html(data);
+    });
+</script>
 <footer th:replace="~{fragment/footer :: footer}"></footer>
 </body>
 </html>
