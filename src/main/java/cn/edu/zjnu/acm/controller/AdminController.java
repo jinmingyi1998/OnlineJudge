@@ -62,6 +62,7 @@ public class AdminController {
         config.setPython2(updateConfig.getPython2());
         config.setPython3(updateConfig.getPython3());
         config.setGo(updateConfig.getGo());
+        config.setNotice(updateConfig.getNotice());
         return "success";
     }
 
@@ -149,6 +150,7 @@ public class AdminController {
         private Config.LanguageConfig python2;
         private Config.LanguageConfig python3;
         private Config.LanguageConfig go;
+        private String notice;
 
         public UpdateConfig() {
         }
@@ -173,6 +175,7 @@ public class AdminController {
             setPython2(config.getPython2());
             setPython3(config.getPython3());
             setGo(config.getGo());
+            setNotice(config.getNotice());
         }
     }
 

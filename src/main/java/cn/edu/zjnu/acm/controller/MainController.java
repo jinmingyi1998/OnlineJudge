@@ -1,5 +1,6 @@
 package cn.edu.zjnu.acm.controller;
 
+import cn.edu.zjnu.acm.config.Config;
 import cn.edu.zjnu.acm.entity.oj.Solution;
 import cn.edu.zjnu.acm.exception.NotFoundException;
 import cn.edu.zjnu.acm.service.JudgeService;
@@ -17,16 +18,25 @@ import java.util.ArrayList;
 @CrossOrigin
 @RestController
 public class MainController {
-    @Autowired
-    private JudgeService judgeService;
+    private final JudgeService judgeService;
+    private final Config config;
+    private final SolutionService solutionService;
 
-    @Autowired
-    private SolutionService solutionService;
+    public MainController(JudgeService judgeService, Config config, SolutionService solutionService) {
+        this.judgeService = judgeService;
+        this.config = config;
+        this.solutionService = solutionService;
+    }
 
     @GetMapping("/")
     public ModelAndView home() {
         ModelAndView m = new ModelAndView("index");
         return m;
+    }
+
+    @GetMapping("/notice")
+    public String getNotice() {
+        return config.getNotice();
     }
 
     @PostMapping("/judge/callback")

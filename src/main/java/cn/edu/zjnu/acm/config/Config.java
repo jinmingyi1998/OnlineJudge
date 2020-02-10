@@ -19,6 +19,7 @@ public class Config {
     private LanguageConfig python2;
     private LanguageConfig python3;
     private LanguageConfig go;
+    private String notice = "";
 
     @Data
     public static class LanguageConfig {
