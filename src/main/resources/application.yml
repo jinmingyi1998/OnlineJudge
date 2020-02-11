@@ -61,7 +61,7 @@ onlinejudge:
     memory_limit_check_only: 0
   go:
     src: main.go
-    compile_command: /usr/local/go/bin/go build main.go
+    compile_command: /usr/bin/gccgo -g -Wall main.go -o main
     run_command: ./main
     memory_limit_check_only: 0
   java:
