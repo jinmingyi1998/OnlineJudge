@@ -25,6 +25,7 @@ vue_history = new Vue({
     },
     methods: {
         get_data() {
+            console.log("refresh")
             var that = this;
             axios.get('/api/status/user/latest/submit/' + pid).then(function (res) {
                 that.status = res.data;
@@ -68,6 +69,8 @@ var prom = new Vue({
                 code_editor.setCodeMirrorOption("mode", "python");
             } else if (this.language.indexOf("c") === 0) {
                 code_editor.setCodeMirrorOption("mode", "clike");
+            }else if (this.language.indexOf("go")===0){
+                code_editor.setCodeMirrorOption("mode","go");
             }
         },
         submit: function () {

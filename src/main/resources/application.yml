@@ -77,7 +77,7 @@ onlinejudge:
     seccomp_rule: general
   python3:
     src: main.py
-    run_command: /usr/bin/python3 __pycache__/main.cpython-38.pyc
+    run_command: /usr/bin/python3 __pycache__/main.cpython-36.pyc
     compile_command: /usr/bin/python3 -m py_compile main.py
     memory_limit_check_only: 0
     seccomp_rule: general

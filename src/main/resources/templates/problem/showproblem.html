@@ -15,6 +15,11 @@
     <link rel="stylesheet" href="/js/prettify/skins/sunburst.css">
     <title></title>
     <script src="/js/submit_button.js"></script>
+    <style>
+        .ui.fluid.container{
+            max-width:95%!important;
+        }
+    </style>
 </head>
 <body>
 <main class="ui container fluid">
@@ -25,10 +30,10 @@
                 <div v-for="t in tags" v-html="t.name" class="ui small label" :class="[colorClass()]"></div>
             </div>
             <div class="ui  green segment" id="vue-history">
-                <table class="ui selectable single line compact small striped center aligned table">
+                <table class="ui selectable single line very compact small striped center aligned table">
                     <thead>
                     <tr>
-                        <th>提交结果</th>
+                        <th>提交结果 <i class="ui icon green sync link" @click="get_data()"></i></th>
                         <th>提交时间</th>
                     </tr>
                     </thead>
@@ -40,7 +45,7 @@
                             error:s.result!='Accepted'&&s.result!='Pending'
                             }">{{s.normalResult}}
                         </td>
-                        <td class="">{{s.normalSubmitTime}}</td>
+                        <td class="">{{s.normalSubmitTime.substring(0,16)}}</td>
                     </tr>
                     </tbody>
                 </table>
@@ -116,7 +121,7 @@
                     </div>
                 </div>
             </div>
-            <div class="ui container fluid">
+            <div class="ui segment">
                 <form id="form" class="ui form">
                     <div>
                         <label for="language">语言 :</label>
