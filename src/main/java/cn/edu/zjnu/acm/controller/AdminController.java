@@ -125,8 +125,8 @@ public class AdminController {
     public String calculateData() {
         List<Problem> problemList = problemService.getAllProblems(0, 10000, "").getContent();
         for (Problem p : problemList) {
-            problemRepository.updateAcceptedNumber(p.getId(), solutionService.countAcOfProblem(p).intValue());
-            problemRepository.updateSubmittedNumber(p.getId(), solutionService.countOfProblem(p).intValue());
+            problemRepository.setAcceptedNumber(p.getId(), solutionService.countAcOfProblem(p).intValue());
+            problemRepository.setSubmittedNumber(p.getId(), solutionService.countOfProblem(p).intValue());
         }
         List<Contest> contestList = contestService.getContestPage(0, 1000000, "").getContent();
         for (Contest c : contestList) {
