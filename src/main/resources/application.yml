@@ -9,6 +9,9 @@ spring:
       ddl-auto: update
     show-sql: false
     open-in-view: false
+  redis:
+    host: localhost
+    port: 6379
   thymeleaf:
     encoding: utf-8
     cache: false

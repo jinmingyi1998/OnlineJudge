@@ -20,6 +20,7 @@ configurations {
 
 repositories {
     maven { url 'https://maven.aliyun.com/repository/public' }
+    mavenLocal()
     mavenCentral()
 }
 
@@ -38,6 +39,9 @@ dependencies {
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-redis
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-redis', version: '2.2.3.RELEASE'
+
 }
 
 test {

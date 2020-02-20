@@ -1,51 +1,41 @@
 package cn.edu.zjnu.acm;
 
 import cn.edu.zjnu.acm.entity.User;
-import cn.edu.zjnu.acm.entity.oj.Solution;
-import cn.edu.zjnu.acm.repo.UserRepository;
-import cn.edu.zjnu.acm.service.JudgeService;
-import cn.edu.zjnu.acm.service.SolutionService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 
-import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @SpringBootTest
 class LearncsApplicationTests {
     @Autowired
-    UserRepository userRepository;
+    StringRedisTemplate stringRedisTemplate;
+
     @Autowired
-    SolutionService solutionService;
+    RedisTemplate redisTemplate;
     @Test
     void contextLoads() {
-        String code = generateCode(123);
-        System.out.println(code);
-        System.out.println(decode(code));
+        User user = getUser();
+        ValueOperations<String, User> operations=redisTemplate.opsForValue();
+        operations.set("user", user);
+        User t = operations.get("user");
+        System.out.println(t.toString());
     }
-    private String generateCode(int number){
-        int offset = (int) ((Math.random()*10)%10);
-        StringBuffer sub = new StringBuffer();
-        sub.append((char)(offset+65));
-        for(int i = 1;i<18;i++){
-            char c = (char) (Math.random()*26+65);
-            sub.append(c);
-        }
-        String str = String.format("%06d",number);
-        for(int i=1;i<=6;i++)
-            sub.setCharAt(offset+i, (char) (str.charAt(i-1)+17+offset));
-        return String.valueOf(sub);
+
+    public User getUser() {
+        User user = new User();
+        user.setId(123L);
+        user.setName("2213");
+        user.setPassword("awef");
+        user.setUsername("2rhu");
+        user.setEmail("dsf@s.c");
+        user.setIntro("dasfjkhsd");
+        return user;
     }
-    private int decode(String s){
-        int offset = s.charAt(0)-65;
-        int result=0;
-        for(int i=1;i<=6;i++)
-        {
-            result*=10;
-            int n = s.charAt(offset+i)-65-offset;
-            result+=n;
-        }
-        return result;
-    }
+
 }
