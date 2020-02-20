@@ -116,7 +116,7 @@
                         that.number = response.number;
                         that.totalPages = response.totalPages;
                         that.npage = [];
-                        for (var i = Math.max(0, that.number - 3); i < Math.min(that.totalPages, that.number + 3); i++) {
+                        for (var i = Math.max(0, that.number - 5); i < Math.min(that.totalPages, that.number + 6); i++) {
                             that.npage.push(i)
                         }
                     })
@@ -135,7 +135,7 @@
                     that.last = response.last;
                     that.first = response.first;
                     that.number = response.number;
-                    for (var i = Math.max(0, that.number - 3); i < Math.min(that.totalPages, that.number + 3); i++) {
+                    for (var i = Math.max(0, that.number - 5); i < Math.min(that.totalPages, that.number + 6); i++) {
                         that.npage.push(i)
                     }
                     that.ready = true;

@@ -77,7 +77,7 @@
                         that.last = res.data.page.last;
                         that.totalPages = res.data.page.totalPages;
                         that.npage = [];
-                        for (var i = Math.max(0, that.number - 3); i < Math.min(that.totalPages, that.number + 3); i++) {
+                        for (var i = Math.max(0, that.number -5); i < Math.min(that.totalPages, that.number + 6); i++) {
                             that.npage.push(i)
                         }
                         that.ready = true;

@@ -67,7 +67,7 @@ var problems_list = new Vue({
                     that.first = response.first;
                     that.number = response.number;
                     that.npage = [];
-                    for (var i = Math.max(0, that.number - 3); i < Math.min(that.totpage, that.number + 3); i++) {
+                    for (var i = Math.max(0, that.number - 5); i < Math.min(that.totpage, that.number + 6); i++) {
                         that.npage.push(i)
                     }
                 })
@@ -88,7 +88,7 @@ var problems_list = new Vue({
                 that.last = response.last;
                 that.first = response.first;
                 that.number = response.number;
-                for (var i = Math.max(0, that.number - 3); i < Math.min(that.totpage, that.number + 3); i++) {
+                for (var i = Math.max(0, that.number - 5); i < Math.min(that.totpage, that.number + 6); i++) {
                     that.npage.push(i)
                 }
             })

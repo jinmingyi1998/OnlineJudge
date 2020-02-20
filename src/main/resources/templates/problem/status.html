@@ -166,7 +166,7 @@
                 that.numberOfElements = res.numberOfElements;
                 that.empyt = res.empty;
                 that.npage = [];
-                for (var i = Math.max(0, that.number - 3); i < Math.min(that.totalPages, that.number + 3); i++) {
+                for (var i = Math.max(0, that.number - 3); i < Math.min(that.totalPages, that.number + 6); i++) {
                     that.npage.push(i)
                 }
             })
@@ -188,7 +188,7 @@
                     that.numberOfElements = res.numberOfElements;
                     that.empyt = res.empty;
                     that.npage = [];
-                    for (var i = Math.max(0, that.number - 3); i < Math.min(that.totalPages, that.number + 3); i++) {
+                    for (var i = Math.max(0, that.number - 5); i < Math.min(that.totalPages, that.number + 6); i++) {
                         that.npage.push(i)
                     }
                 })
