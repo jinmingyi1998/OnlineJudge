@@ -14,7 +14,7 @@ $(function () {
         previewTheme: "dark",
         theam: "dark",
         mode: "clike",
-        path: '/editor/lib/',
+        path: '/editor/lib/'
     });
 });
 vue_history = new Vue({
@@ -69,8 +69,8 @@ var prom = new Vue({
                 code_editor.setCodeMirrorOption("mode", "python");
             } else if (this.language.indexOf("c") === 0) {
                 code_editor.setCodeMirrorOption("mode", "clike");
-            }else if (this.language.indexOf("go")===0){
-                code_editor.setCodeMirrorOption("mode","go");
+            } else if (this.language.indexOf("go") === 0) {
+                code_editor.setCodeMirrorOption("mode", "go");
             }
         },
         submit: function () {
