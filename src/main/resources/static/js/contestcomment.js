@@ -82,7 +82,7 @@ vue_comment = new Vue({
             var that = this;
             this.reply_text = mdeditor.getMarkdown();
             var url = "/api/contest/comments/post/" + cid;
-            axios.post(url, {rtext: that.reply_text, rid: that.reply_id}).then(function (res) {
+            axios.post(url, {replyText: that.reply_text, replyId: that.reply_id}).then(function (res) {
                 if (res.data != "success") {
                     alert(res.data);
                     return;
