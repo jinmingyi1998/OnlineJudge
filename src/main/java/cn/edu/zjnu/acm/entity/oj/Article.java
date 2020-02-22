@@ -11,6 +11,9 @@ import java.time.Instant;
 @Data
 @Slf4j
 public class Article {
+    public Article() {
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
