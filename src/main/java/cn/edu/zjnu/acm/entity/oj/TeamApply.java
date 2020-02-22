@@ -14,17 +14,17 @@ public class TeamApply implements Serializable {
     public static final String APPROVED = "approved";
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
     @ManyToOne(optional = false)
-    Team team;
+    private Team team;
     @ManyToOne(optional = false)
-    User user;
+    private User user;
     @Column(columnDefinition = "DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP")
-    Instant time;
+    private Instant time;
     @Column(nullable = false, columnDefinition = "bit(1) default 1")
-    Boolean active = true;
+    private Boolean active = true;
     @Column(nullable = false, columnDefinition = "varchar(20) default 'rejected'")
-    String result = REJECTED;
+    private String result = REJECTED;
 
     public TeamApply() {
     }

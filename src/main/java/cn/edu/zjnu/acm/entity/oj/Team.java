@@ -35,7 +35,7 @@ public class Team {
     private List<Contest> contests;
     @Column(nullable = false, columnDefinition = "varchar(50) default 'public'")
     private String attend = PUBLIC;
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
     private Instant createTime;
 
     public String getNormalCreateTime() {

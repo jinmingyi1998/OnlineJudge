@@ -54,7 +54,7 @@ public class Solution implements Cloneable {
     private String language;
     @Column(nullable = false, columnDefinition = "LONGTEXT")
     private String source;
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
     private Instant submitTime;
     @Column(nullable = false)
     private String ip;
