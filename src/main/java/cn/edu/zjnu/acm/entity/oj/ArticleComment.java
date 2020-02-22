@@ -9,24 +9,19 @@ import javax.persistence.*;
 import java.time.Instant;
 
 @Entity
-@Slf4j
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ContestComment implements CommentAdapter {
+@Slf4j
+public class ArticleComment implements CommentAdapter {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne(optional = false)
-    private Contest contest;
+    private Article article;
     @JsonIgnore
     @OneToOne(optional = false)
     private Comment comment;
 
-    public ContestComment() {
-    }
-
-    public ContestComment(Contest contest, Comment comment) {
-        this.contest = contest;
-        this.comment = comment;
+    public ArticleComment() {
     }
 
     @Override
