@@ -38,8 +38,15 @@ public class MvcConfigurer implements WebMvcConfigurer {
         return new TeamInterceptor();
     }
 
+    @Bean
+    UnavailableInterceptor getUnavailableInterceptor() {
+        return new UnavailableInterceptor();
+    }
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(getUnavailableInterceptor()).addPathPatterns("/**")
+                .excludePathPatterns("/judge/callback");
         String[] needLogin = {"/contest/**", "/team/**", "/problems/**", "/user/**", "/admin/**", "/status/**"};
         registry.addInterceptor(getLoginViewInterceptor())
                 .addPathPatterns(needLogin);

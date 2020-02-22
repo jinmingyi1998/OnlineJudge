@@ -1,12 +1,17 @@
 package cn.edu.zjnu.acm.controller;
 
 import cn.edu.zjnu.acm.config.Config;
+import cn.edu.zjnu.acm.config.GlobalStatus;
+import cn.edu.zjnu.acm.entity.User;
 import cn.edu.zjnu.acm.entity.oj.Contest;
 import cn.edu.zjnu.acm.entity.oj.ContestProblem;
 import cn.edu.zjnu.acm.entity.oj.Problem;
+import cn.edu.zjnu.acm.entity.oj.Solution;
 import cn.edu.zjnu.acm.exception.NotFoundException;
 import cn.edu.zjnu.acm.repo.ContestProblemRepository;
 import cn.edu.zjnu.acm.repo.ProblemRepository;
+import cn.edu.zjnu.acm.repo.SolutionRepository;
+import cn.edu.zjnu.acm.repo.UserProfileRepository;
 import cn.edu.zjnu.acm.service.ContestService;
 import cn.edu.zjnu.acm.service.ProblemService;
 import cn.edu.zjnu.acm.service.SolutionService;
@@ -15,6 +20,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
@@ -34,8 +40,10 @@ public class AdminController {
     private final Config config;
     private final SolutionService solutionService;
     private final ContestProblemRepository contestProblemRepository;
+    private final SolutionRepository solutionRepository;
+    private final UserProfileRepository userProfileRepository;
 
-    public AdminController(ProblemService problemService, ContestService contestService, UserService userService, HttpSession session, Config config, SolutionService solutionService, ProblemRepository problemRepository, ContestProblemRepository contestProblemRepository) {
+    public AdminController(ProblemService problemService, ContestService contestService, UserService userService, HttpSession session, Config config, SolutionService solutionService, ProblemRepository problemRepository, ContestProblemRepository contestProblemRepository, SolutionRepository solutionRepository, UserProfileRepository userProfileRepository) {
         this.problemService = problemService;
         this.contestService = contestService;
         this.userService = userService;
@@ -44,6 +52,8 @@ public class AdminController {
         this.solutionService = solutionService;
         this.problemRepository = problemRepository;
         this.contestProblemRepository = contestProblemRepository;
+        this.solutionRepository = solutionRepository;
+        this.userProfileRepository = userProfileRepository;
     }
 
     @GetMapping("/config")
@@ -123,13 +133,71 @@ public class AdminController {
 
     @GetMapping("/correctData")
     public String calculateData() {
-        List<Problem> problemList = problemService.getAllProblems(0, 10000, "").getContent();
+        try {
+            User user = (User) session.getAttribute("currentUser");
+            log.info("calculating data by user:" + user.getUsername());
+            Thread threadProblem = new Thread(this::calcProblem);
+            Thread threadContest = new Thread(this::calcContest);
+            Thread threadUser = new Thread(this::calcUser);
+            GlobalStatus.maintaining = true;
+            threadContest.start();
+            threadProblem.start();
+            threadUser.start();
+            try {
+                threadContest.join();
+                threadProblem.join();
+                threadUser.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            log.info("finish calculating");
+            return "success";
+        } catch (Exception e) {
+            log.info("exception catched");
+        } finally {
+            GlobalStatus.maintaining = false;
+        }
+        return "failed";
+    }
+
+    @Transactional
+    void calcUser() {
+        log.info("calculating on user");
+        List<User> userList = userService.userList();
+        int cnt = 0;
+        for (User u : userList) {
+            if (++cnt % 100 == 0)
+                log.info("update user " + u.getId());
+            userProfileRepository.setUserSubmitted(u.getUserProfile().getId(), solutionRepository.countAllByUser(u).intValue());
+            userProfileRepository.setUserAccepted(u.getUserProfile().getId(), solutionRepository.countAllByUserAndResult(u, Solution.AC).intValue());
+            userProfileRepository.setUserScore(u.getUserProfile().getId(), solutionRepository.calculateScoreOfUser(u.getId()).intValue());
+        }
+        log.info("calculating on user finished");
+    }
+
+    @Transactional
+    void calcProblem() {
+        log.info("calculating on problem");
+        List<Problem> problemList = problemService.getProblemList();
+        int cnt = 0;
         for (Problem p : problemList) {
+            if (++cnt % 100 == 0) {
+                log.info("update problem " + p.getId());
+            }
             problemRepository.setAcceptedNumber(p.getId(), solutionService.countAcOfProblem(p).intValue());
             problemRepository.setSubmittedNumber(p.getId(), solutionService.countOfProblem(p).intValue());
         }
-        List<Contest> contestList = contestService.getContestPage(0, 1000000, "").getContent();
+        log.info("calculating on problem finished");
+    }
+
+    @Transactional
+    void calcContest() {
+        log.info("calculating on contest");
+        int cnt = 0;
+        List<Contest> contestList = contestService.getContestList();
         for (Contest c : contestList) {
+            if (++cnt % 100 == 0)
+                log.info("update contest " + c.getId());
             List<ContestProblem> contestProblemList = contestProblemRepository.findAllByContest(c);
             for (ContestProblem cp : contestProblemList) {
                 cp.setSubmitted(solutionService.countOfProblemContest(cp.getProblem(), c).intValue());
@@ -137,8 +205,9 @@ public class AdminController {
                 contestProblemRepository.save(cp);
             }
         }
-        return "success";
+        log.info("calculating on contest finished");
     }
+
 
     @Data
     static class UpdateConfig {

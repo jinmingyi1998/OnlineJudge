@@ -15,15 +15,33 @@ public interface UserProfileRepository extends JpaRepository<UserProfile, Long> 
     @Transactional
     @Modifying
     @Query(value = "UPDATE user_profile set score=score+:score where id = :pid", nativeQuery = true)
-    public void updateUserScore(@Param(value = "pid") Long pid, @Param(value = "score") int score);
+    void updateUserScore(@Param(value = "pid") Long profileId, @Param(value = "score") int score);
+
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE user_profile set score=:score where id = :pid", nativeQuery = true)
+    void setUserScore(@Param(value = "pid") Long prolfileId, @Param(value = "score") int score);
 
     @Transactional
     @Modifying
     @Query(value = "UPDATE user_profile set accepted=accepted+:ac where id = :pid", nativeQuery = true)
-    public void updateUserAccepted(@Param(value = "pid") Long pid, @Param(value = "ac") int accepted);
+    void updateUserAccepted(@Param(value = "pid") Long profileId, @Param(value = "ac") int accepted);
+
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE user_profile set accepted=:ac where id = :pid", nativeQuery = true)
+    void setUserAccepted(@Param(value = "pid") Long profileId, @Param(value = "ac") int accepted);
 
     @Transactional
     @Modifying
     @Query(value = "UPDATE user_profile set submitted=submitted+:sub where id = :pid", nativeQuery = true)
-    public void updateUserSubmitted(@Param(value = "pid") Long pid, @Param(value = "sub") int sub);
+    void updateUserSubmitted(@Param(value = "pid") Long profileId, @Param(value = "sub") int sub);
+
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE user_profile set submitted=:sub where id = :pid", nativeQuery = true)
+    void setUserSubmitted(@Param(value = "pid") Long profileId, @Param(value = "sub") int sub);
+
+
+
 }

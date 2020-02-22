@@ -42,6 +42,10 @@ public class ContestService {
         return contestRepository.findByTitleContains(pageable, title);
     }
 
+    public List<Contest> getContestList() {
+        return contestRepository.findAll();
+    }
+
     public Contest insertContest(Contest contest) {
         return contestRepository.save(contest);
     }

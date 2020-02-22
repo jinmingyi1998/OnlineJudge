@@ -125,7 +125,7 @@ public class SolutionService {
     }
 
     public Long countOfProblem(Problem problem) {
-        return solutionRepository.countAllByProblemAndResult(problem, Solution.AC);
+        return solutionRepository.countAllByProblem(problem);
     }
 
     public Long countAcOfProblemContest(Problem problem, Contest contest) {

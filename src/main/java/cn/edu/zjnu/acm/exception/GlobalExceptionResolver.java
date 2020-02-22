@@ -13,4 +13,10 @@ public class GlobalExceptionResolver {
     public String exceptionHandle() {
         return "请登录 Please Login";
     }
+
+    @ExceptionHandler(UnavailableException.class)
+    @ResponseBody
+    public String unavilableHandle() {
+        return "维护中，不可用";
+    }
 }

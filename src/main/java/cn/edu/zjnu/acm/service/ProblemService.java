@@ -33,6 +33,10 @@ public class ProblemService {
         return problemRepository.findAllByTitleContaining(PageRequest.of(page, size), search);
     }
 
+    public List<Problem> getProblemList() {
+        return problemRepository.findAll();
+    }
+
     public Page<Problem> getByTagName(int page, int size, List<String> tagNames, List<Problem> problems) {
         problems = new ArrayList<>(problems);
         for (String tagName : tagNames) {

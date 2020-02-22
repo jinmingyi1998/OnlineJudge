@@ -57,7 +57,12 @@ public interface SolutionRepository extends JpaRepository<Solution, Long> {
 
     @Transactional
     @Modifying
-    @Query(value = "update solution set solution.result=:re , solution.time=:ti, solution.memory=:me , solution.case_number=:ca where solution.id=:id", nativeQuery = true)
+    @Query(value = "update solution set " +
+            "solution.result=:re ," +
+            " solution.time=:ti, " +
+            "solution.memory=:me , " +
+            "solution.case_number=:ca " +
+            "where solution.id=:id", nativeQuery = true)
     void updateResultTimeMemoryCase(@Param(value = "id") Long id,
                                     @Param(value = "re") String result,
                                     @Param(value = "ti") int time,
@@ -66,7 +71,9 @@ public interface SolutionRepository extends JpaRepository<Solution, Long> {
 
     @Transactional
     @Modifying
-    @Query(value = "update solution set share = :share where id = :id", nativeQuery = true)
+    @Query(value = "update solution set " +
+            "share = :share " +
+            "where id = :id", nativeQuery = true)
     void updateShare(@Param("id") Long id, @Param("share") Boolean share);
 
     @Transactional
@@ -101,5 +108,16 @@ public interface SolutionRepository extends JpaRepository<Solution, Long> {
     Long countAllByContestAndProblem(Contest contest, Problem problem);
 
     Long countAllByContestAndProblemAndResult(Contest contest, Problem problem, String result);
+
+    Long countAllByUser(User user);
+
+    Long countAllByUserAndResult(User user, String result);
+
+    @Query(nativeQuery = true,
+            value = "SELECT COALESCE(0,SUM(score)) FROM " +
+                    "(SELECT DISTINCT pp.id,pp.score " +
+                    "FROM user, solution AS ss, problem AS pp " +
+                    "WHERE user.id = ss.user_id AND ss.problem_id=pp.id AND ss.result='Accepted' AND user.id = :uid)t1")
+    Long calculateScoreOfUser(@Param("uid") Long user_id);
 }
 
