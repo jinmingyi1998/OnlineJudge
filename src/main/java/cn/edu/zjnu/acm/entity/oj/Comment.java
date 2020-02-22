@@ -21,7 +21,7 @@ public class Comment implements Comparable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Comment father = null;
     @Column(nullable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
     private Instant postTime;
@@ -30,7 +30,7 @@ public class Comment implements Comparable {
     @Column(nullable = false, columnDefinition = "LONGTEXT")
     private String text;
 
-    public Comment(User user, String text, Contest contest, Comment father) {
+    public Comment(User user, String text, Comment father) {
         this.user = user;
         this.text = text;
         this.father = father;

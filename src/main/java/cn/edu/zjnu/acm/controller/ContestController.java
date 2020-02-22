@@ -239,39 +239,32 @@ public class ContestController {
     @PostMapping("/comments/post/{cid:[0-9]+}")
     public String postComments(@PathVariable(value = "cid") Long cid, @RequestBody CommentPost commentPost) {
         try {
-            if (commentPost.rtext.length() < 4) return "too short";
+            if (commentPost.replyText.length() < 4) return "too short";
             User user = (User) session.getAttribute("currentUser");
             if (user == null) return "need login";
-            Comment father = commentRepository.findById(commentPost.getRid()).orElse(null);
+            Comment father = commentRepository.findById(commentPost.getReplyId()).orElse(null);
             @NotNull Contest contest = contestService.getContestById(cid);
             if (!contest.isStarted() || contest.isEnded())
                 throw new NotFoundException();
-            Comment comment = new Comment(user, commentPost.rtext, contest, father);
-            comment = contestService.postComment(comment);
+            Comment comment = new Comment(user, commentPost.replyText, father);
+            contestService.postComment(comment, contest);
             return "success";
         } catch (Exception e) {
+            //TODO remove this
             e.printStackTrace();
         }
         return "failed";
     }
 
-    private Comment commentFilter(Comment comment) {
-        comment.getUser().setPassword(null);
-        comment.getUser().setEmail(null);
-        comment.getUser().setIntro(null);
-        comment.getUser().setUserProfile(null);
-        return comment;
-    }
-
     @GetMapping("/comments/{cid:[0-9]+}")
-    public List<Comment> getCommentsOfContest(@PathVariable Long cid) {
+    public List<ContestComment> getCommentsOfContest(@PathVariable Long cid) {
         try {
             @NotNull Contest contest = contestService.getContestById(cid, false);
             if (!contest.isStarted())
                 throw new NotFoundException();
-            List<Comment> contestComments = contestService.getCommentsOfContest(contest);
-            for (Comment c : contestComments) {
-                c = commentFilter(c);
+            List<ContestComment> contestComments = contestService.getCommentsOfContest(contest);
+            for (ContestComment c : contestComments) {
+                c.getUser().hideInfo();
             }
             return contestComments;
         } catch (Exception e) {
@@ -375,14 +368,14 @@ public class ContestController {
 
     @Data
     static class CommentPost {
-        String rtext = "";
-        Long rid = 0L;
+        String replyText = "";
+        Long replyId = 0L;
 
         public CommentPost() {
         }
 
-        public Long getRid() {
-            return rid == null ? 0L : rid;
+        public Long getReplyId() {
+            return replyId == null ? 0L : replyId;
         }
     }
 
