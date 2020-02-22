@@ -42,10 +42,10 @@ public class Contest implements Cloneable {
     private Instant endTime;
     @ManyToOne(optional = false)
     private User creator;
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
     private Instant createTime;
     @OneToMany(mappedBy = "contest")
-    private List<Comment> contestComments;
+    private List<ContestComment> contestComments;
     @OneToMany(mappedBy = "contest")
     private List<ContestProblem> problems;
     @OneToMany(mappedBy = "contest")

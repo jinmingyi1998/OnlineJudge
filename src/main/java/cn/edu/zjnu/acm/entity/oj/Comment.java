@@ -23,20 +23,16 @@ public class Comment implements Comparable {
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     private Comment father = null;
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
     private Instant postTime;
     @ManyToOne(optional = false)
     private User user;
     @Column(nullable = false, columnDefinition = "LONGTEXT")
     private String text;
-    @JsonIgnore
-    @ManyToOne(optional = false)
-    private Contest contest;
 
     public Comment(User user, String text, Contest contest, Comment father) {
         this.user = user;
         this.text = text;
-        this.contest = contest;
         this.father = father;
         postTime = Instant.now();
     }
