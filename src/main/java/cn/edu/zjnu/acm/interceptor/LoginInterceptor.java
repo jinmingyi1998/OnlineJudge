@@ -1,6 +1,7 @@
 package cn.edu.zjnu.acm.interceptor;
 
 import cn.edu.zjnu.acm.exception.NeedLoginException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -8,6 +9,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+@Slf4j
 @ComponentScan
 public class LoginInterceptor implements HandlerInterceptor {
 

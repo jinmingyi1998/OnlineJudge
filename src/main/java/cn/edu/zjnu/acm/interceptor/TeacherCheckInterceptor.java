@@ -27,7 +27,7 @@ public class TeacherCheckInterceptor implements HandlerInterceptor {
         try {
             User user = (User) session.getAttribute("currentUser");
             if (user != null) {
-                log.info("admin page intercepted:" + user.getId() + user.getUsername());
+                log.info(String.format("admin page intercepted:%s %s at %s", user.getId() + "", user.getUsername(), request.getRemoteAddr()));
                 Teacher teacher = teacherRepository.findByUser(user).orElse(null);
                 if (teacher != null)
                     return true;
