@@ -10,7 +10,6 @@ import java.util.ArrayList;
 @Configuration
 @ConfigurationProperties(prefix = "onlinejudge")
 public class Config {
-    //TODO score should be a threshold which can be set by admin
     private Integer leastScoreToSeeOthersCode = 1000;
     private ArrayList<String> judgerhost;
     private LanguageConfig c;
