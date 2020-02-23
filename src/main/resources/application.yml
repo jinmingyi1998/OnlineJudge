@@ -42,6 +42,10 @@ logging:
     max-history: 14
   level:
     cn.edu.zjnu.acm: INFO
+    org.springframework: ERROR
+    org.hibernate: ERROR
+    com.zaxxer.hikari: WARN
+    org.apache.catalina: ERROR
 
 onlinejudge:
   judgerhost:
