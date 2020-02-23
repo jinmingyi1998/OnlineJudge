@@ -7,7 +7,6 @@ import cn.edu.zjnu.acm.service.JudgeService;
 import cn.edu.zjnu.acm.service.SolutionService;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 

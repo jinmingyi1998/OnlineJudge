@@ -1,16 +1,10 @@
 package cn.edu.zjnu.acm;
 
-import cn.edu.zjnu.acm.entity.User;
-import cn.edu.zjnu.acm.entity.oj.Solution;
-import cn.edu.zjnu.acm.repo.UserRepository;
-import cn.edu.zjnu.acm.service.JudgeService;
+import cn.edu.zjnu.acm.repo.user.UserRepository;
 import cn.edu.zjnu.acm.service.SolutionService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
-import java.util.List;
 
 @SpringBootTest
 class LearncsApplicationTests {

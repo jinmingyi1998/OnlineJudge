@@ -5,7 +5,7 @@ import cn.edu.zjnu.acm.entity.oj.*;
 import cn.edu.zjnu.acm.exception.NeedLoginException;
 import cn.edu.zjnu.acm.exception.NotFoundException;
 import cn.edu.zjnu.acm.repo.CommentRepository;
-import cn.edu.zjnu.acm.repo.ContestProblemRepository;
+import cn.edu.zjnu.acm.repo.contest.ContestProblemRepository;
 import cn.edu.zjnu.acm.service.*;
 import cn.edu.zjnu.acm.util.Rank;
 import lombok.Data;

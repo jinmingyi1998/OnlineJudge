@@ -2,7 +2,7 @@ package cn.edu.zjnu.acm.interceptor;
 
 import cn.edu.zjnu.acm.config.GlobalStatus;
 import cn.edu.zjnu.acm.entity.User;
-import cn.edu.zjnu.acm.repo.TeacherRepository;
+import cn.edu.zjnu.acm.repo.user.TeacherRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

@@ -4,13 +4,12 @@ import cn.edu.zjnu.acm.config.Config;
 import cn.edu.zjnu.acm.entity.oj.Contest;
 import cn.edu.zjnu.acm.entity.oj.ContestProblem;
 import cn.edu.zjnu.acm.entity.oj.Solution;
-import cn.edu.zjnu.acm.repo.ContestProblemRepository;
-import cn.edu.zjnu.acm.repo.ProblemRepository;
-import cn.edu.zjnu.acm.repo.UserProfileRepository;
+import cn.edu.zjnu.acm.repo.contest.ContestProblemRepository;
+import cn.edu.zjnu.acm.repo.problem.ProblemRepository;
+import cn.edu.zjnu.acm.repo.user.UserProfileRepository;
 import com.alibaba.fastjson.JSON;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

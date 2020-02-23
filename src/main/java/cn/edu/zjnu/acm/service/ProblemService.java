@@ -2,8 +2,8 @@ package cn.edu.zjnu.acm.service;
 
 import cn.edu.zjnu.acm.entity.oj.Problem;
 import cn.edu.zjnu.acm.entity.oj.Tag;
-import cn.edu.zjnu.acm.repo.ProblemRepository;
-import cn.edu.zjnu.acm.repo.TagRepository;
+import cn.edu.zjnu.acm.repo.problem.ProblemRepository;
+import cn.edu.zjnu.acm.repo.problem.TagRepository;
 import cn.edu.zjnu.acm.util.PageHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

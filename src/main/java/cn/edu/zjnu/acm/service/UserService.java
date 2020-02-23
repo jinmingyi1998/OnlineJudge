@@ -2,8 +2,8 @@ package cn.edu.zjnu.acm.service;
 
 import cn.edu.zjnu.acm.entity.User;
 import cn.edu.zjnu.acm.entity.UserProfile;
-import cn.edu.zjnu.acm.repo.UserProfileRepository;
-import cn.edu.zjnu.acm.repo.UserRepository;
+import cn.edu.zjnu.acm.repo.user.UserProfileRepository;
+import cn.edu.zjnu.acm.repo.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
