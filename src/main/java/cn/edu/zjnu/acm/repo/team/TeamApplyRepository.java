@@ -1,4 +1,4 @@
-package cn.edu.zjnu.acm.repo;
+package cn.edu.zjnu.acm.repo.team;
 
 import cn.edu.zjnu.acm.entity.User;
 import cn.edu.zjnu.acm.entity.oj.Team;

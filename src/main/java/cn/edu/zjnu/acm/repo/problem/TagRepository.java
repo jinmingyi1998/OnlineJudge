@@ -1,4 +1,4 @@
-package cn.edu.zjnu.acm.repo;
+package cn.edu.zjnu.acm.repo.problem;
 
 import cn.edu.zjnu.acm.entity.oj.Tag;
 import org.springframework.data.jpa.repository.JpaRepository;

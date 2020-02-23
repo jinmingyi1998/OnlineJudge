@@ -1,4 +1,4 @@
-package cn.edu.zjnu.acm.repo;
+package cn.edu.zjnu.acm.repo.contest;
 
 
 import cn.edu.zjnu.acm.entity.oj.Contest;

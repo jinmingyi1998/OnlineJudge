@@ -1,4 +1,4 @@
-package cn.edu.zjnu.acm.repo;
+package cn.edu.zjnu.acm.repo.team;
 
 import cn.edu.zjnu.acm.entity.oj.Team;
 import org.springframework.data.domain.Page;

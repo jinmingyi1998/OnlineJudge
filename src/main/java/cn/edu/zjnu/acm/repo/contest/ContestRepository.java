@@ -6,7 +6,7 @@
  * Vestibulum commodo. Ut rhoncus gravida arcu.
  */
 
-package cn.edu.zjnu.acm.repo;
+package cn.edu.zjnu.acm.repo.contest;
 
 import cn.edu.zjnu.acm.entity.oj.Contest;
 import cn.edu.zjnu.acm.entity.oj.Team;

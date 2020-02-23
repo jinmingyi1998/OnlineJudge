@@ -1,4 +1,4 @@
-package cn.edu.zjnu.acm.repo;
+package cn.edu.zjnu.acm.repo.user;
 
 import cn.edu.zjnu.acm.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
