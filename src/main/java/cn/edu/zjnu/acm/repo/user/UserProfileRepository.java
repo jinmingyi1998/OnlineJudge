@@ -43,5 +43,4 @@ public interface UserProfileRepository extends JpaRepository<UserProfile, Long> 
     void setUserSubmitted(@Param(value = "pid") Long profileId, @Param(value = "sub") int sub);
 
 
-
 }

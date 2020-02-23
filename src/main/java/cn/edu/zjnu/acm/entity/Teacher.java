@@ -1,12 +1,10 @@
 package cn.edu.zjnu.acm.entity;
 
-import cn.edu.zjnu.acm.entity.oj.Contest;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @Data

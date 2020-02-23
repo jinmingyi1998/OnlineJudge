@@ -12,9 +12,6 @@ import java.util.List;
 @Data
 @Slf4j
 public class Article {
-    public Article() {
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -32,4 +29,6 @@ public class Article {
     private Integer down;
     @OneToMany(mappedBy = "article")
     private List<ArticleComment> comment;
+    public Article() {
+    }
 }
