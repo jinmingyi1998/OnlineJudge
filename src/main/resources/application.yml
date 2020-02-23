@@ -4,6 +4,10 @@ spring:
     password: ${MYSQL_PASSWORD:-1234}
     url: jdbc:mysql://${MYSQL_URL}?serverTimezone=GMT%2B8&useUnicode=yes&characterEncoding=UTF-8
     driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      max-lifetime: 240000
+      maximum-pool-size: 10
+      connection-test-query: SELECT 1
   jpa:
     hibernate:
       ddl-auto: update
