@@ -7,6 +7,7 @@ import cn.edu.zjnu.acm.entity.oj.Contest;
 import cn.edu.zjnu.acm.entity.oj.ContestProblem;
 import cn.edu.zjnu.acm.entity.oj.Problem;
 import cn.edu.zjnu.acm.entity.oj.Solution;
+import cn.edu.zjnu.acm.exception.ForbiddenException;
 import cn.edu.zjnu.acm.exception.NotFoundException;
 import cn.edu.zjnu.acm.repo.ContestProblemRepository;
 import cn.edu.zjnu.acm.repo.ProblemRepository;
@@ -206,6 +207,17 @@ public class AdminController {
             }
         }
         log.info("calculating on contest finished");
+    }
+
+    @GetMapping("/maintain")
+    public String maintainSwich() {
+        GlobalStatus.teacherOnly ^= true;
+        User user = (User) session.getAttribute("currentUser");
+        if (user == null) {
+            throw new ForbiddenException();
+        }
+        log.info(user.getId() + "set status: teacherOnly to " + GlobalStatus.teacherOnly);
+        return GlobalStatus.teacherOnly ? "maintaining now" : "not maintaining now";
     }
 
 
