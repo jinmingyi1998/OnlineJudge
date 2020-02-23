@@ -1,8 +1,6 @@
 package cn.edu.zjnu.acm.interceptor;
 
 import cn.edu.zjnu.acm.entity.oj.Contest;
-import cn.edu.zjnu.acm.exception.NeedLoginException;
-import cn.edu.zjnu.acm.exception.NotFoundException;
 import cn.edu.zjnu.acm.service.ContestService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +21,11 @@ public class ContestInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         HttpSession session = request.getSession();
-        if (session.getAttribute("currentUser") == null)
-            throw new NeedLoginException();
+        if (session.getAttribute("currentUser") == null) {
+            response.setContentType("text/html;charset=utf-8");
+            response.getWriter().println("Please Login 请登录");
+            return false;
+        }
         String url = request.getRequestURL().toString();
         String[] sp = url.split("/");
         if (sp.length <= 3) return true;
@@ -32,12 +33,13 @@ public class ContestInterceptor implements HandlerInterceptor {
         try {
             cid = Long.parseLong(sp[sp.length - 1]);
         } catch (NumberFormatException e) {
-            throw new NotFoundException();
+            response.sendError(404);
+            return false;
         }
         Contest contest = contestService.getContestById(cid, false);
         if (contest != null && contest.isStarted() && session.getAttribute("contest" + contest.getId()) != null)
             return true;
-        response.setStatus(404);
+        response.sendError(404);
         return false;
     }
 

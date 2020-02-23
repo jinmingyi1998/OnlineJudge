@@ -30,10 +30,9 @@ public class TeacherCheckInterceptor implements HandlerInterceptor {
                 if (teacher != null)
                     return true;
             }
-            response.setStatus(403);
-            return false;
+            response.sendError(403);
         } catch (Exception e) {
-            response.setStatus(404);
+            response.sendError(404);
         }
         return false;
     }

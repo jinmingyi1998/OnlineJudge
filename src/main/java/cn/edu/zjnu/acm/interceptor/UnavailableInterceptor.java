@@ -1,7 +1,10 @@
 package cn.edu.zjnu.acm.interceptor;
 
 import cn.edu.zjnu.acm.config.GlobalStatus;
+import cn.edu.zjnu.acm.entity.User;
+import cn.edu.zjnu.acm.repo.TeacherRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -12,11 +15,23 @@ import javax.servlet.http.HttpServletResponse;
 @Component
 @Slf4j
 public class UnavailableInterceptor implements HandlerInterceptor {
+    @Autowired
+    TeacherRepository teacherRepository;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         if (GlobalStatus.maintaining) {
+            response.setContentType("text/html;charset=utf-8");
             response.getWriter().println("维护中");
+            return false;
+        }
+        if (GlobalStatus.teacherOnly) {
+            User user = (User) request.getSession().getAttribute("currentUser");
+            if (user != null && teacherRepository.existsByUser(user)) {
+                return true;
+            }
+            response.setContentType("text/html;charset=utf-8");
+            response.getWriter().println("维护中 Unavailable now");
             return false;
         }
         return true;

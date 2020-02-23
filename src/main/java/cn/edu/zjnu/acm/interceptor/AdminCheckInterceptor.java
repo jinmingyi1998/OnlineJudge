@@ -31,20 +31,18 @@ public class AdminCheckInterceptor implements HandlerInterceptor {
                     return true;
                 }
             }
-            response.setStatus(403);
+            response.sendError(403);
         } catch (Exception e) {
-            response.setStatus(404);
+            response.sendError(404);
         }
         return false;
     }
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-
     }
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-
     }
 }

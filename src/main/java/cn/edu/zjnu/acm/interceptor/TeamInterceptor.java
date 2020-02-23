@@ -21,6 +21,7 @@ public class TeamInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         User user = (User) request.getSession().getAttribute("currentUser");
         if (user == null) {
+            response.setCharacterEncoding("utf-8");
             response.getWriter().println("请登录 Please Login");
             return false;
         }
@@ -30,13 +31,13 @@ public class TeamInterceptor implements HandlerInterceptor {
             Long tid = Long.parseLong(sp[sp.length - 1]);
             Team team = teamService.getTeamById(tid);
             if (teamService.getUserInTeam(user, team).getLevel() > Teammate.MANAGER) {
-                response.setStatus(403);
+                response.sendError(403);
                 return false;
             }
         } catch (NumberFormatException e) {
             return true;
         } catch (NullPointerException e) {
-            response.setStatus(404);
+            response.sendError(404);
             return false;
         }
         return true;
