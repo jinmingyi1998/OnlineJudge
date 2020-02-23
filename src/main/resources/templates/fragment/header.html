@@ -19,37 +19,70 @@
             padding-top: 6rem;
             margin: 0;
         }
+
         .ui.fluid.container {
             max-width: 85% !important;
         }
-        .katex{
-            font-size: 1.21em!important;
+
+        .katex {
+            font-size: 1.21em !important;
         }
-        .editormd-html-preview, .editormd-preview-containe{
-            font-size: 16px!important;
+
+        .editormd-html-preview, .editormd-preview-containe {
+            font-size: 16px !important;
         }
     </style>
 </head>
 <body>
 <nav class="ui fixed massive menu borderless">
-    <div class="ui container">
+    <div class="ui fluid container">
         <a href="/" class="header item">
             <img src="/images/acmlogo.png" alt="logo"></a>
-        <a class="link item" href="/">主页</a>
-        <a class="link item" href="/problems">题库</a>
-        <a class="link item" href="/contest">比赛</a>
-        <a class="link item" href="/status">提交记录</a>
-        <a class="link item" href="/user/standing">排名</a>
-        <a class="link item" href="/team">队伍</a>
+
+        <a class="link item animated fade ui button big" href="/">
+            <div class="hidden content"><i class="ui home icon"></i>主页</div>
+            <div class="visible content">Home</div>
+        </a>
+        <a class="link item animated fade ui button big" href="/problems">
+            <div class="hidden content"><i class="ui tasks icon"></i>题库</div>
+            <div class="visible content">Problem set</div>
+        </a>
+        <a class="link item animated fade ui button big" href="/contest">
+            <div class="hidden content"><i class="ui flag checkered icon"></i>比赛</div>
+            <div class="visible content">Contests</div>
+        </a>
+        <a class="link item animated fade ui button big" href="/status">
+            <div class="hidden content"><i class="ui microchip icon"></i>提交记录</div>
+            <div class="visible content">Judge Status</div>
+        </a>
+        <a class="link item animated fade ui button big" href="/user/standing">
+            <div class="hidden content"><i class="ui sort amount up icon"></i>排名</div>
+            <div class="visible content">Ranklist</div>
+        </a>
+        <a class="link item animated fade ui button big" href="/team">
+            <div class="hidden content"><i class="ui users icon"></i>队伍</div>
+            <div class="visible content">Teams</div>
+        </a>
         <div class="ui right borderless menu" id="userbar">
             <div v-if="!isLogin" class="ui menu">
-                <a class="item" href="/login">登录</a>
-                <a class="item" href="/register">注册</a>
+                <a class="item animated fade ui button big" href="/login">
+                    <div class="hidden content"><i class="ui sign-in icon"></i>登录</div>
+                    <div class="visible content">Sign in</div>
+                </a>
+                <a class="item animated fade ui button big" href="/register">
+                    <div class="hidden content"><i class="ui user plus icon"></i>注册</div>
+                    <div class="visible content">Sing up</div>
+                </a>
             </div>
             <div v-if="isLogin" class="ui menu">
-                <a class="item" :href="'/user/'+user.id" v-if="isLogin"
-                   data-inverted="" v-bind:data-tooltip="user.name" data-position="bottom center">个人中心</a>
-                <a class="item" href="/logout">注销</a>
+                <a :href="'/user/'+user.id" class="item  animated fade ui button big" v-if="isLogin">
+                    <div class="visible content" v-html="user.name"></div>
+                    <div class="hidden content"><i class="ui user circle icon"></i></div>
+                </a>
+                <a class="item animated fade ui button big" href="/logout">
+                    <div class="hidden content"><i class="ui sign-out icon"></i>注销</div>
+                    <div class="visible content">log out</div>
+                </a>
             </div>
         </div>
     </div>
