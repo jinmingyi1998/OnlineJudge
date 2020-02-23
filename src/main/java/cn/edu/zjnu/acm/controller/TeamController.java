@@ -93,10 +93,13 @@ public class TeamController {
         if (teammate == null) {
             throw new NotFoundException();
         }
-        if (!isUserPermitted(teammate.getTeam().getId(), Teammate.MASTER)) {
-            throw new ForbiddenException();
+        if (!isUserPermitted(teammate.getTeam().getId(), Teammate.MANAGER)) {
+            return "Permission denied";
         }
         User user = (User) session.getAttribute("currentUser");
+        Teammate selfTeammate = teamService.getUserInTeam(user, teammate.getTeam());
+        if (selfTeammate.getLevel() >= teammate.getLevel())
+            throw new ForbiddenException();
         if (teammate.getUser().getId() == user.getId())
             return "failed";
         teamService.deleteTeammate(teammate);

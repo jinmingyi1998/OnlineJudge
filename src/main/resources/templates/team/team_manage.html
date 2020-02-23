@@ -165,14 +165,17 @@
             update_attend() {
                 var that = this;
                 that.dim = true;
-                console.log(this.attend);
                 axios.get("/api/team/update/attend/" + tid + "?attend=" + this.attend)
                     .then(function (res) {
                         if (res.data != "success") {
                             alert(res.data);
                         }
                     }).catch(function (e) {
-                    alert("Unknown error");
+                    if (e.response.status === 403) {
+                        alert("Permission denied")
+                    } else {
+                        alert("error");
+                    }
                 }).finally(function () {
                     that.dim = false;
                 });
