@@ -1,6 +1,5 @@
 package cn.edu.zjnu.acm.interceptor;
 
-import cn.edu.zjnu.acm.exception.NeedLoginException;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;

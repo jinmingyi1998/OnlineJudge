@@ -19,7 +19,6 @@ public class UnavailableInterceptor implements HandlerInterceptor {
             response.getWriter().println("维护中");
             return false;
         }
-        log.info("unavailable interceptor");
         return true;
     }
 

@@ -2,8 +2,6 @@ package cn.edu.zjnu.acm.interceptor;
 
 import cn.edu.zjnu.acm.entity.Teacher;
 import cn.edu.zjnu.acm.entity.User;
-import cn.edu.zjnu.acm.exception.ForbiddenException;
-import cn.edu.zjnu.acm.exception.NotFoundException;
 import cn.edu.zjnu.acm.repo.TeacherRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,10 +31,11 @@ public class AdminCheckInterceptor implements HandlerInterceptor {
                     return true;
                 }
             }
-            throw new ForbiddenException();
+            response.setStatus(403);
         } catch (Exception e) {
-            throw new NotFoundException();
+            response.setStatus(404);
         }
+        return false;
     }
 
     @Override
