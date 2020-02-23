@@ -19,11 +19,11 @@ spring:
     mode: HTML
     check-template: false
   config:
-    additional-location: /config
+    additional-location: /onlinejudge/config
   servlet:
     multipart:
-      max-file-size: 3050MB
-      max-request-size: 3050MB
+      max-file-size: 1024MB
+      max-request-size: 1280MB
   resources:
     cache:
       period: 2592000

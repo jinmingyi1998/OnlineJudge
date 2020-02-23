@@ -6,4 +6,5 @@ RUN chmod 755 gradlew && ./gradlew --no-daemon bootJar \
     &&  rm -rf .git src out .gradle build \
     && rm -rf /root/.gradle
 EXPOSE 8080
+VOLUME /onlinejudge
 CMD java -jar acm-0.0.1-SNAPSHOT.jar
