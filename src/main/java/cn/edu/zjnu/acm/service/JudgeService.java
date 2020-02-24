@@ -61,6 +61,10 @@ public class JudgeService {
             default:
                 throw new Exception("no this language");
         }
+        if (!(solution.getLanguage().equals("c")||solution.getLanguage().equals("cpp"))){
+            solution.getProblem().setTimeLimit(solution.getProblem().getTimeLimit()*2);
+            solution.getProblem().setMemoryLimit(solution.getProblem().getMemoryLimit()*2);
+        }
         JudgeService.SubmitCode submitCode = new JudgeService.SubmitCode(
                 solution.getId().intValue(),
                 solution.getProblem().getId().intValue(),
