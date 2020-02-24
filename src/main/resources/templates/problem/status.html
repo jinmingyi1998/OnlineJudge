@@ -59,19 +59,23 @@
         </tr>
         </tbody>
     </table>
-    <div class="ui pagination menu">
-        <pagination :class="{disabled:first}" content='<i class="angle double left icon"></i>' v-on:change_page="get_page"
-                    v-bind:to_page="0"></pagination>
-        <pagination :class="{disabled:first}" content="<i class='angle left icon'></i>"
-                    v-on:change_page="get_page" v-bind:to_page="number-1"></pagination>
-        <div v-for="n in npage">
-            <pagination :class="{active:number == n}" v-bind:content="n+1" v-on:change_page="get_page"
-                        v-bind:to_page="n"></pagination>
+    <div class="ui centered gird">
+        <div class="ui pagination menu">
+            <pagination :class="{disabled:first}" content='<i class="angle double left icon"></i>'
+                        v-on:change_page="get_page"
+                        v-bind:to_page="0"></pagination>
+            <pagination :class="{disabled:first}" content="<i class='angle left icon'></i>"
+                        v-on:change_page="get_page" v-bind:to_page="number-1"></pagination>
+            <div v-for="n in npage">
+                <pagination :class="{active:number == n}" v-bind:content="n+1" v-on:change_page="get_page"
+                            v-bind:to_page="n"></pagination>
+            </div>
+            <pagination :class="{disabled:last}" content='<i class="angle  right icon"></i>'
+                        v-on:change_page="get_page" v-bind:to_page="number+1"></pagination>
+            <pagination :class="{disabled:last}" content='<i class="angle double right icon"></i>'
+                        v-on:change_page="get_page"
+                        v-bind:to_page="totalPages-1"></pagination>
         </div>
-        <pagination :class="{disabled:last}" content='<i class="angle  right icon"></i>'
-                    v-on:change_page="get_page" v-bind:to_page="number+1"></pagination>
-        <pagination :class="{disabled:last}" content='<i class="angle double right icon"></i>' v-on:change_page="get_page"
-                    v-bind:to_page="totalPages-1"></pagination>
     </div>
 </div>
 <div class="ui large modal" id="codemodal">
@@ -173,7 +177,7 @@
         },
         methods: {
             get_page(page) {
-                if(page>=this.totalPages||page<0)return;
+                if (page >= this.totalPages || page < 0) return;
                 var that = this;
                 url = "/api/status?page=" + page + "&user=" + that.searchUser + "&pid=" + that.searchProblem + "&AC=" + that.searchAC;
                 axios.get(url).then(function (res) {
