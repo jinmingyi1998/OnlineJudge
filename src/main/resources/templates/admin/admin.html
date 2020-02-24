@@ -30,10 +30,10 @@
         </div>
         <div class="ui selection vertically list celled segment" :class="{loading:!ready}">
             <div class="ui item" target="_blank" v-for="p in problems">
-                <a :href="'/problems/'+p.id"><h3>{{p.id}} - {{p.title}} - {{p.score}}积分</h3></a>
+                <a :href="'/problems/'+p.id" target="_blank"><h3>{{p.id}} - {{p.title}} - {{p.score}}积分</h3></a>
                 <div class="right floated">
 <!--                    <div class="ui inverted red button small">Delete</div>-->
-                    <a class="ui button brown inverted small" :href="'/admin/problem/edit/'+p.id">Update</a>
+                    <a class="ui button brown inverted small" :href="'/admin/problem/edit/'+p.id" target="_blank">Update</a>
                 </div>
                 <div class="ui small horizontal labels">
                     <div class="ui label" v-for="pt in p.tags" v-html="pt.name"></div>
