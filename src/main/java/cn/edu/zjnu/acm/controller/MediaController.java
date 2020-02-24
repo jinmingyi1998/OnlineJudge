@@ -90,7 +90,7 @@ public class MediaController {
     public void downloadImage(@PathVariable(value = "filename") String filename, HttpServletResponse response) {
         File img = new File(saveDir + filename);
         if (img.exists()) {
-            byte[] buffer = new byte[1024];
+            byte[] buffer = new byte[4096];
             try {
                 BufferedInputStream stream = new BufferedInputStream(new FileInputStream(img));
                 OutputStream os = response.getOutputStream();
