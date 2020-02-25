@@ -103,7 +103,7 @@ var prom = new Vue({
                     $(this).attr("id", "editormd-view");
                     editormd.markdownToHTML("editormd-view", {
                         gfm: true,
-                        htmlDecode:"p,br,img,h1,h2,h3,h4,h5,h6,hr",
+                        htmlDecode:"style,script,iframe|on*",
                         toc: true,
                         tocm: false,
                         tocStartLevel: 1,
