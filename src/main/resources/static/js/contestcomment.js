@@ -8,6 +8,7 @@ $(function () {
         toolbar: false,
         toc: false,
         tocm: false,
+        autoFocus:false,
         autoLoadKaTeX: true,
         pageBreak: true,
         atLink: true,    // for @link
