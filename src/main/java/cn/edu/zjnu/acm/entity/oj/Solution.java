@@ -32,7 +32,7 @@ public class Solution implements Cloneable {
     @JsonIgnore
     public static final String RE = "Runtime Error";
     @JsonIgnore
-    public static final String CE = "Compile Error";
+    public static final String CE = "Compilation Error";
     @JsonIgnore
     public static final String SE = "System Error";
 
