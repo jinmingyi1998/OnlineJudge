@@ -4,6 +4,7 @@ import cn.edu.zjnu.acm.entity.User;
 import cn.edu.zjnu.acm.entity.oj.Team;
 import cn.edu.zjnu.acm.entity.oj.TeamApply;
 import cn.edu.zjnu.acm.entity.oj.Teammate;
+import cn.edu.zjnu.acm.repo.contest.ContestRepository;
 import cn.edu.zjnu.acm.repo.team.TeamApplyRepository;
 import cn.edu.zjnu.acm.repo.team.TeamRepository;
 import cn.edu.zjnu.acm.repo.team.TeammateRepository;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,11 +22,13 @@ public class TeamService {
     private final TeamRepository teamRepository;
     private final TeammateRepository teammateRepository;
     private final TeamApplyRepository teamApplyRepository;
+    private final ContestRepository contestRepository;
 
-    public TeamService(TeamRepository teamRepository, TeammateRepository teammateRepository, TeamApplyRepository teamApplyRepository) {
+    public TeamService(TeamRepository teamRepository, TeammateRepository teammateRepository, TeamApplyRepository teamApplyRepository, ContestRepository contestRepository) {
         this.teamRepository = teamRepository;
         this.teammateRepository = teammateRepository;
         this.teamApplyRepository = teamApplyRepository;
+        this.contestRepository = contestRepository;
     }
 
     public Page<Team> getAll(int page, int size) {
@@ -94,8 +98,9 @@ public class TeamService {
     public Boolean isTeamNameExist(String name) {
         return teamRepository.findByName(name).isPresent();
     }
-    public Boolean checkUserCreateTeamLimit(int limit,User user){
-        return teamRepository.countAllByCreator(user)>=limit;
+
+    public Boolean checkUserCreateTeamLimit(int limit, User user) {
+        return teamRepository.countAllByCreator(user) >= limit;
     }
 
     public TeamApply resolveApply(TeamApply teamApply, boolean approve) {
@@ -124,7 +129,15 @@ public class TeamService {
         return teamApplyRepository.findByUserAndTeamAndActive(user, team, true).isPresent();
     }
 
+    @Transactional
     public void deleteTeammate(Teammate teammate) {
         teammateRepository.deleteById(teammate.getId());
+    }
+
+    @Transactional
+    public void deleteTeam(Team team) {
+        teammateRepository.deleteAllByTeam(team);
+        teamApplyRepository.deleteAllByTeam(team);
+        teamRepository.delete(team);
     }
 }

@@ -4,6 +4,7 @@ import cn.edu.zjnu.acm.entity.User;
 import cn.edu.zjnu.acm.entity.oj.Team;
 import cn.edu.zjnu.acm.entity.oj.Teammate;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,5 +18,9 @@ public interface TeammateRepository extends JpaRepository<Teammate, Long> {
 
     Optional<Teammate> findByUserAndTeam(User user, Team team);
 
+    @Modifying
     void deleteById(Long id);
+
+    @Modifying
+    void deleteAllByTeam(Team team);
 }

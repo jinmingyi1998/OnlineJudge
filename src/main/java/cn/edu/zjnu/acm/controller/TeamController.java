@@ -261,7 +261,7 @@ public class TeamController {
         if (teamService.isTeamNameExist(team.getName())) {
             return "name existed!";
         }
-        if (teamService.checkUserCreateTeamLimit(20,currentUser)){
+        if (teamService.checkUserCreateTeamLimit(20, currentUser)) {
             return "number limit exceed";
         }
         team.setCreator(currentUser);
@@ -273,6 +273,24 @@ public class TeamController {
         return "success";
     }
 
+    @GetMapping("/leave/{teamid:[0-9]+}")
+    public String leaveTeam(@PathVariable("teamid") Long teamId) {
+        User user = (User) session.getAttribute("currentUser");
+        if (user == null) {
+            throw new NeedLoginException();
+        }
+        Team team = teamService.getTeamById(teamId);
+        if (!teamService.isUserInTeam(user, team)) {
+            throw new NotFoundException();
+        }
+        Teammate teammate = teamService.getUserInTeam(user, team);
+        if (teammate.getLevel() == Teammate.MASTER) {
+            teamService.deleteTeam(team);
+        } else {
+            teamService.deleteTeammate(teammate);
+        }
+        return "success";
+    }
 }
 
 @Controller

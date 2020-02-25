@@ -92,4 +92,8 @@ public class ContestService {
     public List<Contest> contestsOfTeam(Team team) {
         return contestRepository.findAllByTeam(team);
     }
+    @Transactional
+    public void deleteContest(Contest contest){
+        contestRepository.delete(contest);
+    }
 }

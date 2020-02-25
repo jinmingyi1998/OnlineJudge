@@ -13,6 +13,7 @@ import cn.edu.zjnu.acm.entity.oj.Team;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,4 +30,7 @@ public interface ContestRepository extends JpaRepository<Contest, Long> {
     Optional<Contest> findById(Long aLong);
 
     Page<Contest> findByTitleContains(Pageable pageable, String title);
+
+    @Modifying
+    void deleteAllByTeam(Team team);
 }
