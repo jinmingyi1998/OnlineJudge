@@ -2,6 +2,7 @@ package cn.edu.zjnu.acm.controller;
 
 import cn.edu.zjnu.acm.entity.User;
 import cn.edu.zjnu.acm.entity.oj.*;
+import cn.edu.zjnu.acm.exception.ForbiddenException;
 import cn.edu.zjnu.acm.exception.NeedLoginException;
 import cn.edu.zjnu.acm.exception.NotFoundException;
 import cn.edu.zjnu.acm.repo.CommentRepository;
@@ -62,6 +63,10 @@ class ContestViewController {
         return "contest/create_contest";
     }
 
+    @GetMapping("/edit/{tid:[0-9]+}")
+    public String editContest() {
+        return "contest/edit_contest";
+    }
 }
 
 @Slf4j
@@ -134,6 +139,61 @@ public class ContestController {
         } else {
             return "success";
         }
+    }
+
+    private Boolean isContestCreator(Contest contest, User currentUser) {
+        if (contest == null) {
+            throw new NotFoundException();
+        }
+        return contest.getCreator().getId() == currentUser.getId();
+    }
+
+    @GetMapping("/background/access/{cid:[0-9]+}")
+    public String isAccessContestBackground(@PathVariable("cid") Long cid,
+                                            @SessionAttribute User currentUser) {
+        Contest contest = contestService.getContestById(cid);
+        if (isContestCreator(contest, currentUser)) {
+            return "success";
+        }
+        return "negative";
+    }
+
+    @GetMapping("/background/{cid:[0-9]+}")
+    public Contest getUpdateContestInfo(@PathVariable("cid") Long cid,
+                                        @SessionAttribute User currentUser) {
+        Contest contest = contestService.getContestById(cid);
+        if (!isContestCreator(contest, currentUser)) {
+            throw new ForbiddenException();
+        }
+        contest.setCreator(null);
+        contest.setProblems(null);
+        contest.setSolutions(null);
+        contest.setTeam(null);
+        contest.setContestComments(null);
+        return contest;
+    }
+
+    @PostMapping("/background/{cid:[0-9]+}")
+    public String updateContest(@PathVariable("cid") Long cid,
+                                @SessionAttribute User currentUser,
+                                @RequestBody EditContest editContest) {
+        Contest contest = contestService.getContestById(cid);
+        if (!isContestCreator(contest, currentUser)) {
+            throw new ForbiddenException();
+        }
+        contest.setTitle(editContest.getTitle());
+        contest.setDescription(editContest.getDescription());
+        if (!contest.getPrivilege().equals(Contest.TEAM)) {
+            if (!editContest.getPrivilege().equals(Contest.TEAM)) {
+                contest.setPrivilege(editContest.getPrivilege());
+            }
+        }
+        contest.setStartAndEndTime(editContest.getStartTime(), editContest.getLength());
+        if (contest.getPrivilege().equals(Contest.PRIVATE)) {
+            contest.setPassword(editContest.getPassword());
+        }
+        contestService.saveContest(contest);
+        return "success";
     }
 
     @GetMapping("/{cid:[0-9]+}")
@@ -354,7 +414,7 @@ public class ContestController {
                 contest.setTeam(null);
             }
             contest.setSolutions(null);
-            contest = contestService.insertContest(contest);
+            contest = contestService.saveContest(contest);
             for (ContestProblem cp : contestProblems) {
                 cp.setContest(contest);
                 contestProblemRepository.save(cp);
@@ -376,6 +436,19 @@ public class ContestController {
 
         public Long getReplyId() {
             return replyId == null ? 0L : replyId;
+        }
+    }
+
+    @Data
+    static class EditContest {
+        String title;
+        String description;
+        String privilege;
+        String password;
+        String startTime;
+        Long length;
+
+        public EditContest() {
         }
     }
 

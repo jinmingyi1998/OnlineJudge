@@ -46,7 +46,7 @@ public class ContestService {
         return contestRepository.findAll();
     }
 
-    public Contest insertContest(Contest contest) {
+    public Contest saveContest(Contest contest) {
         return contestRepository.save(contest);
     }
 

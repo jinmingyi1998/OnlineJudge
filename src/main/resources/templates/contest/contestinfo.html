@@ -27,6 +27,7 @@
     <div v-if="attend">
         <div class="ui segment content">
             <h1 class=" ui center aligned header">{{contest.title}}</h1>
+            <a :href="'/contest/edit/'+cid" class="ui button" v-if="creator">Update更新比赛</a>
             <p class="ui description">{{contest.description}}</p>
         </div>
         <header-tab loc="problem" v-bind:cid="contest.id"></header-tab>

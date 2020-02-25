@@ -15,6 +15,7 @@
     <div class="segment">
         <div class="header" v-if="info.length==0">Waiting...</div>
         <h1 class="ui center aligned header" v-html="info"></h1>
+        <a :href="'/contest/edit/'+cid" class="ui button" v-if="creator">Update更新比赛</a>
     </div>
 </main>
 <script>
@@ -23,7 +24,9 @@
     var cont = new Vue({
         el: "#contest-content",
         data: {
-            info: ""
+            info: "",
+            cid:cid,
+            creator:false
         },
         created() {
             var that = this;
@@ -43,6 +46,14 @@
                         location.href="/4O4";
                     }
                 });
+            axios.get("/api/contest/background/access/" + cid)
+                .then(function (res) {
+                    if (res.data == "success") {
+                        that.creator = true;
+                    }
+                }).catch(function (e) {
+                console.log(e)
+            });
         }
     });
 </script>

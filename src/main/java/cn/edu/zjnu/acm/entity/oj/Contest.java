@@ -100,7 +100,7 @@ public class Contest implements Cloneable {
     public String getLength() {
         Duration d = Duration.between(startTime, endTime);
         Long minutes = d.toMinutes();
-        return (minutes / 60) + ":" + (minutes % 60);
+        return minutes.toString();
     }
 
     public String getNormalStartTime() {
@@ -115,6 +115,10 @@ public class Contest implements Cloneable {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         LocalDateTime localDateTime = LocalDateTime.parse(startTime, dtf);
         this.startTime = Instant.from(localDateTime.atZone(ZoneId.systemDefault()));
+    }
+    public void setStartAndEndTime(String startTime,Long length){
+        setStartTime(startTime);
+        this.endTime = this.startTime.plusSeconds(60 * length);
     }
 
     public void setEndTime(String startTime, String lastTime) {
