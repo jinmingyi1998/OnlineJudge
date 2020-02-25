@@ -23,7 +23,7 @@ function render_md() {
                 flowChart: true,
                 sequenceDiagram: true,
                 previewCodeHighlight: true,
-                htmlDecode:true,
+                htmlDecode:"p,br,img,h1,h2,h3,h4,h5,h6,hr",
             });
             $(this).attr("id", tid);
         });

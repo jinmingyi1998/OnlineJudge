@@ -130,8 +130,10 @@
                     if (res !== "success") {
                         console.log(res);
                         alert(res);
+                    } else {
+                        alert("success")
+                        location.reload();
                     }
-                    location.reload();
                 })
             }
         },
@@ -169,7 +171,7 @@
                         autoLoadKaTeX: true,
                         tex: true,
                         flowChart: true,
-                        htmlDecode:true,
+                        htmlDecode:"p,br,img,h1,h2,h3,h4,h5,h6,hr",
                         previewCodeHighlight: true,
                         imageUploadURL: "/api/media/upload",
                         imageUpload: true,
@@ -187,7 +189,7 @@
                         tex: true,
                         flowChart: true,
                         previewCodeHighlight: true,
-                        htmlDecode:true,
+                        htmlDecode:"p,br,img,h1,h2,h3,h4,h5,h6,hr",
                         imageUploadURL: "/api/media/upload",
                         imageUpload: true,
                         imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "ico"],
@@ -201,7 +203,7 @@
                         codeFold: true,
                         searchReplace: true,
                         autoLoadKaTeX: true,
-                        htmlDecode:true,
+                        htmlDecode:"p,br,img,h1,h2,h3,h4,h5,h6,hr",
                         tex: true,
                         flowChart: true,
                         previewCodeHighlight: true,
@@ -218,7 +220,7 @@
                         codeFold: true,
                         searchReplace: true,
                         autoLoadKaTeX: true,
-                        htmlDecode:true,
+                        htmlDecode:"p,br,img,h1,h2,h3,h4,h5,h6,hr",
                         tex: true,
                         flowChart: true,
                         previewCodeHighlight: true,
