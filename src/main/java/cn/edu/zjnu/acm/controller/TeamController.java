@@ -261,6 +261,9 @@ public class TeamController {
         if (teamService.isTeamNameExist(team.getName())) {
             return "name existed!";
         }
+        if (teamService.checkUserCreateTeamLimit(20,currentUser)){
+            return "number limit exceed";
+        }
         team.setCreator(currentUser);
         team.setTeammates(new ArrayList<Teammate>());
         team.setContests(new ArrayList<Contest>());
