@@ -27,11 +27,11 @@ public class Team {
     private String name;
     @Column(nullable = false, columnDefinition = "LONGTEXT default ''")
     private String description;
-    @OneToMany(mappedBy = "team", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "team", fetch = FetchType.LAZY,cascade = CascadeType.REMOVE)
     private List<Teammate> teammates;
     @ManyToOne(optional = false)
     private User creator;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "team")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "team",cascade = CascadeType.REMOVE)
     private List<Contest> contests;
     @Column(nullable = false, columnDefinition = "varchar(50) default 'public'")
     private String attend = PUBLIC;

@@ -44,11 +44,11 @@ public class Contest implements Cloneable {
     private User creator;
     @Column(nullable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
     private Instant createTime;
-    @OneToMany(mappedBy = "contest")
+    @OneToMany(mappedBy = "contest",cascade = CascadeType.REMOVE)
     private List<ContestComment> contestComments;
-    @OneToMany(mappedBy = "contest")
+    @OneToMany(mappedBy = "contest",cascade = CascadeType.REMOVE)
     private List<ContestProblem> problems;
-    @OneToMany(mappedBy = "contest")
+    @OneToMany(mappedBy = "contest",cascade=CascadeType.REMOVE)
     private List<Solution> solutions;
     @Column(nullable = false, columnDefinition = "varchar(20) default 'acm'")
     private String pattern = "acm";
