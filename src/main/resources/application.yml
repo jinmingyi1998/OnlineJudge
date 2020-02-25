@@ -91,12 +91,60 @@ onlinejudge:
     seccomp_rule: general
   least-score-to-see-others-code: 1000
   notice: |
-    C: gcc -DONLINE_JUDGE -fno-tree-ch -O2 -Wall -std=c99 main.c -lm -o main && ./main <br>
-    CPP: g++ -DONLINE_JUDGE -fno-tree-ch -O2 -Wall -std=c++14 main.cpp -lm -o main && ./main <br>
-    Java: javac Main.java -encoding UTF8 && java -Dfile.encoding=UTF-8 -Djava.awt.headless=true Main <br>
-    python(3): python(3) main.py <br>
-    go: go build main.go && ./main <br>
+    ## 运行参数
+    C: `gcc -DONLINE_JUDGE -fno-tree-ch -O2 -Wall -std=c99 main.c -lm -o main && ./main`
+    CPP: `g++ -DONLINE_JUDGE -fno-tree-ch -O2 -Wall -std=c++14 main.cpp -lm -o main && ./main `
+    Java: `javac Main.java -encoding UTF8 && java -Dfile.encoding=UTF-8 -Djava.awt.headless=true Main`
+    python(3): `python(3) main.py`
+    go: `go build main.go && ./main`
 
+    题目显示的时间空间限制为C/C++语言。其他语言二倍时间空间限制。
+
+    ## Q&A
+    1. `main`的问题
+
+    错误的例子：
+    ```
+    void main()
+    {
+        printf("hello\n");
+    }
+    ```
+    函数`main()`的返回类型必须是`int`，在`main()`里一定要有一句
+    ```
+    return 0;
+    ```
+    `system("pause");`将导致程序超时
+    2. 汉字问题
+
+    程序中不要出现任何汉字，即使在注释中也不行。服务器上使用的文字编码未必和你的电脑上的相同，你认为无害的汉字会被编译器认为是各种奇怪的东西。
+
+    3. 输出格式问题
+
+    仔细阅读题目中对于输出格式的要求。因为在服务器上程序是严格地按照预设的输出来比对你的程序的输出。
+
+    常见的输出格式问题包括：
+
+    - 行末要求不带空格（或带空格）
+    - 输出要求分行（或不分行）
+    - 有空格没空格要看仔细
+    - 输出中的标点符号要看清楚，尤其是绝对不能用中文全角的标点符号，另外单引号“'”和一撇“`”要分清楚
+    - 当输出浮点数时，通常题目中会做适当处理，要求比较明确的输出格式，一定要严格遵守，因为浮点数会涉及到输出的精度问题
+    - 当输出浮点数时，如果可能输出`0`，而数据可能为负时，有可能出现输出`-0.0`的情况，需要自己写代码判断，保证不出现`-0.0`
+
+    4. 不能用的库函数
+
+    某些库函数因为存在安全隐患是不能用的，目前主要常见的是`itoa`和`gets`。
+
+    5. 过时的写法问题
+
+    某些旧书上的过时写法也会在服务器的gcc编译时引起错误，例如：
+    ```
+    int f()
+    int a;
+    {
+    }
+    ```
 server:
   tomcat:
     max-threads: 2000
