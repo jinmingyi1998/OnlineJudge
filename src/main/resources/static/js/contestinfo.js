@@ -22,7 +22,8 @@ function render_md() {
                 taskList: false,   // Github Flavored Markdown task lists
                 flowChart: true,
                 sequenceDiagram: true,
-                previewCodeHighlight: true
+                previewCodeHighlight: true,
+                htmlDecode:true,
             });
             $(this).attr("id", tid);
         });
