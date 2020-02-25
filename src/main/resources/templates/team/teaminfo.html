@@ -24,9 +24,9 @@
                 <a :href="'manage/'+id" class="ui mini button" v-if="isManager()">管理队伍</a>
                 <h2>{{id}} - {{name}}</h2>
                 <div class="ui list" v-for="m in teammates">
-                    <div class="item">{{m.user.name}}
-                        <div class="ui small orange label" v-if="m.level==0">master</div>
-                        <div class="ui small label" v-if="m.level==1">manager</div>
+                    <div class="link item"><a v-bind:href="'/user/'+m.user.id">{{m.user.name}}</a>
+                        <div class="ui mini orange basic label" v-if="m.level==0">master</div>
+                        <div class="ui mini teal basic label" v-if="m.level==1">manager</div>
                     </div>
                 </div>
             </div>
