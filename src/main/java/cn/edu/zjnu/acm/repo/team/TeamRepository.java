@@ -1,5 +1,6 @@
 package cn.edu.zjnu.acm.repo.team;
 
+import cn.edu.zjnu.acm.entity.User;
 import cn.edu.zjnu.acm.entity.oj.Team;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +21,8 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
     Optional<Team> findByName(String name);
 
     Page<Team> findAll(Pageable pageable);
+
+    Long countAllByCreator(User user);
 
     @Transactional
     @Modifying

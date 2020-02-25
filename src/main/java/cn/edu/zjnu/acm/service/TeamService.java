@@ -94,6 +94,9 @@ public class TeamService {
     public Boolean isTeamNameExist(String name) {
         return teamRepository.findByName(name).isPresent();
     }
+    public Boolean checkUserCreateTeamLimit(int limit,User user){
+        return teamRepository.countAllByCreator(user)>=limit;
+    }
 
     public TeamApply resolveApply(TeamApply teamApply, boolean approve) {
         teamApply.setResult(approve ? TeamApply.APPROVED : TeamApply.REJECTED);
