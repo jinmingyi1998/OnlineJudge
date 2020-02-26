@@ -41,7 +41,7 @@
             </div>
             <div class="ui segment" :class="{loading:!ready}">
                 <div class="ui animated selection list">
-                    <a class="ui link item" v-for="p in problems" :href="'/problems/'+p.id">
+                    <a class="ui link item" target="_blank" v-for="p in problems" :href="'/problems/'+p.id">
                         <div class="ui content">
                             <div class="ui header">{{p.id}} - {{p.title}}</div>
                             <div class="meta">{{p.description.substring(0,35)}}

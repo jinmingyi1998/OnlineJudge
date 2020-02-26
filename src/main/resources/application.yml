@@ -165,8 +165,8 @@ server:
   tomcat:
     max-threads: 2000
     max-connections: 2000
-    max-http-form-post-size: 8192
+    uri-encoding: UTF-8
   servlet:
     session:
       timeout: 350m
-  max-http-header-size: 16384
+  max-http-header-size: 1048576
