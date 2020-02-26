@@ -1,13 +1,12 @@
 package cn.edu.zjnu.acm.controller;
 
+import cn.edu.zjnu.acm.entity.Teacher;
 import cn.edu.zjnu.acm.entity.User;
 import cn.edu.zjnu.acm.exception.NeedLoginException;
+import cn.edu.zjnu.acm.exception.NotFoundException;
 import cn.edu.zjnu.acm.service.UserService;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpSession;
@@ -71,5 +70,21 @@ public class UserController {
         if (user != null)
             return user.hideInfo();
         throw new NeedLoginException();
+    }
+
+    @GetMapping("/permission")
+    public String getUserPermission(@SessionAttribute(required = false) User currentUser) {
+        if (currentUser == null) {
+            throw new NotFoundException();
+        }
+        int p = (userService.getUserPermission(currentUser));
+        if (p == Teacher.TEACHER) {
+            return "teacher";
+        } else if (p == Teacher.ADMIN) {
+            return "admin";
+        } else {
+            return "user";
+        }
+
     }
 }

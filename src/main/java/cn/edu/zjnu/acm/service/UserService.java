@@ -2,9 +2,9 @@ package cn.edu.zjnu.acm.service;
 
 import cn.edu.zjnu.acm.entity.User;
 import cn.edu.zjnu.acm.entity.UserProfile;
+import cn.edu.zjnu.acm.repo.user.TeacherRepository;
 import cn.edu.zjnu.acm.repo.user.UserProfileRepository;
 import cn.edu.zjnu.acm.repo.user.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,10 +13,15 @@ import java.util.List;
 
 @Service
 public class UserService {
-    @Autowired
-    UserRepository userRepository;
-    @Autowired
-    UserProfileRepository userProfileRepository;
+    private final UserRepository userRepository;
+    private final UserProfileRepository userProfileRepository;
+    private final TeacherRepository teacherRepository;
+
+    public UserService(UserRepository userRepository, UserProfileRepository userProfileRepository, TeacherRepository teacherRepository) {
+        this.userRepository = userRepository;
+        this.userProfileRepository = userProfileRepository;
+        this.teacherRepository = teacherRepository;
+    }
 
     public User getUserById(Long id) {
         return userRepository.findById(id).orElse(null);
@@ -62,5 +67,16 @@ public class UserService {
     public List<User> userList() {
         List<User> userList = userRepository.findAll();
         return userList;
+    }
+
+    /**
+     * get user's permission
+     * @param user
+     * @return -1 if normal users, otherwise return teacher privileges.
+     */
+    public int getUserPermission(User user){
+        if(!teacherRepository.existsByUser(user))
+            return -1;
+        return teacherRepository.findByUser(user).get().getPrivilege();
     }
 }
