@@ -90,6 +90,7 @@ onlinejudge:
     memory_limit_check_only: 0
     seccomp_rule: general
   least-score-to-see-others-code: 1000
+  least-score-to-post-blog: 750
   notice: |
     ## 运行参数
     - C: `gcc -DONLINE_JUDGE -fno-tree-ch -O2 -Wall -std=c99 main.c -lm -o main && ./main`
@@ -170,3 +171,6 @@ server:
     session:
       timeout: 350m
   max-http-header-size: 1048576
+  error:
+    whitelabel:
+      enabled: false
