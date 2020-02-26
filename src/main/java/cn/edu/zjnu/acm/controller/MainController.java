@@ -13,14 +13,10 @@ import org.springframework.web.servlet.ModelAndView;
 @CrossOrigin
 @RestController
 public class MainController {
-    private final JudgeService judgeService;
     private final Config config;
-    private final SolutionService solutionService;
 
     public MainController(JudgeService judgeService, Config config, SolutionService solutionService) {
-        this.judgeService = judgeService;
         this.config = config;
-        this.solutionService = solutionService;
     }
 
     @GetMapping("/")
