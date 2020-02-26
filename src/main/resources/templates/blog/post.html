@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <th:block th:insert="~{fragment/header :: header}"></th:block>
+    <title>Update</title>
+    <meta content="text/html;charset=UTF-8" http-equiv="Content-Type">
+    <link rel="stylesheet" href="/editor/css/editormd.min.css">
+    <script src="/editor/editormd.min.js"></script>
+</head>
+<body>
+<main class="ui container segment">
+    <form onsubmit="return false" class="ui form" id="article">
+        <div class="required field">
+            <label for="title">Title</label>
+            <input type="text" required="required" id="title" v-model="title">
+        </div>
+        <div class="field">
+            <div id="editor-article">
+                <textarea style="display: none"></textarea>
+            </div>
+        </div>
+        <div class="button ui inverted green" v-on:click="send_article()"><i class="ui paper plane icon"></i>Post</div>
+    </form>
+</main>
+
+<script>
+    var editor;
+    $(function () {
+        editor = editormd({
+            id: "editor-article",
+            path: "/editor/lib/",
+            pluginPath: "/editor/plugins/",
+            height: 800,
+            autoFocus: false,
+            markdown: "",
+            tocTitle: "目录",
+            pageBreak: true,
+            atLink: true,    // for @link
+            emailLink: true,    // for mail address auto link
+            tex: true,
+            taskList: true,   // Github Flavored Markdown task lists
+            flowChart: true,
+            sequenceDiagram: true,
+            previewCodeHighlight: true,
+            imageUploadURL: "/api/media/upload",
+            imageUpload: true,
+            imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "ico", "JPG", "JPEG", "PNG"],
+        });
+    });
+
+    function render_md() {
+        $(function () {
+            $(".md-text").each(function () {
+                $(this).attr("id", "editormd-view");
+                editormd.markdownToHTML("editormd-view", {
+                    toc: true,
+                    tocStartLevel: 1,
+                    path: "/editor/lib/",
+                    pluginPath: "/editor/plugins",
+                    tocTitle: "目录",
+                    tocDropdown: false,
+                    tocContainer: "",
+                    pageBreak: true,
+                    atLink: true,    // for @link
+                    emailLink: true,    // for mail address auto link
+                    tex: true,
+                    taskList: true,   // Github Flavored Markdown task lists
+                    flowChart: true,
+                    sequenceDiagram: true,
+                    previewCodeHighlight: true
+                });
+                $(this).attr("id", "");
+            });
+        });
+    }
+
+    var article = new Vue({
+        el: "#article",
+        data: {
+            title: "",
+            text: ""
+        },
+        methods: {
+            send_article() {
+                if (this.title==""){
+                    alert("Title cannot be empty");
+                    return;
+                }
+                this.text = editor.getMarkdown();
+                if (this.text.length<15){
+                    alert("content too short! At least 15 letters");
+                    return;
+                }
+                axios.post("/api/blog/post", {
+                    title: this.title,
+                    text: this.text
+                })
+                    .then(function (res) {
+                        if (res.data == 'success') {
+                            alert(res.data);
+                            // location.href="/blog";
+                        } else {
+                            alert(res.data);
+                        }
+                    })
+                    .catch(function (e) {
+                        console.log(e);
+                    }).finally(function () {
+                    location.reload();
+                });
+            }
+        }
+    });
+    render_md();
+</script>
+</body>
+</html>

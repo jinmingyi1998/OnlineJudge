@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.Instant;
 import java.util.List;
 
@@ -16,18 +18,18 @@ public class Article {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false)
+    @NotNull(message = "title can't be null")
+    @Size(min = 1,message = "title too short")
     private String title;
+    @Size(min = 15,message = "text too short")
+    @NotNull(message = "text cannot be null")
     @Column(nullable = false, columnDefinition = "LONGTEXT DEFAULT ''")
     private String text;
     @Column(nullable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
-    private Instant postTime;
+    private Instant postTime=Instant.now();
     @ManyToOne(optional = false)
     private User user;
-    @Column(nullable = false, columnDefinition = "INTEGER DEFAULT 0")
-    private Integer up;
-    @Column(nullable = false, columnDefinition = "INTEGER DEFAULT 0")
-    private Integer down;
-    @OneToMany(mappedBy = "article")
+    @OneToMany(mappedBy = "article",cascade = CascadeType.REMOVE)
     private List<ArticleComment> comment;
     public Article() {
     }

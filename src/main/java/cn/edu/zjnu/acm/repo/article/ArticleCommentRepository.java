@@ -1,4 +1,4 @@
-package cn.edu.zjnu.acm.repo;
+package cn.edu.zjnu.acm.repo.article;
 
 import cn.edu.zjnu.acm.entity.oj.ArticleComment;
 import org.springframework.data.jpa.repository.JpaRepository;

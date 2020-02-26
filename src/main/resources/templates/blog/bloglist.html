@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragment/header :: header}"></th:block>
+    <meta charset="UTF-8">
+    <title>Blog</title>
+    <script src="/js/pagination.js"></script>
+    <style>
+        .ui.statistic {
+            margin-bottom: 0px;
+        }
+    </style>
+</head>
+<body>
+<main class="ui fluid container">
+    <div class="ui grid" id="blog-list">
+        <div class="ui container">
+            <div class="ui segment">
+                <form class="ui icon input" v-on:submit.prevent="search_problem()">
+                    <input type="text" v-model="search_string" placeholder="搜索标题">
+                    <i class="search link icon" v-on:click="search_problem()"></i>
+                </form>
+            </div>
+            <div class="ui centered grid">
+                <div class="ui pagination menu ">
+                    <pagination :class="{disabled:first}" content='<i class="angle double left icon"></i>'
+                                v-on:change_page="get_page" v-bind:to_page="0"></pagination>
+                    <pagination :class="{disabled:first}" content="<i class='angle left icon'></i>"
+                                v-on:change_page="get_page" v-bind:to_page="number-1"></pagination>
+                    <pagination v-for="n in npage" :class="{active:number == n}" v-bind:content="n+1"
+                                v-on:change_page="get_page" v-bind:to_page="n"></pagination>
+                    <pagination :class="{disabled:last}" content='<i class="angle  right icon"></i>'
+                                v-on:change_page="get_page" v-bind:to_page="number+1"></pagination>
+                    <pagination :class="{disabled:last}" content='<i class="angle double right icon"></i>'
+                                v-on:change_page="get_page" v-bind:to_page="totalPages-1"></pagination>
+                </div>
+            </div>
+            <div class="ui segment" :class="{loading:!ready}">
+                <div class="ui animated selection list">
+                    <a class="ui link item" target="_blank" v-for="article in articles" :href="'/problems/'+p.id">
+                        <div class="ui content">
+                            <div class="ui header">{{article.title}}</div>
+                            <div class="meta">{{article.text.substring(0,35)}}
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <div class="ui centered grid">
+                <div class="ui pagination menu">
+                    <pagination :class="{disabled:first}" content='<i class="angle double left icon"></i>'
+                                v-on:change_page="get_page" v-bind:to_page="0"></pagination>
+                    <pagination :class="{disabled:first}" content="<i class='angle left icon'></i>"
+                                v-on:change_page="get_page" v-bind:to_page="number-1"></pagination>
+                    <pagination v-for="n in npage" :class="{active:number == n}" v-bind:content="n+1"
+                                v-on:change_page="get_page" v-bind:to_page="n"></pagination>
+                    <pagination :class="{disabled:last}" content='<i class="angle  right icon"></i>'
+                                v-on:change_page="get_page" v-bind:to_page="number+1"></pagination>
+                    <pagination :class="{disabled:last}" content='<i class="angle double right icon"></i>'
+                                v-on:change_page="get_page" v-bind:to_page="totalPages-1"></pagination>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<footer th:replace="~{fragment/footer :: footer}"></footer>
+<script>
+    var blog_list = new Vue({
+        el: "#blog-list",
+        data: {
+            ready: false,
+            articles: [],
+            totalPages: 0,
+            number: 0,
+            size: 0,
+            first: false,
+            last: false,
+            npage: [],
+            search_string: "",
+        },
+        methods: {
+            search() {
+                return this.search_string;
+            },
+            search_problem: function () {
+                this.get_page(0);
+            },
+            get_page: function (to_page) {
+                var that = this;
+                that.ready = false;
+                if (to_page !== 0 && (to_page < 0 || to_page >= that.totalPages))
+                    return null;
+                url = "/api/blog?page=" + to_page + "&search=" + this.search();
+                axios.get(url)
+                    .then(function (response) {
+                        response = response.data;
+                        that.articles = response.content;
+                        that.size = response.size;
+                        that.totalPages = response.totalPages;
+                        that.last = response.last;
+                        that.first = response.first;
+                        that.number = response.number;
+                        that.npage = [];
+                        for (var i = Math.max(0, that.number - 5); i < Math.min(that.totalPages, that.number + 6); i++) {
+                            that.npage.push(i)
+                        }
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    }).finally(function () {
+                    that.ready = true;
+                });
+            }
+        },
+        created() {
+            this.get_page(0);
+        }
+    });
+</script>
+</body>
+</html>
