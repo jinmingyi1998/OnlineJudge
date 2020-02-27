@@ -49,10 +49,7 @@ public class Comment implements Comparable {
                 '}';
     }
 
-    @JsonManagedReference
-    public String getNormalPostTime() {
-        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date.from(postTime));
-    }
+
 
     @Override
     public int compareTo(Object o) {
