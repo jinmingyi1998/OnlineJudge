@@ -85,7 +85,7 @@ public class ArticleController {
     }
 
     @PostMapping("/edit/{aid:[0-9]+}")
-    public String editArticle(@RequestBody @Validated Article editArticle,
+    public ArticleCallback editArticle(@RequestBody @Validated Article editArticle,
                               @PathVariable Long aid,
                               @SessionAttribute User currentUser) {
         Article article = getArticleById(aid);
@@ -98,9 +98,9 @@ public class ArticleController {
             articleRepository.save(article);
         } catch (Exception e) {
             e.printStackTrace();
-            return "unknown error";
+            return new ArticleCallback("unknown error", "");
         }
-        return "success";
+        return new ArticleCallback("success", article.getId().toString());
     }
 
     @GetMapping("/post/score/limit")
