@@ -17,25 +17,33 @@ public class GlobalExceptionResolver {
     public static class Result {
         private int code = 200;
         private String message = "";
+
+        public Result(int code, String message) {
+            this.code = code;
+            this.message = message;
+        }
+
+        public Result() {
+        }
     }
 
     @ExceptionHandler(NeedLoginException.class)
     @ResponseBody
-    public String exceptionHandle() {
-        return "请登录 Please Login";
+    public Result exceptionHandle() {
+        return new Result(403, "请登录 Please Login");
     }
 
     @ExceptionHandler(UnavailableException.class)
     @ResponseBody
-    public String unavilableHandle() {
-        return "维护中，不可用";
+    public Result unavilableHandle() {
+        return new Result(200, "维护中，不可用");
     }
 
     @ExceptionHandler({BindException.class, ConstraintViolationException.class})
-    public String validatorExceptionHandler(Exception e) {
+    public Result validatorExceptionHandler(Exception e) {
         String msg = e instanceof BindException ? String.valueOf(((BindException) e).getBindingResult())
                 : String.valueOf(((ConstraintViolationException) e).getConstraintViolations());
-        return msg;
+        return new Result(400, msg);
     }
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
@@ -43,7 +51,9 @@ public class GlobalExceptionResolver {
     public Result handleBindException(MethodArgumentNotValidException ex) {
         Result errorResult = new Result();
         StringBuilder msg = new StringBuilder();
-        ex.getBindingResult().getAllErrors().forEach((e)->{msg.append(e.getDefaultMessage()+"\n");});
+        ex.getBindingResult().getAllErrors().forEach((e) -> {
+            msg.append(e.getDefaultMessage() + "\n");
+        });
         errorResult.setCode(400);
         errorResult.setMessage(msg.toString());
         return errorResult;
