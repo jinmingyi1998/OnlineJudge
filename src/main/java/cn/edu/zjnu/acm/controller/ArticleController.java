@@ -33,7 +33,7 @@ public class ArticleController {
         this.ojConfig = ojConfig;
     }
 
-    private Article getArticleById(Long aid){
+    private Article getArticleById(Long aid) {
         Article article = articleRepository.findById(aid).orElse(null);
         if (article == null) {
             throw new NotFoundException();
@@ -43,10 +43,14 @@ public class ArticleController {
 
     @GetMapping("")
     public Page<Article> getArticleList(@RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "search", defaultValue = "") String search) {
+        Page<Article> articles;
         if (search.length() == 0) {
-            return articleRepository.findAll(PageRequest.of(page, SIZE, Sort.by(Sort.Direction.DESC, "id")));
+            articles = articleRepository.findAll(PageRequest.of(page, SIZE, Sort.by(Sort.Direction.DESC, "id")));
+        } else {
+            articles = articleRepository.findAllByTitleContaining(PageRequest.of(page, SIZE, Sort.by(Sort.Direction.DESC, "id")), search);
         }
-        return articleRepository.findAllByTitleContaining(PageRequest.of(page, SIZE, Sort.by(Sort.Direction.DESC, "id")), search);
+        articles.forEach((a)->{a.getUser().hideInfo();a.setComment(null);});
+        return articles;
     }
 
     @GetMapping("/{aid:[0-9]+}")
