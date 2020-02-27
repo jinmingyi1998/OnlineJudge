@@ -3347,7 +3347,7 @@
     editormd.firstUpperCase = editormd.ucfirst = firstUpperCase;
     
     editormd.urls = {
-        atLinkBase : "https://github.com/"
+        atLinkBase : "/api/user/username/"
     };
     
     editormd.regexs = {
