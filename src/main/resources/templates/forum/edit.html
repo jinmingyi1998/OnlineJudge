@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <th:block th:insert="~{fragment/header :: header}"></th:block>
-    <title>Write Article</title>
+    <title>Update</title>
     <meta content="text/html;charset=UTF-8" http-equiv="Content-Type">
     <link rel="stylesheet" href="/editor/css/editormd.min.css">
     <script src="/editor/editormd.min.js"></script>
@@ -24,62 +24,16 @@
 </main>
 
 <script>
+    aid = location.pathname.split('/');
+    aid = aid[aid.length - 1];
     var editor;
-    $(function () {
-        editor = editormd({
-            id: "editor-article",
-            path: "/editor/lib/",
-            pluginPath: "/editor/plugins/",
-            height: 800,
-            autoFocus: false,
-            markdown: "",
-            tocTitle: "目录",
-            pageBreak: true,
-            atLink: true,    // for @link
-            emailLink: true,    // for mail address auto link
-            tex: true,
-            taskList: true,   // Github Flavored Markdown task lists
-            flowChart: true,
-            sequenceDiagram: true,
-            previewCodeHighlight: true,
-            imageUploadURL: "/api/media/upload",
-            imageUpload: true,
-            imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "ico", "JPG", "JPEG", "PNG"],
-        });
-    });
-
-    function render_md() {
-        $(function () {
-            $(".md-text").each(function () {
-                $(this).attr("id", "editormd-view");
-                editormd.markdownToHTML("editormd-view", {
-                    toc: true,
-                    tocStartLevel: 1,
-                    path: "/editor/lib/",
-                    pluginPath: "/editor/plugins",
-                    tocTitle: "目录",
-                    tocDropdown: false,
-                    tocContainer: "",
-                    pageBreak: true,
-                    atLink: true,    // for @link
-                    emailLink: true,    // for mail address auto link
-                    tex: true,
-                    taskList: true,   // Github Flavored Markdown task lists
-                    flowChart: true,
-                    sequenceDiagram: true,
-                    previewCodeHighlight: true
-                });
-                $(this).attr("id", "");
-            });
-        });
-    }
 
     var article = new Vue({
         el: "#article",
         data: {
+            id: aid,
             title: "",
             text: "",
-            scoreLimit: 1000
         },
         methods: {
             send_article() {
@@ -92,7 +46,8 @@
                     alert("content too short! At least 15 letters");
                     return;
                 }
-                axios.post("/api/forum/post", {
+                axios.post("/api/forum/edit/" + aid, {
+                    id: this.id,
                     title: this.title,
                     text: this.text
                 })
@@ -107,14 +62,44 @@
                     .catch(function (e) {
                         console.log(e);
                     }).finally(function () {
+                    ;
                 });
             }
         },
         created() {
             let that = this;
-            axios.get("")
+            axios.get("/api/forum/" + aid)
                 .then(function (res) {
-                    that.scoreLimit = res.data;
+                    that.title = res.data.title;
+                    that.text = res.data.text;
+                    $(function () {
+                        editor = editormd({
+                            id: "editor-article",
+                            path: "/editor/lib/",
+                            pluginPath: "/editor/plugins/",
+                            height: 800,
+                            autoFocus: false,
+                            markdown: res.data.text,
+                            tocTitle: "目录",
+                            pageBreak: true,
+                            atLink: true,    // for @link
+                            emailLink: true,    // for mail address auto link
+                            tex: true,
+                            taskList: true,   // Github Flavored Markdown task lists
+                            flowChart: true,
+                            sequenceDiagram: true,
+                            previewCodeHighlight: true,
+                            imageUploadURL: "/api/media/upload",
+                            imageUpload: true,
+                            imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "ico", "JPG", "JPEG", "PNG"],
+                        });
+                    });
+                })
+                .catch(function (e) {
+                    console.log(e)
+                    if (e.response.status == 404) {
+                        location.href = "4O4";
+                    }
                 });
         }
     });
