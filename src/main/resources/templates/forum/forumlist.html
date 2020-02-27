@@ -29,7 +29,7 @@
                                 v-on:change_page="get_page" v-bind:to_page="0"></pagination>
                     <pagination :class="{disabled:first}" content="<i class='angle left icon'></i>"
                                 v-on:change_page="get_page" v-bind:to_page="number-1"></pagination>
-                    <pagination v-for="n in npage" :class="{active:number == n}" v-bind:content="n+1"
+                    <pagination v-for="n in npage" v-bind:key="n" :class="{active:number == n}" v-bind:content="n+1"
                                 v-on:change_page="get_page" v-bind:to_page="n"></pagination>
                     <pagination :class="{disabled:last}" content='<i class="angle  right icon"></i>'
                                 v-on:change_page="get_page" v-bind:to_page="number+1"></pagination>
@@ -42,7 +42,7 @@
                     <a class="ui link item" target="_blank" v-for="article in articles" :href="'/forum/'+article.id">
                         <div class="ui content">
                             <div class="ui header">{{article.title}}</div>
-                            <div class="meta">{{article.text.substring(0,35)}}
+                            <div class="meta">{{article.text.substring(0,35)}}</div>
                         </div>
                     </a>
                 </div>
@@ -53,7 +53,7 @@
                                 v-on:change_page="get_page" v-bind:to_page="0"></pagination>
                     <pagination :class="{disabled:first}" content="<i class='angle left icon'></i>"
                                 v-on:change_page="get_page" v-bind:to_page="number-1"></pagination>
-                    <pagination v-for="n in npage" :class="{active:number == n}" v-bind:content="n+1"
+                    <pagination v-for="n in npage" v-bind:key="n" :class="{active:number == n}" v-bind:content="n+1"
                                 v-on:change_page="get_page" v-bind:to_page="n"></pagination>
                     <pagination :class="{disabled:last}" content='<i class="angle  right icon"></i>'
                                 v-on:change_page="get_page" v-bind:to_page="number+1"></pagination>
@@ -89,8 +89,10 @@
             get_page: function (to_page) {
                 var that = this;
                 that.ready = false;
-                if (to_page !== 0 && (to_page < 0 || to_page >= that.totalPages))
+                if (to_page !== 0 && (to_page < 0 || to_page >= that.totalPages)){
+                    that.ready=true;
                     return null;
+                }
                 url = "/api/forum?page=" + to_page + "&search=" + this.search();
                 axios.get(url)
                     .then(function (response) {
