@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <th:block th:insert="~{fragment/header :: header}"></th:block>
-    <title>Update</title>
+    <title>Write Article</title>
     <meta content="text/html;charset=UTF-8" http-equiv="Content-Type">
     <link rel="stylesheet" href="/editor/css/editormd.min.css">
     <script src="/editor/editormd.min.js"></script>
@@ -10,7 +10,6 @@
 <body>
 <main class="ui container segment">
     <form onsubmit="return false" class="ui form" id="article">
-        <h2 class="ui header center aligned">Writing article requires <span style="color: lightcoral;">{{scoreLimit}}</span> score</h2>
         <div class="required field">
             <label for="title">Title</label>
             <input type="text" required="required" id="title" v-model="title">
@@ -19,7 +18,7 @@
             <div id="editor-article">
                 <textarea style="display: none"></textarea>
             </div>
-        </div>
+            post.html        </div>
         <div class="button ui inverted green" v-on:click="send_article()"><i class="ui paper plane icon"></i>Post</div>
     </form>
 </main>
@@ -114,7 +113,7 @@
         },
         created() {
             let that = this;
-            axios.get("/api/forum/post/score/limit")
+            axios.get("")
                 .then(function (res) {
                     that.scoreLimit=res.data;
                 });
