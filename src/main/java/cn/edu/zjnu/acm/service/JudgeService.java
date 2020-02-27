@@ -61,9 +61,9 @@ public class JudgeService {
             default:
                 throw new Exception("no this language");
         }
-        if (!(solution.getLanguage().equals("c")||solution.getLanguage().equals("cpp"))){
-            solution.getProblem().setTimeLimit(solution.getProblem().getTimeLimit()*2);
-            solution.getProblem().setMemoryLimit(solution.getProblem().getMemoryLimit()*2);
+        if (!(solution.getLanguage().equals("c") || solution.getLanguage().equals("cpp"))) {
+            solution.getProblem().setTimeLimit(solution.getProblem().getTimeLimit() * 2);
+            solution.getProblem().setMemoryLimit(solution.getProblem().getMemoryLimit() * 2);
         }
         JudgeService.SubmitCode submitCode = new JudgeService.SubmitCode(
                 solution.getId().intValue(),
@@ -85,9 +85,18 @@ public class JudgeService {
 
     @Transactional
     public void update(Solution solution) {
+        submitSolutionFilter(solution);
+        acceptSolutionFilter(solution);
+        contestSolutionFilter(solution);
+    }
+
+    private void submitSolutionFilter(Solution solution) {
         solutionService.updateSolutionResultTimeMemoryCase(solution);
         userProfileRepository.updateUserSubmitted(solution.getUser().getUserProfile().getId(), 1);
         problemRepository.updateSubmittedNumber(solution.getProblem().getId(), 1);
+    }
+
+    private void contestSolutionFilter(Solution solution) {
         if (solution.getContest() != null) {
             Contest contest = contestService.getContestById(solution.getContest().getId(), true);
             for (ContestProblem cp : contest.getProblems()) {
@@ -100,6 +109,9 @@ public class JudgeService {
                 }
             }
         }
+    }
+
+    private void acceptSolutionFilter(Solution solution) {
         if (solution.getResult().equals(Solution.AC)) {
             List<Solution> solutions = solutionService.getProblemSubmitOfUser(solution.getUser(), solution.getProblem());
             boolean hasAc = false;
