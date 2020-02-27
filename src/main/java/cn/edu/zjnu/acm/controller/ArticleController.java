@@ -9,7 +9,7 @@ import cn.edu.zjnu.acm.exception.NotFoundException;
 import cn.edu.zjnu.acm.repo.article.ArticleCommentRepository;
 import cn.edu.zjnu.acm.repo.article.ArticleRepository;
 import cn.edu.zjnu.acm.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.Data;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -20,17 +20,17 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/forum")
 public class ArticleController {
+    private static final int SIZE = 30;
     private final Config ojConfig;
     private final ArticleRepository articleRepository;
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
     private final ArticleCommentRepository articleCommentRepository;
-    private static final int SIZE = 30;
 
-    public ArticleController(ArticleRepository articleRepository, ArticleCommentRepository articleCommentRepository, Config ojConfig) {
+    public ArticleController(ArticleRepository articleRepository, ArticleCommentRepository articleCommentRepository, Config ojConfig, UserService userService) {
         this.articleRepository = articleRepository;
         this.articleCommentRepository = articleCommentRepository;
         this.ojConfig = ojConfig;
+        this.userService = userService;
     }
 
     private Article getArticleById(Long aid) {
@@ -49,7 +49,10 @@ public class ArticleController {
         } else {
             articles = articleRepository.findAllByTitleContaining(PageRequest.of(page, SIZE, Sort.by(Sort.Direction.DESC, "id")), search);
         }
-        articles.forEach((a)->{a.getUser().hideInfo();a.setComment(null);});
+        articles.forEach((a) -> {
+            a.getUser().hideInfo();
+            a.setComment(null);
+        });
         return articles;
     }
 
@@ -57,27 +60,28 @@ public class ArticleController {
     public Article getArticle(@PathVariable Long aid) {
         Article article = getArticleById(aid);
         article.getUser().hideInfo();
+        article.setComment(articleCommentRepository.findAllByArticle(article));
         return article;
     }
 
     @PostMapping("/post")
-    public String postArticle(@RequestBody @Validated Article article, @SessionAttribute(required = false) User currentUser) {
+    public ArticleCallback postArticle(@RequestBody @Validated Article article, @SessionAttribute(required = false) User currentUser) {
         if (currentUser == null) {
             throw new NeedLoginException();
         }
         if (userService.getUserPermission(currentUser) < 0)
             if (currentUser.getUserProfile().getScore() < ojConfig.getLeastScoreToPostBlog()) {
-                return "score too low, at least " + ojConfig.getLeastScoreToPostBlog();
+                return new ArticleCallback("score too low, at least " + ojConfig.getLeastScoreToPostBlog(), "");
             }
         try {
             article.setUser(currentUser);
             article.setComment(null);
-            articleRepository.save(article);
+            article = articleRepository.save(article);
         } catch (Exception e) {
             e.printStackTrace();
-            return "unknown error";
+            return new ArticleCallback("unknown error", "");
         }
-        return "success";
+        return new ArticleCallback("success", article.getId().toString());
     }
 
     @PostMapping("/edit/{aid:[0-9]+}")
@@ -102,6 +106,20 @@ public class ArticleController {
     @GetMapping("/post/score/limit")
     public String getPostScoreLimit() {
         return ojConfig.getLeastScoreToPostBlog().toString();
+    }
+
+    @Data
+    class ArticleCallback {
+        String message;
+        String extra;
+
+        public ArticleCallback(String message, String extra) {
+            this.message = message;
+            this.extra = extra;
+        }
+
+        public ArticleCallback() {
+        }
     }
 }
 
