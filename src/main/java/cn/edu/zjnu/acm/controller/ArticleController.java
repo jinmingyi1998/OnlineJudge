@@ -3,17 +3,22 @@ package cn.edu.zjnu.acm.controller;
 import cn.edu.zjnu.acm.config.Config;
 import cn.edu.zjnu.acm.entity.User;
 import cn.edu.zjnu.acm.entity.oj.Article;
+import cn.edu.zjnu.acm.entity.oj.ArticleComment;
+import cn.edu.zjnu.acm.entity.oj.Comment;
 import cn.edu.zjnu.acm.exception.ForbiddenException;
 import cn.edu.zjnu.acm.exception.NeedLoginException;
 import cn.edu.zjnu.acm.exception.NotFoundException;
+import cn.edu.zjnu.acm.repo.CommentRepository;
 import cn.edu.zjnu.acm.repo.article.ArticleCommentRepository;
 import cn.edu.zjnu.acm.repo.article.ArticleRepository;
 import cn.edu.zjnu.acm.service.UserService;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +26,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/forum")
 public class ArticleController {
     private static final int SIZE = 30;
+
+    @Autowired
+    private CommentRepository commentRepository;
     private final Config ojConfig;
     private final ArticleRepository articleRepository;
     private final UserService userService;
@@ -86,8 +94,8 @@ public class ArticleController {
 
     @PostMapping("/edit/{aid:[0-9]+}")
     public ArticleCallback editArticle(@RequestBody @Validated Article editArticle,
-                              @PathVariable Long aid,
-                              @SessionAttribute User currentUser) {
+                                       @PathVariable Long aid,
+                                       @SessionAttribute User currentUser) {
         Article article = getArticleById(aid);
         if (article.getUser().getId() != currentUser.getId()) {
             throw new ForbiddenException();
@@ -102,6 +110,30 @@ public class ArticleController {
         }
         return new ArticleCallback("success", article.getId().toString());
     }
+
+    @PostMapping("/post/comment/{aid:[0-9]+}")
+    @Transactional
+    public String postComment(@PathVariable Long aid,
+                              @SessionAttribute User currentUser,
+                              @RequestBody ContestController.CommentPost commentPost) {
+        Article article = articleRepository.findById(aid).orElse(null);
+        if (article == null) {
+            throw new NotFoundException();
+        }
+        if (commentPost.replyText.length() < 4) return "too short";
+        try {
+            Comment father = commentRepository.findById(commentPost.getReplyId()).orElse(null);
+            Comment comment = new Comment(currentUser, commentPost.replyText, father);
+            comment = commentRepository.save(comment);
+            ArticleComment articleComment = new ArticleComment(article, comment);
+            articleCommentRepository.save(articleComment);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "unknown error";
+        }
+        return "success";
+    }
+
 
     @GetMapping("/post/score/limit")
     public String getPostScoreLimit() {
