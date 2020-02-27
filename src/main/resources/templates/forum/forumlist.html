@@ -39,7 +39,7 @@
             </div>
             <div class="ui segment" :class="{loading:!ready}">
                 <div class="ui animated selection list">
-                    <a class="ui link item" target="_blank" v-for="article in articles" :href="'/problems/'+p.id">
+                    <a class="ui link item" target="_blank" v-for="article in articles" :href="'/forum/'+article.id">
                         <div class="ui content">
                             <div class="ui header">{{article.title}}</div>
                             <div class="meta">{{article.text.substring(0,35)}}
