@@ -1,6 +1,7 @@
 package cn.edu.zjnu.acm.entity.oj;
 
 import cn.edu.zjnu.acm.entity.User;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
@@ -13,6 +14,7 @@ import java.util.List;
 @Entity
 @Data
 @Slf4j
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Article {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
