@@ -81,7 +81,7 @@ public class ArticleController {
     }
 
     @PostMapping("/edit/{aid:[0-9]+}")
-    public String editArticle(@RequestBody @Validated  Article editArticle,
+    public String editArticle(@RequestBody @Validated Article editArticle,
                               @PathVariable Long aid,
                               @SessionAttribute User currentUser) {
         Article article = getArticleById(aid);
@@ -98,25 +98,33 @@ public class ArticleController {
         }
         return "success";
     }
+
+    @GetMapping("/post/score/limit")
+    public String getPostScoreLimit() {
+        return ojConfig.getLeastScoreToPostBlog().toString();
+    }
 }
 
 @Controller
 @RequestMapping("/forum")
 class ArticleViewController {
     @GetMapping("")
-    public String listArticle(){
+    public String listArticle() {
         return "forum/forumlist";
     }
+
     @GetMapping("/{id:[0-9]+}")
-    public String showArticle(){
+    public String showArticle() {
         return "forum/show";
     }
+
     @GetMapping("/edit/{id:[0-9]+}")
-    public String editArticle(){
+    public String editArticle() {
         return "forum/edit";
     }
+
     @GetMapping("/post")
-    public String postArticle(){
+    public String postArticle() {
         return "forum/post";
     }
 }
