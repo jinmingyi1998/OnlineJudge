@@ -1,5 +1,6 @@
 package cn.edu.zjnu.acm.exception;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindException;
@@ -13,6 +14,7 @@ import javax.validation.ConstraintViolationException;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionResolver {
+        public static final Result pleaseLoginResult=new Result(403,"请登录 Please Login") ;
     @Data
     public static class Result {
         private int code = 200;
@@ -30,7 +32,7 @@ public class GlobalExceptionResolver {
     @ExceptionHandler(NeedLoginException.class)
     @ResponseBody
     public Result exceptionHandle() {
-        return new Result(403, "请登录 Please Login");
+        return pleaseLoginResult;
     }
 
     @ExceptionHandler(UnavailableException.class)

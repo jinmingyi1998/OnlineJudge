@@ -3,6 +3,7 @@ package cn.edu.zjnu.acm.interceptor;
 import cn.edu.zjnu.acm.entity.User;
 import cn.edu.zjnu.acm.entity.oj.Team;
 import cn.edu.zjnu.acm.entity.oj.Teammate;
+import cn.edu.zjnu.acm.exception.GlobalExceptionResolver;
 import cn.edu.zjnu.acm.service.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
@@ -21,8 +22,8 @@ public class TeamInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         User user = (User) request.getSession().getAttribute("currentUser");
         if (user == null) {
-            response.setCharacterEncoding("utf-8");
-            response.getWriter().println("请登录 Please Login");
+            response.setContentType("text/html;charset=utf-8");
+            response.getWriter().println(GlobalExceptionResolver.pleaseLoginResult.toString());
             return false;
         }
         String url = String.valueOf(request.getRequestURL());

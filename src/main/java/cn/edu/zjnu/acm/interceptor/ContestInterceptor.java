@@ -1,6 +1,7 @@
 package cn.edu.zjnu.acm.interceptor;
 
 import cn.edu.zjnu.acm.entity.oj.Contest;
+import cn.edu.zjnu.acm.exception.GlobalExceptionResolver;
 import cn.edu.zjnu.acm.service.ContestService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ public class ContestInterceptor implements HandlerInterceptor {
         HttpSession session = request.getSession();
         if (session.getAttribute("currentUser") == null) {
             response.setContentType("text/html;charset=utf-8");
-            response.getWriter().println("Please Login 请登录");
+            response.getWriter().println(GlobalExceptionResolver.pleaseLoginResult.toString());
             return false;
         }
         String url = request.getRequestURL().toString();
