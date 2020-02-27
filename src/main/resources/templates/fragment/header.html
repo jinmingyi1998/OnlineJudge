@@ -51,7 +51,7 @@
             <div class="visible content">Contests</div>
         </a>
         <a class="link item animated fade ui button big" href="/status">
-            <div class="hidden content"><i class="ui microchip icon"></i>提交记录</div>
+            <div class="hidden content"><i class="ui microchip icon"></i>评测姬</div>
             <div class="visible content">Judge Status</div>
         </a>
         <a class="link item animated fade ui button big" href="/user/standing">
@@ -61,6 +61,10 @@
         <a class="link item animated fade ui button big" href="/team">
             <div class="hidden content"><i class="ui users icon"></i>队伍</div>
             <div class="visible content">Teams</div>
+        </a>
+        <a class="link item animated fade ui button big" href="/forum">
+            <div class="hidden content"><i class="ui rss icon"></i>论坛</div>
+            <div class="visible content">Forum</div>
         </a>
         <div class="ui right borderless menu" id="userbar">
             <div v-if="!isLogin" class="ui menu">
@@ -94,7 +98,7 @@
             isLogin: false
         },
         created() {
-            var that = this
+            var that = this;
             axios.get("/user/session").then(function (res) {
                 res = res.data;
                 if (res.username != undefined) {

@@ -20,6 +20,8 @@
                     <input type="text" v-model="search_string" placeholder="搜索标题">
                     <i class="search link icon" v-on:click="search_problem()"></i>
                 </form>
+                <div class="ui divider"></div>
+                <a class="ui button green inverted" href="/forum/post"><i class="ui plus icon"></i>Write</a>
             </div>
             <div class="ui centered grid">
                 <div class="ui pagination menu ">
@@ -89,7 +91,7 @@
                 that.ready = false;
                 if (to_page !== 0 && (to_page < 0 || to_page >= that.totalPages))
                     return null;
-                url = "/api/blog?page=" + to_page + "&search=" + this.search();
+                url = "/api/forum?page=" + to_page + "&search=" + this.search();
                 axios.get(url)
                     .then(function (response) {
                         response = response.data;

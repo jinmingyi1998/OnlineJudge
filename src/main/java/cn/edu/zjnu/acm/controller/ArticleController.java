@@ -18,7 +18,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/blog")
+@RequestMapping("/api/forum")
 public class ArticleController {
     private final Config ojConfig;
     private final ArticleRepository articleRepository;
@@ -97,22 +97,22 @@ public class ArticleController {
 }
 
 @Controller
-@RequestMapping("/blog")
+@RequestMapping("/forum")
 class ArticleViewController {
     @GetMapping("")
     public String listArticle(){
-        return "blog/bloglist";
+        return "forum/forumlist";
     }
-    @GetMapping("/{}")
+    @GetMapping("/{id:[0-9]+}")
     public String showArticle(){
-        return "blog/show";
+        return "forum/show";
     }
-    @GetMapping("/edit/{}")
+    @GetMapping("/edit/{id:[0-9]+}")
     public String editArticle(){
-        return "blog/edit";
+        return "forum/edit";
     }
     @GetMapping("/post")
     public String postArticle(){
-        return "blog/post";
+        return "forum/post";
     }
 }

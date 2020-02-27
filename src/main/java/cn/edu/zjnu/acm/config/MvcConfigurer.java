@@ -47,7 +47,7 @@ public class MvcConfigurer implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(getUnavailableInterceptor()).addPathPatterns("/**")
                 .excludePathPatterns("/judge/callback");
-        String[] needLogin = {"/contest/**", "/team/**", "/problems/**", "/user/**", "/admin/**", "/status/**", "/blog/**"};
+        String[] needLogin = {"/contest/**", "/team/**", "/problems/**", "/user/**", "/admin/**", "/status/**", "/forum/**"};
         registry.addInterceptor(getLoginViewInterceptor())
                 .addPathPatterns(needLogin);
         registry.addInterceptor(getTeacherCheckInterceptor())
@@ -73,7 +73,7 @@ public class MvcConfigurer implements WebMvcConfigurer {
                 "/api/status/share/*",
                 "/api/user/edit/*",
                 "/api/team/**",
-                "/api/blog/**"};
+                "/api/forum/**"};
         registry.addInterceptor(getLoginInterceptor())
                 .addPathPatterns(apiNeedLogin)
                 .addPathPatterns();
