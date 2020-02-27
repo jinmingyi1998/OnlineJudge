@@ -4,12 +4,13 @@
     <th:block th:insert="~{fragment/header :: header}"></th:block>
     <meta charset="UTF-8">
     <title>Teams</title>
+    <script src="/js/pagination.js"></script>
 </head>
 <body>
 <main class="ui fluid container">
     <div class="ui grid">
         <div class="ten wide column" id="vue-team">
-            <div class="ui segment raised">
+            <div class="ui segment raised" v-bind:class="{loading:!ready}">
                 <div class="ui icon input">
                     <input type="text" placeholder="邀请码" v-model="inviteCode">
                     <i class="circular arrow right link icon" @click="invite()"></i>
@@ -32,7 +33,7 @@
                         <td><a :href="'/team/'+vt.id" v-html="vt.name"></a></td>
                         <td>{{vt.creator.name}}</td>
                         <td>{{vt.normalCreateTime}}</td>
-                        <td >{{vt.attend}}</td>
+                        <td>{{vt.attend}}</td>
                         <td>{{vt.teammates.length}}</td>
                         <td class="link item">
                             <button class="ui button red inverted mini animated" @click="apply(vt.id)"
@@ -46,6 +47,20 @@
                     </tr>
                     </tbody>
                 </table>
+                <div class="ui centered grid">
+                    <div class="ui pagination menu">
+                        <pagination :class="{disabled:first}" content='<i class="angle double left icon"></i>'
+                                    v-on:change_page="get_page" v-bind:to_page="0"></pagination>
+                        <pagination :class="{disabled:first}" content="<i class='angle left icon'></i>"
+                                    v-on:change_page="get_page" v-bind:to_page="number-1"></pagination>
+                        <pagination v-for="n in npage" v-bind:key="n" :class="{active:number == n}" v-bind:content="n+1"
+                                    v-on:change_page="get_page" v-bind:to_page="n"></pagination>
+                        <pagination :class="{disabled:last}" content='<i class="angle  right icon"></i>'
+                                    v-on:change_page="get_page" v-bind:to_page="number+1"></pagination>
+                        <pagination :class="{disabled:last}" content='<i class="angle double right icon"></i>'
+                                    v-on:change_page="get_page" v-bind:to_page="totalPages-1"></pagination>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="six wide column">
@@ -79,7 +94,8 @@
             inviteCode: "",
             first: true,
             empty: true,
-            npage: []
+            npage: [],
+            readt:false
         },
         methods: {
             apply(id) {
@@ -100,26 +116,35 @@
                             alert("failed!");
                         }
                     });
+            },
+            get_page(to_page) {
+                var that = this;
+                that.ready = false;
+                if (to_page !== 0 && (to_page < 0 || to_page >= that.totalPages)){
+                    that.ready=true;
+                    return null;
+                }
+                axios.get('/api/team?page=' + to_page).then(function (res) {
+                    res = res.data;
+                    that.vteams = res.content;
+                    that.totalPages = res.totalPages;
+                    that.totalElements = res.totalElements;
+                    that.last = res.last;
+                    that.number = res.number;
+                    that.size = res.size;
+                    that.first = res.first;
+                    that.numberOfElements = res.numberOfElements;
+                    that.empyt = res.empty;
+                    that.npage = [];
+                    for (var i = Math.max(0, that.number - 3); i < Math.min(that.totalPages, that.number + 3); i++) {
+                        that.npage.push(i)
+                    }
+                });
+                that.ready=true;
             }
         },
         created() {
-            var that = this;
-            axios.get('/api/team').then(function (res) {
-                res = res.data;
-                that.vteams = res.content;
-                that.totalPages = res.totalPages;
-                that.totalElements = res.totalElements;
-                that.last = res.last;
-                that.number = res.number;
-                that.size = res.size;
-                that.first = res.first;
-                that.numberOfElements = res.numberOfElements;
-                that.empyt = res.empty;
-                that.npage = [];
-                for (var i = Math.max(0, that.number - 3); i < Math.min(that.totalPages, that.number + 3); i++) {
-                    that.npage.push(i)
-                }
-            });
+            this.get_page(0);
         }
     });
     my_team = new Vue({

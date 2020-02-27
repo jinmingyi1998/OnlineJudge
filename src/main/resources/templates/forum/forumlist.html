@@ -23,21 +23,21 @@
                 <div class="ui divider"></div>
                 <a class="ui button green inverted" href="/forum/post"><i class="ui plus icon"></i>Write</a>
             </div>
-            <div class="ui centered grid">
-                <div class="ui pagination menu ">
-                    <pagination :class="{disabled:first}" content='<i class="angle double left icon"></i>'
-                                v-on:change_page="get_page" v-bind:to_page="0"></pagination>
-                    <pagination :class="{disabled:first}" content="<i class='angle left icon'></i>"
-                                v-on:change_page="get_page" v-bind:to_page="number-1"></pagination>
-                    <pagination v-for="n in npage" v-bind:key="n" :class="{active:number == n}" v-bind:content="n+1"
-                                v-on:change_page="get_page" v-bind:to_page="n"></pagination>
-                    <pagination :class="{disabled:last}" content='<i class="angle  right icon"></i>'
-                                v-on:change_page="get_page" v-bind:to_page="number+1"></pagination>
-                    <pagination :class="{disabled:last}" content='<i class="angle double right icon"></i>'
-                                v-on:change_page="get_page" v-bind:to_page="totalPages-1"></pagination>
-                </div>
-            </div>
             <div class="ui segment" :class="{loading:!ready}">
+                <div class="ui centered grid">
+                    <div class="ui pagination menu ">
+                        <pagination :class="{disabled:first}" content='<i class="angle double left icon"></i>'
+                                    v-on:change_page="get_page" v-bind:to_page="0"></pagination>
+                        <pagination :class="{disabled:first}" content="<i class='angle left icon'></i>"
+                                    v-on:change_page="get_page" v-bind:to_page="number-1"></pagination>
+                        <pagination v-for="n in npage" v-bind:key="n" :class="{active:number == n}" v-bind:content="n+1"
+                                    v-on:change_page="get_page" v-bind:to_page="n"></pagination>
+                        <pagination :class="{disabled:last}" content='<i class="angle  right icon"></i>'
+                                    v-on:change_page="get_page" v-bind:to_page="number+1"></pagination>
+                        <pagination :class="{disabled:last}" content='<i class="angle double right icon"></i>'
+                                    v-on:change_page="get_page" v-bind:to_page="totalPages-1"></pagination>
+                    </div>
+                </div>
                 <div class="ui animated selection list">
                     <a class="ui link item" target="_blank" v-for="article in articles" :href="'/forum/'+article.id">
                         <div class="ui content">
@@ -46,19 +46,19 @@
                         </div>
                     </a>
                 </div>
-            </div>
-            <div class="ui centered grid">
-                <div class="ui pagination menu">
-                    <pagination :class="{disabled:first}" content='<i class="angle double left icon"></i>'
-                                v-on:change_page="get_page" v-bind:to_page="0"></pagination>
-                    <pagination :class="{disabled:first}" content="<i class='angle left icon'></i>"
-                                v-on:change_page="get_page" v-bind:to_page="number-1"></pagination>
-                    <pagination v-for="n in npage" v-bind:key="n" :class="{active:number == n}" v-bind:content="n+1"
-                                v-on:change_page="get_page" v-bind:to_page="n"></pagination>
-                    <pagination :class="{disabled:last}" content='<i class="angle  right icon"></i>'
-                                v-on:change_page="get_page" v-bind:to_page="number+1"></pagination>
-                    <pagination :class="{disabled:last}" content='<i class="angle double right icon"></i>'
-                                v-on:change_page="get_page" v-bind:to_page="totalPages-1"></pagination>
+                <div class="ui centered grid">
+                    <div class="ui pagination menu">
+                        <pagination :class="{disabled:first}" content='<i class="angle double left icon"></i>'
+                                    v-on:change_page="get_page" v-bind:to_page="0"></pagination>
+                        <pagination :class="{disabled:first}" content="<i class='angle left icon'></i>"
+                                    v-on:change_page="get_page" v-bind:to_page="number-1"></pagination>
+                        <pagination v-for="n in npage" v-bind:key="n" :class="{active:number == n}" v-bind:content="n+1"
+                                    v-on:change_page="get_page" v-bind:to_page="n"></pagination>
+                        <pagination :class="{disabled:last}" content='<i class="angle  right icon"></i>'
+                                    v-on:change_page="get_page" v-bind:to_page="number+1"></pagination>
+                        <pagination :class="{disabled:last}" content='<i class="angle double right icon"></i>'
+                                    v-on:change_page="get_page" v-bind:to_page="totalPages-1"></pagination>
+                    </div>
                 </div>
             </div>
         </div>

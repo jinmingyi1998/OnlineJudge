@@ -41,7 +41,7 @@
                 </div>
             </div>
             <a :href="'/user/edit/'+id" class="ui button attached animated fade bottom" v-if="owner">
-                <div class="visible content"><i class="ui edit icon"></i></div>
+                <div class="visible content"><i class="ui edit icon"></i>Update</div>
                 <div class="hidden content">更新个人信息</div>
             </a>
         </div>
@@ -60,9 +60,10 @@
             id:pid,
             user: {},
             ready: false,
-            owner: user_bar.user.id == pid
+            owner: false
         },
         created() {
+            this.owner =user_bar.user.id == pid;
             var that = this;
             axios.get("/api/user/" + pid)
                 .then(function (res) {
