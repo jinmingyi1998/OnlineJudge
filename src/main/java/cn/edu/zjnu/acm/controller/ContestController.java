@@ -310,7 +310,6 @@ public class ContestController {
             contestService.postComment(comment, contest);
             return "success";
         } catch (Exception e) {
-            //TODO remove this
             e.printStackTrace();
         }
         return "failed";
@@ -427,7 +426,7 @@ public class ContestController {
     }
 
     @Data
-    static class CommentPost {
+    public static class CommentPost {
         String replyText = "";
         Long replyId = 0L;
 
