@@ -18,6 +18,9 @@ every comment should have:
     comments:[
         {
             fatherId: 1,  //or null
+            normalPostTime:"",
+            user:{},
+            text:"",
             sons: [], //other comments
             reply_action: function (id) {
                 ;//do something for replying
