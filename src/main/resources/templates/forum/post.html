@@ -10,6 +10,7 @@
 <body>
 <main class="ui container segment">
     <form onsubmit="return false" class="ui form" id="article">
+        <h2 class="ui header center aligned">Writing article requires <span style="color: lightcoral;">{{scoreLimit}}</span> score</h2>
         <div class="required field">
             <label for="title">Title</label>
             <input type="text" required="required" id="title" v-model="title">
@@ -78,7 +79,8 @@
         el: "#article",
         data: {
             title: "",
-            text: ""
+            text: "",
+            scoreLimit:1000
         },
         methods: {
             send_article() {
@@ -91,14 +93,14 @@
                     alert("content too short! At least 15 letters");
                     return;
                 }
-                axios.post("/api/blog/post", {
+                axios.post("/api/forum/post", {
                     title: this.title,
                     text: this.text
                 })
                     .then(function (res) {
                         if (res.data == 'success') {
                             alert(res.data);
-                            // location.href="/forum";
+                            location.href="/forum";
                         } else {
                             alert(res.data);
                         }
@@ -109,6 +111,13 @@
                     location.reload();
                 });
             }
+        },
+        created() {
+            let that = this;
+            axios.get("/api/forum/post/score/limit")
+                .then(function (res) {
+                    that.scoreLimit=res.data;
+                });
         }
     });
     render_md();
