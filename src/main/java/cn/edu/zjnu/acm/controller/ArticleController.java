@@ -65,10 +65,10 @@ public class ArticleController {
         if (currentUser == null) {
             throw new NeedLoginException();
         }
-        if (userService.getUserPermission(currentUser)>=0)
-        if (currentUser.getUserProfile().getScore() < ojConfig.getLeastScoreToPostBlog()) {
-            return "score too low, at least " + ojConfig.getLeastScoreToPostBlog();
-        }
+        if (userService.getUserPermission(currentUser) < 0)
+            if (currentUser.getUserProfile().getScore() < ojConfig.getLeastScoreToPostBlog()) {
+                return "score too low, at least " + ojConfig.getLeastScoreToPostBlog();
+            }
         try {
             article.setUser(currentUser);
             article.setComment(null);
