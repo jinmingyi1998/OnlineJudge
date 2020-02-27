@@ -8,7 +8,7 @@ $(function () {
         toolbar: false,
         toc: false,
         tocm: false,
-        autoFocus:false,
+        autoFocus: false,
         autoLoadKaTeX: true,
         pageBreak: true,
         atLink: true,    // for @link
@@ -96,8 +96,13 @@ vue_comment = new Vue({
         get_sons(id) {
             var sons = [];
             for (c of this.comments) {
-                if (c.fatherId == id) {
-                    sons.push(c);
+                try {
+                    if (c.father.id == id) {
+                        c.fatherId = id;
+                        sons.push(c);
+                    }
+                } catch (e) {
+                    continue;
                 }
             }
             return sons;
@@ -110,6 +115,7 @@ vue_comment = new Vue({
             .then(function (res) {
                 that.comments = res.data;
                 for (c of that.comments) {
+                    c.fatherId = null;
                     c.reply_action = that.replya;
                     c.sons = that.get_sons(c.id);
                 }

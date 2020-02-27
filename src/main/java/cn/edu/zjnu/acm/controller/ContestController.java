@@ -305,7 +305,7 @@ public class ContestController {
             Comment father = commentRepository.findById(commentPost.getReplyId()).orElse(null);
             @NotNull Contest contest = contestService.getContestById(cid);
             if (!contest.isStarted() || contest.isEnded())
-                throw new NotFoundException();
+                return "contest is not running";
             Comment comment = new Comment(user, commentPost.replyText, father);
             contestService.postComment(comment, contest);
             return "success";

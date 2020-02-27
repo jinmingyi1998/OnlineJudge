@@ -14,7 +14,6 @@ import java.util.Date;
 
 @Data
 @Entity
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Comment implements Comparable {
 
     @Id
@@ -40,15 +39,10 @@ public class Comment implements Comparable {
     public Comment() {
     }
 
-    public Long getFatherId() {
-        return father == null ? null : father.getId();
-    }
-
     @Override
     public String toString() {
         return "Comment{" +
                 "id=" + id +
-                ", father=" + getFatherId() +
                 ", postTime=" + postTime +
                 ", user=" + user +
                 ", text='" + text + '\'' +
