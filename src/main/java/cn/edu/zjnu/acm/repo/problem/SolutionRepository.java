@@ -81,7 +81,7 @@ public interface SolutionRepository extends JpaRepository<Solution, Long> {
     @Query(value = "update solution set solution.result = :result , solution.info = :info where solution.id = :id", nativeQuery = true)
     void updateResultInfo(@Param("id") Long id, @Param("result") String result, @Param("info") String info);
 
-    @Query(value = "SELECT SUM(score) FROM " +
+    @Query(value = "SELECT COALESCE (SUM(score),0) FROM " +
             "(SELECT DISTINCT p.id, p.score FROM problem AS p, solution AS s ,problem_tags AS pt " +
             "WHERE pt.problem_id = s.problem_id " +
             "AND s.user_id = :uid " +
@@ -114,7 +114,7 @@ public interface SolutionRepository extends JpaRepository<Solution, Long> {
     Long countAllByUserAndResult(User user, String result);
 
     @Query(nativeQuery = true,
-            value = "SELECT COALESCE(0,SUM(score)) FROM " +
+            value = "SELECT COALESCE(SUM(score),0) FROM " +
                     "(SELECT DISTINCT pp.id,pp.score " +
                     "FROM user, solution AS ss, problem AS pp " +
                     "WHERE user.id = ss.user_id AND ss.problem_id=pp.id AND ss.result='Accepted' AND user.id = :uid)t1")
