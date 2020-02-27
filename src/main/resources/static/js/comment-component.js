@@ -12,3 +12,18 @@ comment_group = Vue.component("comment-group", {
     </div>
 </div>`
 });
+/*
+every comment should have:
+{
+    comments:[
+        {
+            fatherId: 1,  //or null
+            sons: [], //other comments
+            reply_action: function (id) {
+                ;//do something for replying
+            }
+        },
+    ]
+}
+
+ */
