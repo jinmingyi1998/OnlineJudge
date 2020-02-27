@@ -3,7 +3,7 @@ $(function () {
     mdeditor = editormd("comment-editor", {
         path: "/editor/lib/",
         width: "100%",
-        height: 340,
+        height: 150,
         gfm: true,
         toolbar: false,
         toc: false,
@@ -72,7 +72,7 @@ vue_comment = new Vue({
             var name = "";
             for (c of this.comments) {
                 if (c.id == id) {
-                    name = c.user.name;
+                    name = c.user.username;
                     break;
                 }
             }
