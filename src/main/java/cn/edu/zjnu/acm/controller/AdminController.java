@@ -6,12 +6,12 @@ import cn.edu.zjnu.acm.entity.User;
 import cn.edu.zjnu.acm.entity.oj.Contest;
 import cn.edu.zjnu.acm.entity.oj.ContestProblem;
 import cn.edu.zjnu.acm.entity.oj.Problem;
-import cn.edu.zjnu.acm.entity.oj.Solution;
 import cn.edu.zjnu.acm.exception.ForbiddenException;
 import cn.edu.zjnu.acm.exception.NotFoundException;
 import cn.edu.zjnu.acm.repo.contest.ContestProblemRepository;
 import cn.edu.zjnu.acm.repo.problem.ProblemRepository;
 import cn.edu.zjnu.acm.repo.problem.SolutionRepository;
+import cn.edu.zjnu.acm.repo.user.UserProblemRepository;
 import cn.edu.zjnu.acm.repo.user.UserProfileRepository;
 import cn.edu.zjnu.acm.service.ContestService;
 import cn.edu.zjnu.acm.service.ProblemService;
@@ -30,12 +30,14 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 @RestController
 @RequestMapping("/api/admin")
 @Slf4j
 public class AdminController {
     public static final int PAGE_SIZE = 50;
+    private final UserProblemRepository userProblemRepository;
     private final ProblemService problemService;
     private final ContestService contestService;
     private final UserService userService;
@@ -48,7 +50,8 @@ public class AdminController {
     private final UserProfileRepository userProfileRepository;
     private static final ExecutorService threadPool = Executors.newFixedThreadPool(200);
 
-    public AdminController(ProblemService problemService, ContestService contestService, UserService userService, HttpSession session, Config config, SolutionService solutionService, ProblemRepository problemRepository, ContestProblemRepository contestProblemRepository, SolutionRepository solutionRepository, UserProfileRepository userProfileRepository) {
+    public AdminController(UserProblemRepository userProblemRepository, ProblemService problemService, ContestService contestService, UserService userService, HttpSession session, Config config, SolutionService solutionService, ProblemRepository problemRepository, ContestProblemRepository contestProblemRepository, SolutionRepository solutionRepository, UserProfileRepository userProfileRepository) {
+        this.userProblemRepository = userProblemRepository;
         this.problemService = problemService;
         this.contestService = contestService;
         this.userService = userService;
@@ -174,22 +177,18 @@ public class AdminController {
         List<User> userList = userService.userList();
         int cnt = 0;
         for (User u : userList) {
+            Future f = threadPool.submit(() -> {
+                userProfileRepository.setUserSubmitted(u.getUserProfile().getId(), solutionRepository.countAllByUser(u).intValue());
+                userProfileRepository.setUserAccepted(u.getUserProfile().getId(), userProblemRepository.countAllByUser(u).intValue());
+                userProfileRepository.setUserScore(u.getUserProfile().getId(), userProblemRepository.calculateUserScore(u.getId()).intValue());
+            });
             if (cnt == userList.size() - 1) {
                 try {
-                    threadPool.submit(() -> {
-                        userProfileRepository.setUserSubmitted(u.getUserProfile().getId(), solutionRepository.countAllByUser(u).intValue());
-                        userProfileRepository.setUserAccepted(u.getUserProfile().getId(), solutionRepository.countAllByUserAndResult(u, Solution.AC).intValue());
-                        userProfileRepository.setUserScore(u.getUserProfile().getId(), solutionRepository.calculateScoreOfUser(u.getId()).intValue());
-                    }).get();
+                    f.get();
                 } catch (InterruptedException | ExecutionException e) {
                     e.printStackTrace();
                 }
             }
-            threadPool.submit(() -> {
-                userProfileRepository.setUserSubmitted(u.getUserProfile().getId(), solutionRepository.countAllByUser(u).intValue());
-                userProfileRepository.setUserAccepted(u.getUserProfile().getId(), solutionRepository.countAllByUserAndResult(u, Solution.AC).intValue());
-                userProfileRepository.setUserScore(u.getUserProfile().getId(), solutionRepository.calculateScoreOfUser(u.getId()).intValue());
-            });
             ++cnt;
         }
         log.info("calculating on user finished");
@@ -201,20 +200,17 @@ public class AdminController {
         List<Problem> problemList = problemService.getProblemList();
         int cnt = 0;
         for (Problem p : problemList) {
+            Future f = threadPool.submit(() -> {
+                problemRepository.setSubmittedNumber(p.getId(), solutionService.countOfProblem(p).intValue());
+                problemRepository.setAcceptedNumber(p.getId(), userProblemRepository.countAllByProblem(p).intValue());
+            });
             if (cnt == problemList.size() - 1) {
                 try {
-                    threadPool.submit(() -> {
-                        problemRepository.setAcceptedNumber(p.getId(), solutionService.countAcOfProblem(p).intValue());
-                        problemRepository.setSubmittedNumber(p.getId(), solutionService.countOfProblem(p).intValue());
-                    }).get();
+                    f.get();
                 } catch (InterruptedException | ExecutionException e) {
                     e.printStackTrace();
                 }
             }
-            threadPool.submit(() -> {
-                problemRepository.setAcceptedNumber(p.getId(), solutionService.countAcOfProblem(p).intValue());
-                problemRepository.setSubmittedNumber(p.getId(), solutionService.countOfProblem(p).intValue());
-            });
             ++cnt;
         }
         log.info("calculating on problem finished");
@@ -226,21 +222,7 @@ public class AdminController {
         List<Contest> contestList = contestService.getContestList();
         int cnt = 0;
         for (Contest c : contestList) {
-            if (cnt == contestList.size() - 1) {
-                try {
-                    threadPool.submit(() -> {
-                        List<ContestProblem> contestProblemList = contestProblemRepository.findAllByContest(c);
-                        for (ContestProblem cp : contestProblemList) {
-                            cp.setSubmitted(solutionService.countOfProblemContest(cp.getProblem(), c).intValue());
-                            cp.setAccepted(solutionService.countAcOfProblemContest(cp.getProblem(), c).intValue());
-                            contestProblemRepository.save(cp);
-                        }
-                    }).get();
-                } catch (InterruptedException | ExecutionException e) {
-                    e.printStackTrace();
-                }
-            }
-            threadPool.submit(() -> {
+            Future f = threadPool.submit(() -> {
                 List<ContestProblem> contestProblemList = contestProblemRepository.findAllByContest(c);
                 for (ContestProblem cp : contestProblemList) {
                     cp.setSubmitted(solutionService.countOfProblemContest(cp.getProblem(), c).intValue());
@@ -248,6 +230,13 @@ public class AdminController {
                     contestProblemRepository.save(cp);
                 }
             });
+            if (cnt == contestList.size() - 1) {
+                try {
+                    f.get();
+                } catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+                }
+            }
             ++cnt;
         }
         log.info("calculating on contest finished");
