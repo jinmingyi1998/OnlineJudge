@@ -24,6 +24,11 @@ public class ArticleComment implements CommentAdapter {
     public ArticleComment() {
     }
 
+    public ArticleComment(Article article, Comment comment) {
+        this.article = article;
+        this.comment = comment;
+    }
+
     @Override
     public User getUser() {
         return comment.getUser();
