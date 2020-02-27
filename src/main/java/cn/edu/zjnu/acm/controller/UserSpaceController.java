@@ -14,9 +14,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Size;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -123,6 +125,20 @@ public class UserSpaceController {
             map.put("userself", cuser);
         }
         return map;
+    }
+
+    @GetMapping("/username/{username}")
+    public void getUserByUsername(@PathVariable String username, HttpServletResponse response){
+        User user =userService.getUserByUsername(username);
+        if (user==null){
+            throw new NotFoundException();
+        }
+        try {
+            response.sendRedirect("/user/"+user.getId());
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new NotFoundException();
+        }
     }
 
     @Data
