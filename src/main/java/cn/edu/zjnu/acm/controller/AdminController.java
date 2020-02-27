@@ -137,26 +137,29 @@ public class AdminController {
         try {
             User user = (User) session.getAttribute("currentUser");
             log.info("calculating data by user:" + user.getUsername());
-            Thread threadProblem = new Thread(this::calcProblem);
-            Thread threadContest = new Thread(this::calcContest);
-            Thread threadUser = new Thread(this::calcUser);
+            Thread main = new Thread(() -> {
+                Thread threadProblem = new Thread(this::calcProblem);
+                Thread threadContest = new Thread(this::calcContest);
+                Thread threadUser = new Thread(this::calcUser);
+                threadContest.start();
+                threadProblem.start();
+                threadUser.start();
+                try {
+                    threadContest.join();
+                    threadProblem.join();
+                    threadUser.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } finally {
+                    log.info("calculating finished");
+                    GlobalStatus.maintaining = false;
+                }
+            });
             GlobalStatus.maintaining = true;
-            threadContest.start();
-            threadProblem.start();
-            threadUser.start();
-            try {
-                threadContest.join();
-                threadProblem.join();
-                threadUser.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            log.info("finish calculating");
-            return "success";
+            main.start();
+            return "将持续一段时间, it will cost a long long time...";
         } catch (Exception e) {
             log.info("exception catched");
-        } finally {
-            GlobalStatus.maintaining = false;
         }
         return "failed";
     }
