@@ -4,8 +4,10 @@ import cn.edu.zjnu.acm.config.Config;
 import cn.edu.zjnu.acm.entity.oj.Contest;
 import cn.edu.zjnu.acm.entity.oj.ContestProblem;
 import cn.edu.zjnu.acm.entity.oj.Solution;
+import cn.edu.zjnu.acm.entity.oj.UserProblem;
 import cn.edu.zjnu.acm.repo.contest.ContestProblemRepository;
 import cn.edu.zjnu.acm.repo.problem.ProblemRepository;
+import cn.edu.zjnu.acm.repo.user.UserProblemRepository;
 import cn.edu.zjnu.acm.repo.user.UserProfileRepository;
 import com.alibaba.fastjson.JSON;
 import lombok.Data;
@@ -25,8 +27,9 @@ public class JudgeService {
     private final ProblemRepository problemRepository;
     private final ContestProblemRepository contestProblemRepository;
     private final ContestService contestService;
+    private final UserProblemRepository userProblemRepository;
 
-    public JudgeService(Config config, RESTService restService, SolutionService solutionService, UserProfileRepository userProfileRepository, ProblemRepository problemRepository, ContestProblemRepository contestProblemRepository, ContestService contestService) {
+    public JudgeService(Config config, RESTService restService, SolutionService solutionService, UserProfileRepository userProfileRepository, ProblemRepository problemRepository, ContestProblemRepository contestProblemRepository, ContestService contestService, UserProblemRepository userProblemRepository) {
         this.config = config;
         this.restService = restService;
         this.solutionService = solutionService;
@@ -34,6 +37,7 @@ public class JudgeService {
         this.problemRepository = problemRepository;
         this.contestProblemRepository = contestProblemRepository;
         this.contestService = contestService;
+        this.userProblemRepository = userProblemRepository;
     }
 
     public String submitCode(Solution solution) throws Exception {
@@ -113,18 +117,11 @@ public class JudgeService {
 
     private void acceptSolutionFilter(Solution solution) {
         if (solution.getResult().equals(Solution.AC)) {
-            List<Solution> solutions = solutionService.getProblemSubmitOfUser(solution.getUser(), solution.getProblem());
-            boolean hasAc = false;
-            for (Solution s : solutions) {
-                if (s.getId().equals(solution.getId())) continue;
-                if (s.getResult().equals(Solution.AC)) {
-                    hasAc = true;
-                }
-            }
-            if (!hasAc) {
+            if (!userProblemRepository.existsAllByUserAndProblem(solution.getUser(),solution.getProblem())) {
                 userProfileRepository.updateUserScore(solution.getUser().getUserProfile().getId(), solution.getProblem().getScore());
                 userProfileRepository.updateUserAccepted(solution.getUser().getUserProfile().getId(), 1);
                 problemRepository.updateAcceptedNumber(solution.getProblem().getId(), 1);
+                userProblemRepository.save(new UserProblem(solution.getUser(),solution.getProblem()));
             }
         }
     }
