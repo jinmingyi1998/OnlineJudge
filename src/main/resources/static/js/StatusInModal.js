@@ -6,6 +6,7 @@ $(function () {
                 url: "/api/status/view/" + id,
                 success: function (data) {
                     var solution = data;
+                    $(".prettyprint").attr("class", "prettyprint");
                     $("#modal-id").text(solution.id);
                     $("#modal-ce").text(solution.info);
                     $("#modal-username").text(solution.user.username);
