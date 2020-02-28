@@ -6,10 +6,12 @@ import cn.edu.zjnu.acm.entity.oj.Solution;
 import cn.edu.zjnu.acm.entity.oj.Tag;
 import cn.edu.zjnu.acm.exception.NeedLoginException;
 import cn.edu.zjnu.acm.exception.NotFoundException;
+import cn.edu.zjnu.acm.repo.user.UserProblemRepository;
 import cn.edu.zjnu.acm.service.JudgeService;
 import cn.edu.zjnu.acm.service.ProblemService;
 import cn.edu.zjnu.acm.service.SolutionService;
 import cn.edu.zjnu.acm.service.UserService;
+import cn.edu.zjnu.acm.util.RestfulResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -43,13 +45,15 @@ class ProblemViewController {
 public class ProblemController {
     private static final int PAGE_SIZE = 30;
     private final ProblemService problemService;
+    private final UserProblemRepository userProblemRepository;
     private final UserService userService;
     private final JudgeService judgeService;
     private final SolutionService solutionService;
     private final HttpSession session;
 
-    public ProblemController(ProblemService problemService, UserService userService, JudgeService judgeService, SolutionService solutionService, HttpSession session) {
+    public ProblemController(ProblemService problemService, UserProblemRepository userProblemRepository, UserService userService, JudgeService judgeService, SolutionService solutionService, HttpSession session) {
         this.problemService = problemService;
+        this.userProblemRepository = userProblemRepository;
         this.userService = userService;
         this.judgeService = judgeService;
         this.solutionService = solutionService;
@@ -152,6 +156,17 @@ public class ProblemController {
     @GetMapping("/tags")
     public List<Tag> showTags() {
         return problemService.getAllTags();
+    }
+
+    @GetMapping("/is/accepted/{pid:[0-9]+}")
+    public RestfulResult checkUserHasAc(@SessionAttribute User currentUser,@PathVariable Long pid){
+        Problem problem=problemService.getProblemById(pid);
+        if (problem==null){
+            throw new NotFoundException();
+        }
+        return new RestfulResult(200,
+                "success",
+                userProblemRepository.existsAllByUserAndProblem(currentUser,problem));
     }
 
     public static class SubmitCodeObject {

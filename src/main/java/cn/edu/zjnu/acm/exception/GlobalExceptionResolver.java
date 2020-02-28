@@ -68,4 +68,10 @@ public class GlobalExceptionResolver {
         errorResult.setMessage(msg.toString());
         return errorResult;
     }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseBody
+    public String exceptionHandle(Exception e) {
+        return "500";
+    }
 }
