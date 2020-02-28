@@ -98,7 +98,12 @@
                     that.attend = res.attend;
                     that.normalCreateTime = res.normalCreateTime;
                     that.createTime = res.createTime;
-                })
+                }).catch(function (e) {
+                if (e.response.status==404){
+                    console.log(e);
+                    location.href="4O4";
+                }
+            });
         }
     })
 </script>
