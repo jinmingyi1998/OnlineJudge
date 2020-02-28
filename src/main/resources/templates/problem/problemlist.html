@@ -15,17 +15,7 @@
 <main class="ui fluid container">
     <div class="ui grid" id="problem-list">
         <div class="ui twelve wide column container">
-            <div class="ui segment">
-                <form class="ui icon input" v-on:submit.prevent="search_problem()">
-                    <input type="text" v-model="search_string" placeholder="搜索题目或题号">
-                    <i class="search link icon" v-on:click="search_problem()"></i>
-                </form>
-                <div class="ui labels">
-                    <div class="ui label" v-for="tag in search_tag">{{tag}} <i class="close icon"
-                                                                               @click="remove_search_tag"></i></div>
-                </div>
-            </div>
-            <div class="ui centered grid">
+                <div class="ui centered grid">
                 <div class="ui pagination menu ">
                     <pagination :class="{disabled:first}" content='<i class="angle double left icon"></i>'
                                 v-on:change_page="get_page" v-bind:to_page="0"></pagination>
@@ -84,6 +74,16 @@
             </div>
         </div>
         <div class="ui four wide column">
+            <div class="ui blue segment">
+                <form class="ui icon input" v-on:submit.prevent="search_problem()">
+                    <input type="text" v-model="search_string" placeholder="搜索题目或题号">
+                    <i class="search link icon" v-on:click="search_problem()"></i>
+                </form>
+                <div class="ui labels">
+                    <div class="ui label" v-for="tag in search_tag">{{tag}} <i class="close icon"
+                                                                               @click="remove_search_tag"></i></div>
+                </div>
+            </div>
             <div class="ui orange segment" :class="{loading:!ready}">
                 <div class="ui dividing header"><i class="ui orange tags icon"></i>题目分类</div>
                 <a v-bind:key="t.id" v-for="t in tags" v-html="t.name"
