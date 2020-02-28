@@ -5,10 +5,9 @@ import lombok.Data;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class RestfulResult {
-    private Integer code;
-    private String message;
-    private Object data;
+public class RestfulResult extends Result {
+
+    Object data;
 
     @Override
     public String toString() {
@@ -23,8 +22,8 @@ public class RestfulResult {
     }
 
     public RestfulResult(Integer code, String message, Object data) {
-        this.code = code;
-        this.message = message;
+        super(code,message);
         this.data = data;
     }
+
 }
