@@ -8,12 +8,10 @@ import cn.edu.zjnu.acm.entity.oj.Comment;
 import cn.edu.zjnu.acm.exception.ForbiddenException;
 import cn.edu.zjnu.acm.exception.NeedLoginException;
 import cn.edu.zjnu.acm.exception.NotFoundException;
-import cn.edu.zjnu.acm.repo.CommentRepository;
 import cn.edu.zjnu.acm.repo.article.ArticleCommentRepository;
 import cn.edu.zjnu.acm.repo.article.ArticleRepository;
 import cn.edu.zjnu.acm.service.UserService;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -27,8 +25,6 @@ import org.springframework.web.bind.annotation.*;
 public class ArticleController {
     private static final int SIZE = 30;
 
-    @Autowired
-    private CommentRepository commentRepository;
     private final Config ojConfig;
     private final ArticleRepository articleRepository;
     private final UserService userService;
@@ -69,6 +65,7 @@ public class ArticleController {
         Article article = getArticleById(aid);
         article.getUser().hideInfo();
         article.setComment(articleCommentRepository.findAllByArticle(article));
+        article.getComment().forEach((c)->{c.getUser().hideInfo();});
         return article;
     }
 
@@ -122,10 +119,8 @@ public class ArticleController {
         }
         if (commentPost.replyText.length() < 4) return "too short";
         try {
-            Comment father = commentRepository.findById(commentPost.getReplyId()).orElse(null);
-            Comment comment = new Comment(currentUser, commentPost.replyText, father);
-            comment = commentRepository.save(comment);
-            ArticleComment articleComment = new ArticleComment(article, comment);
+            ArticleComment father = articleCommentRepository.findById(commentPost.getReplyId()).orElse(null);
+            ArticleComment articleComment = new ArticleComment(currentUser, commentPost.getReplyText(), father, article);
             articleCommentRepository.save(articleComment);
         } catch (Exception e) {
             e.printStackTrace();

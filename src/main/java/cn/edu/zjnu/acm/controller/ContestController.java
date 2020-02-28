@@ -83,7 +83,6 @@ public class ContestController {
     private final JudgeService judgeService;
     private final ContestProblemRepository contestProblemRepository;
     private final TeamService teamService;
-    private final CommentRepository commentRepository;
 
     public ContestController(HttpSession session, UserService userService, ProblemService problemService, SolutionService solutionService, ContestService contestService, JudgeService judgeService, ContestProblemRepository contestProblemRepository, TeamService teamService, CommentRepository commentRepository) {
         this.session = session;
@@ -94,7 +93,6 @@ public class ContestController {
         this.judgeService = judgeService;
         this.contestProblemRepository = contestProblemRepository;
         this.teamService = teamService;
-        this.commentRepository = commentRepository;
     }
 
     @GetMapping("")
@@ -302,12 +300,12 @@ public class ContestController {
             if (commentPost.replyText.length() < 4) return "too short";
             User user = (User) session.getAttribute("currentUser");
             if (user == null) return "need login";
-            Comment father = commentRepository.findById(commentPost.getReplyId()).orElse(null);
+            ContestComment father = contestService.getFatherComment(commentPost.getReplyId());
             @NotNull Contest contest = contestService.getContestById(cid);
             if (!contest.isStarted() || contest.isEnded())
                 return "contest is not running";
-            Comment comment = new Comment(user, commentPost.replyText, father);
-            contestService.postComment(comment, contest);
+            ContestComment contestComment = new ContestComment(user,commentPost.replyText,father,contest);
+            contestService.postComment(contestComment);
             return "success";
         } catch (Exception e) {
             e.printStackTrace();
@@ -322,9 +320,7 @@ public class ContestController {
             if (!contest.isStarted())
                 throw new NotFoundException();
             List<ContestComment> contestComments = contestService.getCommentsOfContest(contest);
-            for (ContestComment c : contestComments) {
-                c.getUser().hideInfo();
-            }
+            contestComments.forEach(c -> c.getUser().hideInfo());
             return contestComments;
         } catch (Exception e) {
             throw new NotFoundException();
@@ -391,7 +387,7 @@ public class ContestController {
             Instant startTime = Instant.from(localDateTime.atZone(ZoneId.systemDefault()));
             Instant endTime = startTime.plusSeconds(60 * postContest.getLength());
             List<ContestProblem> contestProblems = new ArrayList<>();
-            Long cnt = 1L;
+            long cnt = 1L;
             for (CreateContest.CreateProblem cp : postContest.getProblems()) {
                 Problem p = problemService.getProblemById(cp.getId());
                 if (p == null)

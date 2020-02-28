@@ -24,14 +24,12 @@ public class ContestService {
     private final ContestRepository contestRepository;
     private final ContestProblemRepository contestProblemRepository;
     private final SolutionService solutionService;
-    private final CommentRepository commentRepository;
     private final ContestCommentRepository contestCommentRepository;
 
     public ContestService(ContestRepository contestRepository, ContestProblemRepository contestProblemRepository, SolutionService solutionService, CommentRepository commentRepository, ContestCommentRepository contestCommentRepository) {
         this.contestRepository = contestRepository;
         this.contestProblemRepository = contestProblemRepository;
         this.solutionService = solutionService;
-        this.commentRepository = commentRepository;
         this.contestCommentRepository = contestCommentRepository;
     }
 
@@ -83,10 +81,11 @@ public class ContestService {
         return comments;
     }
 
-    public void postComment(Comment comment, Contest contest) {
-        comment = commentRepository.save(comment);
-        ContestComment contestComment = new ContestComment(contest, comment);
+    public void postComment(ContestComment contestComment) {
         contestCommentRepository.save(contestComment);
+    }
+    public ContestComment getFatherComment(Long id){
+        return contestCommentRepository.findById(id).orElse(null);
     }
 
     public List<Contest> contestsOfTeam(Team team) {

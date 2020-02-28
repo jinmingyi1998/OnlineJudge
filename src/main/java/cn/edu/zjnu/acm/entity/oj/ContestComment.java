@@ -11,46 +11,15 @@ import java.time.Instant;
 @Entity
 @Slf4j
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ContestComment implements CommentAdapter {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class ContestComment extends Comment {
     @ManyToOne(optional = false)
     private Contest contest;
-    @JsonIgnore
-    @OneToOne(optional = false)
-    private Comment comment;
 
     public ContestComment() {
     }
 
-    public ContestComment(Contest contest, Comment comment) {
+    public ContestComment(User user, String text, Comment father, Contest contest) {
+        super(user, text, father);
         this.contest = contest;
-        this.comment = comment;
-    }
-
-    @Override
-    public User getUser() {
-        return comment.getUser();
-    }
-
-    @Override
-    public Long getId() {
-        return comment.getId();
-    }
-
-    @Override
-    public Instant getPostTime() {
-        return comment.getPostTime();
-    }
-
-    @Override
-    public String getText() {
-        return comment.getText();
-    }
-
-    @Override
-    public Comment getFather() {
-        return comment.getFather();
     }
 }

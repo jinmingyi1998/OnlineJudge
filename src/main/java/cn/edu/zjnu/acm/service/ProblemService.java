@@ -1,12 +1,17 @@
 package cn.edu.zjnu.acm.service;
 
+import cn.edu.zjnu.acm.entity.User;
+import cn.edu.zjnu.acm.entity.oj.Analysis;
 import cn.edu.zjnu.acm.entity.oj.Problem;
 import cn.edu.zjnu.acm.entity.oj.Tag;
+import cn.edu.zjnu.acm.entity.oj.UserProblem;
+import cn.edu.zjnu.acm.repo.problem.AnalysisCommentRepository;
+import cn.edu.zjnu.acm.repo.problem.AnalysisRepository;
 import cn.edu.zjnu.acm.repo.problem.ProblemRepository;
 import cn.edu.zjnu.acm.repo.problem.TagRepository;
+import cn.edu.zjnu.acm.repo.user.UserProblemRepository;
 import cn.edu.zjnu.acm.util.PageHolder;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -16,14 +21,24 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 public class ProblemService {
-    @Autowired
-    private ProblemRepository problemRepository;
-    @Autowired
-    private TagRepository tagRepository;
+    private final ProblemRepository problemRepository;
+    private final TagRepository tagRepository;
+    private final UserProblemRepository userProblemRepository;
+    private final AnalysisRepository analysisRepository;
+    private final AnalysisCommentRepository analysisCommentRepository;
+
+    public ProblemService(ProblemRepository problemRepository, TagRepository tagRepository, UserProblemRepository userProblemRepository, AnalysisCommentRepository analysisCommentRepository, AnalysisRepository analysisRepository) {
+        this.problemRepository = problemRepository;
+        this.tagRepository = tagRepository;
+        this.userProblemRepository = userProblemRepository;
+        this.analysisCommentRepository = analysisCommentRepository;
+        this.analysisRepository = analysisRepository;
+    }
 
     public Page<Problem> getAllActiveProblems(int page, int size) {
         return problemRepository.findProblemsByActive(PageRequest.of(page, size), true);
@@ -107,5 +122,21 @@ public class ProblemService {
 
     public Tag getTagByName(String name) {
         return tagRepository.findByName(name).orElse(null);
+    }
+
+    public Boolean isUserAcProblem(User user, Problem problem) {
+        return userProblemRepository.existsAllByUserAndProblem(user, problem);
+    }
+
+    public List<Problem> allUserAcProblems(User user) {
+        return userProblemRepository.findAllByUser(user).stream()
+                .map(UserProblem::getProblem).collect(Collectors.toList());
+    }
+
+    public List<Analysis>getAnalysisByProblem(Problem problem){
+        return analysisRepository.findAllByProblem(problem);
+    }
+    public Analysis postAnalysis(Analysis analysis){
+        return analysisRepository.save(analysis);
     }
 }
