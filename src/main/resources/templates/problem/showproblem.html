@@ -23,18 +23,18 @@
     </style>
 </head>
 <body>
-<main class="ui container fluid">
+<main class="ui container fluid" id="vue-problem">
     <div class="ui grid two column row">
         <div class="ui four wide column">
-            <div class="ui padded blue segment" id="vue-tags" :class="{loading:!ready}">
+            <div class="ui padded blue segment" :class="{loading:!ready}">
                 <div class="ui dividing center aligned grey header">标签</div>
                 <div v-for="t in tags" v-html="t.name" class="ui small label" :class="[colorClass()]"></div>
             </div>
-            <div class="ui  green segment" id="vue-history">
+            <div class="ui  green segment">
                 <table class="ui selectable single line very compact small striped center aligned table">
                     <thead>
                     <tr>
-                        <th>提交结果 <i class="ui icon green sync link" @click="get_data()"></i></th>
+                        <th>提交结果 <i class="ui icon green sync link" @click="get_history_data()"></i></th>
                         <th>提交时间</th>
                     </tr>
                     </thead>
@@ -52,8 +52,11 @@
                 </table>
                 <a v-bind:href="'/status?pid='+problem_id">More</a>
             </div>
+            <div class="ui red segment" v-if="isAccepted">
+                <a class="ui blue button inverted  fluid">题解</a>
+            </div>
         </div>
-        <div class="ui container twelve wide column" id="vue-problem">
+        <div class="ui container twelve wide column" >
             <div class="ui raised piled segments fluid">
                 <div class="ui secondary center aligned segment" v-bind:class="{loading:!dataready}">
                     <h1>{{problem.title}}</h1>
