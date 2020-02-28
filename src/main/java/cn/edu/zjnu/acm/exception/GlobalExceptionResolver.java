@@ -1,11 +1,14 @@
 package cn.edu.zjnu.acm.exception;
 
-import lombok.Data;
+import cn.edu.zjnu.acm.util.RestfulResult;
+import cn.edu.zjnu.acm.util.Result;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.validation.ConstraintViolationException;
@@ -14,28 +17,6 @@ import javax.validation.ConstraintViolationException;
 @RestControllerAdvice
 public class GlobalExceptionResolver {
     public static final Result pleaseLoginResult = new Result(403, "请登录 Please Login");
-
-    @Data
-    public static class Result {
-        private int code = 200;
-        private String message = "";
-
-        public Result(int code, String message) {
-            this.code = code;
-            this.message = message;
-        }
-
-        public Result() {
-        }
-
-        @Override
-        public String toString() {
-            return "{" +
-                    "code=" + code +
-                    ", message='" + message + '\'' +
-                    '}';
-        }
-    }
 
     @ExceptionHandler(NeedLoginException.class)
     @ResponseBody
@@ -59,19 +40,27 @@ public class GlobalExceptionResolver {
     @ExceptionHandler({MethodArgumentNotValidException.class})
     @ResponseBody
     public Result handleBindException(MethodArgumentNotValidException ex) {
-        Result errorResult = new Result();
+        RestfulResult errorResult = new RestfulResult(400,"Bad Request","");
         StringBuilder msg = new StringBuilder();
         ex.getBindingResult().getAllErrors().forEach((e) -> {
             msg.append(e.getDefaultMessage() + "\n");
         });
         errorResult.setCode(400);
-        errorResult.setMessage(msg.toString());
+        errorResult.setData(msg.toString());
         return errorResult;
     }
 
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler(NotFoundException.class)
     @ResponseBody
-    public String exceptionHandle(Exception e) {
-        return "500";
+    @ResponseStatus(value = HttpStatus.NOT_FOUND)
+    public Result notFoundExceptionHandle(NotFoundException e) {
+        return new Result(404, e.getMessage());
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    @ResponseBody
+    @ResponseStatus(value = HttpStatus.FORBIDDEN)
+    public Result forbiddenExceptionHandle(ForbiddenException e) {
+        return new Result(403, e.getMessage());
     }
 }
