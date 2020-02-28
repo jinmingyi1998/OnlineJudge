@@ -34,6 +34,8 @@ public class JudgeController {
                 return "no this id";
             }
             if (!solution.getResult().equals(Solution.PENDING)) {
+                // 只更新PENDING状态的solution
+                // 如果rejudge 需要设置solution 为PENDING
                 return "success";
             }
             if (callback.getErr() != null) {
