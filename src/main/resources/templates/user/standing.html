@@ -4,6 +4,7 @@
     <th:block th:insert="~{fragment/header :: header}"></th:block>
     <meta charset="UTF-8">
     <title>用户排行</title>
+    <script src="/js/pagination.js"></script>
 </head>
 <body>
 <main class="container ui" id="userlist">
@@ -33,7 +34,6 @@
             </tr>
             </tbody>
         </table>
-        <script src="/js/pagination.js"></script>
         <div class="ui center aligned pagination menu">
             <pagination :class="{disabled:first}" content='<i class="angle double left icon"></i>'
                         v-on:change_page="get_page" v-bind:to_page="0"></pagination>
