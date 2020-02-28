@@ -15,9 +15,6 @@ import java.time.Instant;
 @Slf4j
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class User implements Cloneable, Comparable {
-
-    @Column(nullable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
-    Instant createtime = Instant.now();
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -42,6 +39,8 @@ public class User implements Cloneable, Comparable {
     private String intro;
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
     private UserProfile userProfile;
+    @Column(nullable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
+    Instant createtime = Instant.now();
 
     public User() {
         this.username = "";
@@ -99,6 +98,7 @@ public class User implements Cloneable, Comparable {
         setPassword(null);
         setEmail(null);
         setIntro(null);
+        setCreatetime(null);
         return this;
     }
 }
