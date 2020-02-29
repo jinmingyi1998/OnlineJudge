@@ -15,6 +15,7 @@
             <th>Name</th>
             <th>Submitted</th>
             <th>Accepted</th>
+            <th>Ratio</th>
             <th>Score</th>
             </thead>
             <tbody>
@@ -23,6 +24,7 @@
                 <td>{{userself.name}}</td>
                 <td>{{userself.submitted}}</td>
                 <td>{{userself.accepted}}</td>
+                <td>{{acRatio(userself.accepted,userself.submitted)}}</td>
                 <td>{{userself.score}}</td>
             </tr>
             <tr v-for="u in users">
@@ -30,6 +32,7 @@
                 <td><a :href="'/user/'+u.id">{{u.name}}</a></td>
                 <td>{{u.submitted}}</td>
                 <td>{{u.accepted}}</td>
+                <td>{{acRatio(u.accepted,u.submitted)}}</td>
                 <td>{{u.score}}</td>
             </tr>
             </tbody>
@@ -63,6 +66,11 @@
             npage: []
         },
         methods: {
+            acRatio(ac,su){
+                if(su==0){return "0%";}
+                let r = ac/su*100;
+                return Math.floor(r)+"%"
+            },
             get_page(page) {
                 var that = this;
                 axios.get("/api/user/list?page=" + page)
