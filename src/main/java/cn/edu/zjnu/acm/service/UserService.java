@@ -71,11 +71,12 @@ public class UserService {
 
     /**
      * get user's permission
+     *
      * @param user
      * @return -1 if normal users, otherwise return teacher privileges.
      */
-    public int getUserPermission(User user){
-        if(!teacherRepository.existsByUser(user))
+    public int getUserPermission(User user) {
+        if (!teacherRepository.existsByUser(user))
             return -1;
         return teacherRepository.findByUser(user).get().getPrivilege();
     }

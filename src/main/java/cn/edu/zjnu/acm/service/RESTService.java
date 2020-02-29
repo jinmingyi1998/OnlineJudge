@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 @Slf4j
 @Service
@@ -28,11 +29,11 @@ public class RESTService {
             byte[] writebytes = json.getBytes();
             connection.setRequestProperty("Content-Length", String.valueOf(writebytes.length));
             connection.connect();
-            OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream(), "UTF-8");
+            OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream(), StandardCharsets.UTF_8);
             out.append(json);
             out.flush();
             out.close();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), "UTF-8"));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
             String line;
             while ((line = reader.readLine()) != null) {
                 result += line;

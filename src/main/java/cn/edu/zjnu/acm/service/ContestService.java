@@ -1,6 +1,5 @@
 package cn.edu.zjnu.acm.service;
 
-import cn.edu.zjnu.acm.entity.oj.Comment;
 import cn.edu.zjnu.acm.entity.oj.Contest;
 import cn.edu.zjnu.acm.entity.oj.ContestComment;
 import cn.edu.zjnu.acm.entity.oj.Team;
@@ -84,15 +83,17 @@ public class ContestService {
     public void postComment(ContestComment contestComment) {
         contestCommentRepository.save(contestComment);
     }
-    public ContestComment getFatherComment(Long id){
+
+    public ContestComment getFatherComment(Long id) {
         return contestCommentRepository.findById(id).orElse(null);
     }
 
     public List<Contest> contestsOfTeam(Team team) {
         return contestRepository.findAllByTeam(team);
     }
+
     @Transactional
-    public void deleteContest(Contest contest){
+    public void deleteContest(Contest contest) {
         contestRepository.delete(contest);
     }
 }

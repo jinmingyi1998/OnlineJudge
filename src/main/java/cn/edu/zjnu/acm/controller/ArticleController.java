@@ -4,7 +4,6 @@ import cn.edu.zjnu.acm.config.Config;
 import cn.edu.zjnu.acm.entity.User;
 import cn.edu.zjnu.acm.entity.oj.Article;
 import cn.edu.zjnu.acm.entity.oj.ArticleComment;
-import cn.edu.zjnu.acm.entity.oj.Comment;
 import cn.edu.zjnu.acm.exception.ForbiddenException;
 import cn.edu.zjnu.acm.exception.NeedLoginException;
 import cn.edu.zjnu.acm.exception.NotFoundException;
@@ -65,7 +64,9 @@ public class ArticleController {
         Article article = getArticleById(aid);
         article.getUser().hideInfo();
         article.setComment(articleCommentRepository.findAllByArticle(article));
-        article.getComment().forEach((c)->{c.getUser().hideInfo();});
+        article.getComment().forEach((c) -> {
+            c.getUser().hideInfo();
+        });
         return article;
     }
 

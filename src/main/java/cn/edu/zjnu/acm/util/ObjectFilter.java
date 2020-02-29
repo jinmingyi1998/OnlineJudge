@@ -53,7 +53,7 @@ public class ObjectFilter {
      * 判断是否为要忽略处理的类型
      */
     private boolean isIgnoreType(Object object) {
-        if (object instanceof Integer
+        return object instanceof Integer
                 || object instanceof Byte
                 || object instanceof Long
                 || object instanceof Double
@@ -64,10 +64,7 @@ public class ObjectFilter {
                 || object instanceof String
                 || object instanceof StringBuilder
                 || object instanceof StringBuffer
-                || object instanceof Date) {
-            return true;
-        }
-        return false;
+                || object instanceof Date;
     }
 
     /**

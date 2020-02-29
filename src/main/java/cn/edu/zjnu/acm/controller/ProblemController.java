@@ -208,20 +208,20 @@ public class ProblemController {
     @PostMapping("/analysis/comment/post/{aid:[0-9]+}")
     public RestfulResult postAnalysisComment(@PathVariable Long aid, @SessionAttribute User currentUser,
                                              @RequestBody ContestController.CommentPost commentPost) {
-        if (commentPost.replyText.length()<4){
-            return new RestfulResult(400,"bad request","too short!");
+        if (commentPost.replyText.length() < 4) {
+            return new RestfulResult(400, "bad request", "too short!");
         }
         Analysis analysis = problemService.getAnalysisById(aid);
         if (analysis == null) {
             throw new NotFoundException("Analysis not found");
         }
         if (!problemService.isUserAcProblem(currentUser,
-                checkProblemExist(analysis.getProblem().getId()))){
+                checkProblemExist(analysis.getProblem().getId()))) {
             throw new ForbiddenException("Access after passing the question");
         }
         AnalysisComment father = problemService.getFatherComment(commentPost.getReplyId());
         problemService.postAnalysisComment(new AnalysisComment(currentUser, commentPost.replyText, father, analysis));
-        return new RestfulResult(200,"success",null);
+        return new RestfulResult(200, "success", null);
     }
 
     public static class SubmitCodeObject {

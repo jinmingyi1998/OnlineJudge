@@ -304,7 +304,7 @@ public class ContestController {
             @NotNull Contest contest = contestService.getContestById(cid);
             if (!contest.isStarted() || contest.isEnded())
                 return "contest is not running";
-            ContestComment contestComment = new ContestComment(user,commentPost.replyText,father,contest);
+            ContestComment contestComment = new ContestComment(user, commentPost.replyText, father, contest);
             contestService.postComment(contestComment);
             return "success";
         } catch (Exception e) {

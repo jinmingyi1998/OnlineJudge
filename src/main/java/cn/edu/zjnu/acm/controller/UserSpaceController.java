@@ -128,13 +128,13 @@ public class UserSpaceController {
     }
 
     @GetMapping("/username/{username}")
-    public void getUserByUsername(@PathVariable String username, HttpServletResponse response){
-        User user =userService.getUserByUsername(username);
-        if (user==null){
+    public void getUserByUsername(@PathVariable String username, HttpServletResponse response) {
+        User user = userService.getUserByUsername(username);
+        if (user == null) {
             throw new NotFoundException();
         }
         try {
-            response.sendRedirect("/user/"+user.getId());
+            response.sendRedirect("/user/" + user.getId());
         } catch (IOException e) {
             e.printStackTrace();
             throw new NotFoundException();

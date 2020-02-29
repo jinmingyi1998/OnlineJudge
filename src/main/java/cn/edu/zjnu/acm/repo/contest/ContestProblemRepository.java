@@ -22,11 +22,11 @@ public interface ContestProblemRepository extends JpaRepository<ContestProblem, 
     @Transactional
     @Modifying
     @Query(value = "UPDATE contest_problem set accepted=accepted+:ac where id = :pid", nativeQuery = true)
-    public void updateAcceptedNumber(@Param(value = "pid") Long pid, @Param(value = "ac") int ac);
+    void updateAcceptedNumber(@Param(value = "pid") Long pid, @Param(value = "ac") int ac);
 
     @Transactional
     @Modifying
     @Query(value = "UPDATE contest_problem set submitted=submitted+:sub where id = :pid", nativeQuery = true)
-    public void updateSubmittedNumber(@Param(value = "pid") Long pid, @Param(value = "sub") int sub);
+    void updateSubmittedNumber(@Param(value = "pid") Long pid, @Param(value = "sub") int sub);
 
 }

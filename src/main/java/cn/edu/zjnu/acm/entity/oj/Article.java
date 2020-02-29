@@ -21,18 +21,19 @@ public class Article {
     private Long id;
     @Column(nullable = false)
     @NotNull(message = "title can't be null")
-    @Size(min = 1,message = "title too short")
+    @Size(min = 1, message = "title too short")
     private String title;
-    @Size(min = 15,message = "text too short")
+    @Size(min = 15, message = "text too short")
     @NotNull(message = "text cannot be null")
     @Column(nullable = false, columnDefinition = "LONGTEXT DEFAULT ''")
     private String text;
     @Column(nullable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
-    private Instant postTime=Instant.now();
+    private Instant postTime = Instant.now();
     @ManyToOne(optional = false)
     private User user;
-    @OneToMany(mappedBy = "article",cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "article", cascade = CascadeType.REMOVE)
     private List<ArticleComment> comment;
+
     public Article() {
     }
 }

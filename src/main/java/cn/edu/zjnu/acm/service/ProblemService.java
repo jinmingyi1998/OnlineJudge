@@ -141,10 +141,12 @@ public class ProblemService {
     public Analysis postAnalysis(Analysis analysis) {
         return analysisRepository.save(analysis);
     }
-    public AnalysisComment postAnalysisComment(AnalysisComment comment){
+
+    public AnalysisComment postAnalysisComment(AnalysisComment comment) {
         return analysisCommentRepository.save(comment);
     }
-    public AnalysisComment getFatherComment(Long id){
+
+    public AnalysisComment getFatherComment(Long id) {
         return analysisCommentRepository.findById(id).orElse(null);
     }
 }

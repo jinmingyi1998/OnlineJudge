@@ -23,7 +23,7 @@ public class UnavailableInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         if (GlobalStatus.maintaining) {
             response.setContentType("text/html;charset=utf-8");
-            response.getWriter().println(new Result(200,"维护中"));
+            response.getWriter().println(new Result(200, "维护中"));
             return false;
         }
         if (GlobalStatus.teacherOnly) {
@@ -32,7 +32,7 @@ public class UnavailableInterceptor implements HandlerInterceptor {
                 return true;
             }
             response.setContentType("text/html;charset=utf-8");
-            response.getWriter().println(new Result(200,"维护中"));
+            response.getWriter().println(new Result(200, "维护中"));
             return false;
         }
         return true;

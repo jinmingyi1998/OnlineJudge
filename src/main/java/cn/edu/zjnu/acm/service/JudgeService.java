@@ -15,8 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Slf4j
 @Service
 public class JudgeService {
@@ -117,11 +115,11 @@ public class JudgeService {
 
     private void acceptSolutionFilter(Solution solution) {
         if (solution.getResult().equals(Solution.AC)) {
-            if (!userProblemRepository.existsAllByUserAndProblem(solution.getUser(),solution.getProblem())) {
+            if (!userProblemRepository.existsAllByUserAndProblem(solution.getUser(), solution.getProblem())) {
                 userProfileRepository.updateUserScore(solution.getUser().getUserProfile().getId(), solution.getProblem().getScore());
                 userProfileRepository.updateUserAccepted(solution.getUser().getUserProfile().getId(), 1);
                 problemRepository.updateAcceptedNumber(solution.getProblem().getId(), 1);
-                userProblemRepository.save(new UserProblem(solution.getUser(),solution.getProblem()));
+                userProblemRepository.save(new UserProblem(solution.getUser(), solution.getProblem()));
             }
         }
     }

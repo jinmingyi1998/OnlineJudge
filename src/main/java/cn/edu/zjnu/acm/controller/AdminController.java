@@ -37,6 +37,7 @@ import java.util.concurrent.Future;
 @Slf4j
 public class AdminController {
     public static final int PAGE_SIZE = 50;
+    private static final ExecutorService threadPool = Executors.newFixedThreadPool(200);
     private final UserProblemRepository userProblemRepository;
     private final ProblemService problemService;
     private final ContestService contestService;
@@ -48,7 +49,6 @@ public class AdminController {
     private final ContestProblemRepository contestProblemRepository;
     private final SolutionRepository solutionRepository;
     private final UserProfileRepository userProfileRepository;
-    private static final ExecutorService threadPool = Executors.newFixedThreadPool(200);
 
     public AdminController(UserProblemRepository userProblemRepository, ProblemService problemService, ContestService contestService, UserService userService, HttpSession session, Config config, SolutionService solutionService, ProblemRepository problemRepository, ContestProblemRepository contestProblemRepository, SolutionRepository solutionRepository, UserProfileRepository userProfileRepository) {
         this.userProblemRepository = userProblemRepository;
@@ -257,7 +257,7 @@ public class AdminController {
 
     @Data
     static class UpdateConfig {
-        private Integer leastScoreToPostBlog=750;
+        private Integer leastScoreToPostBlog = 750;
         private Integer leastScoreToSeeOthersCode = 1000;
         private ArrayList<String> judgerhost;
         private Config.LanguageConfig c;

@@ -9,8 +9,11 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ArticleRepository extends JpaRepository<Article, Long> {
-    List<Article>findAll();
-    Page<Article>findAll(Pageable pageable);
-    Page<Article>findAllByTitleContaining(Pageable pageable,String search);
+    List<Article> findAll();
+
+    Page<Article> findAll(Pageable pageable);
+
+    Page<Article> findAllByTitleContaining(Pageable pageable, String search);
+
     Optional<Article> findById(Long id);
 }

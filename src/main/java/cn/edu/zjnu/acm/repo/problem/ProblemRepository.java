@@ -37,20 +37,20 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {
     @Transactional
     @Modifying
     @Query(value = "UPDATE problem set accepted=accepted+:ac where id = :pid", nativeQuery = true)
-    public void updateAcceptedNumber(@Param(value = "pid") Long pid, @Param(value = "ac") int ac);
+    void updateAcceptedNumber(@Param(value = "pid") Long pid, @Param(value = "ac") int ac);
 
     @Transactional
     @Modifying
     @Query(value = "UPDATE problem set accepted=:ac where id = :pid", nativeQuery = true)
-    public void setAcceptedNumber(@Param(value = "pid") Long pid, @Param(value = "ac") int ac);
+    void setAcceptedNumber(@Param(value = "pid") Long pid, @Param(value = "ac") int ac);
 
     @Transactional
     @Modifying
     @Query(value = "UPDATE problem set submitted=submitted+:sub where id = :pid", nativeQuery = true)
-    public void updateSubmittedNumber(@Param(value = "pid") Long pid, @Param(value = "sub") int sub);
+    void updateSubmittedNumber(@Param(value = "pid") Long pid, @Param(value = "sub") int sub);
 
     @Transactional
     @Modifying
     @Query(value = "UPDATE problem set submitted=:sub where id = :pid", nativeQuery = true)
-    public void setSubmittedNumber(@Param(value = "pid") Long pid, @Param(value = "sub") int sub);
+    void setSubmittedNumber(@Param(value = "pid") Long pid, @Param(value = "sub") int sub);
 }

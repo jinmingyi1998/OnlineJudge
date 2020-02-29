@@ -9,5 +9,6 @@ import java.util.Optional;
 
 public interface ContestCommentRepository extends JpaRepository<ContestComment, Long> {
     Optional<ContestComment> findById(Long id);
+
     List<ContestComment> findAllByContestOrderByIdDesc(Contest contest);
 }

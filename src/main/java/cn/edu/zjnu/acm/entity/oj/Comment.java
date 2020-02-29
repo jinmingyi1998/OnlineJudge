@@ -1,7 +1,6 @@
 package cn.edu.zjnu.acm.entity.oj;
 
 import cn.edu.zjnu.acm.entity.User;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -50,6 +49,7 @@ public class Comment implements Comparable {
         Comment c = (Comment) o;
         return getPostTime().compareTo(c.getPostTime()) * -1;
     }
+
     public String getNormalPostTime() {
         return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date.from(getPostTime()));
     }

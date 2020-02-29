@@ -44,11 +44,11 @@ public class Contest implements Cloneable {
     private User creator;
     @Column(nullable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
     private Instant createTime;
-    @OneToMany(mappedBy = "contest",cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "contest", cascade = CascadeType.REMOVE)
     private List<ContestComment> contestComments;
-    @OneToMany(mappedBy = "contest",cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "contest", cascade = CascadeType.REMOVE)
     private List<ContestProblem> problems;
-    @OneToMany(mappedBy = "contest",cascade=CascadeType.REMOVE)
+    @OneToMany(mappedBy = "contest", cascade = CascadeType.REMOVE)
     private List<Solution> solutions;
     @Column(nullable = false, columnDefinition = "varchar(20) default 'acm'")
     private String pattern = "acm";
@@ -116,7 +116,8 @@ public class Contest implements Cloneable {
         LocalDateTime localDateTime = LocalDateTime.parse(startTime, dtf);
         this.startTime = Instant.from(localDateTime.atZone(ZoneId.systemDefault()));
     }
-    public void setStartAndEndTime(String startTime,Long length){
+
+    public void setStartAndEndTime(String startTime, Long length) {
         setStartTime(startTime);
         this.endTime = this.startTime.plusSeconds(60 * length);
     }

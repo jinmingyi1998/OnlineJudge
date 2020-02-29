@@ -8,7 +8,7 @@ import java.time.Instant;
 
 @Entity
 @Data
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"problem_id","user_id"})})
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"problem_id", "user_id"})})
 public class UserProblem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,7 +18,7 @@ public class UserProblem {
     @ManyToOne(optional = false)
     private Problem problem;
     @Column(nullable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
-    private Instant createTime=Instant.now();
+    private Instant createTime = Instant.now();
 
     public UserProblem() {
     }
