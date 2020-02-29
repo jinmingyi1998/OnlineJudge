@@ -14,6 +14,10 @@
             <label>least-score-to-see-others-code</label>
             <input type="text" v-model="leastScoreToSeeOthersCode">
         </div>
+        <div class="field">
+            <label>least-score-to-post-blog</label>
+            <input type="text" v-model="leastScoreToPostBlog">
+        </div>
         <div class="ui divider"></div>
         <div class="ui header">judger services</div>
         <button class="ui button mini green icon" @click="add_host()"><i class="ui plus icon"></i></button>
@@ -162,6 +166,7 @@
         el: "#setting",
         data: {
             leastScoreToSeeOthersCode: 1000,
+            leastScoreToPostBlog:750,
             judgerhost: [{str: ""}],
             c: language_config,
             cpp: language_config,
@@ -186,6 +191,7 @@
                 this.notice=editor_notice.getMarkdown();
                 axios.post("/api/admin/config", {
                     leastScoreToSeeOthersCode: this.leastScoreToSeeOthersCode,
+                    leastScoreToPostBlog:this.leastScoreToPostBlog,
                     judgerhost: hosts,
                     c: this.c,
                     cpp: this.cpp,
@@ -211,6 +217,7 @@
             axios.get("/api/admin/config")
                 .then(function (res) {
                     that.leastScoreToSeeOthersCode = res.data.leastScoreToSeeOthersCode;
+                    that.leastScoreToPostBlog=res.data.leastScoreToPostBlog;
                     that.judgerhost = [];
                     for (host of res.data.judgerhost) {
                         that.judgerhost.push({str: host});

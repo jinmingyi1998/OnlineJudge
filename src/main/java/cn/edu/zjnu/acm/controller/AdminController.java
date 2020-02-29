@@ -73,6 +73,7 @@ public class AdminController {
     public String updateConfig(@RequestBody UpdateConfig updateConfig) {
         log.info(updateConfig.toString());
         config.setLeastScoreToSeeOthersCode(updateConfig.getLeastScoreToSeeOthersCode());
+        config.setLeastScoreToPostBlog(updateConfig.getLeastScoreToPostBlog());
         config.setJudgerhost(updateConfig.getJudgerhost());
         config.setC(updateConfig.getC());
         config.setCpp(updateConfig.getCpp());
@@ -256,6 +257,7 @@ public class AdminController {
 
     @Data
     static class UpdateConfig {
+        private Integer leastScoreToPostBlog=750;
         private Integer leastScoreToSeeOthersCode = 1000;
         private ArrayList<String> judgerhost;
         private Config.LanguageConfig c;
@@ -269,19 +271,9 @@ public class AdminController {
         public UpdateConfig() {
         }
 
-        public UpdateConfig(Integer leastScoreToSeeOthersCode, ArrayList<String> judgerhost, Config.LanguageConfig c, Config.LanguageConfig cpp, Config.LanguageConfig java, Config.LanguageConfig python2, Config.LanguageConfig python3, Config.LanguageConfig go) {
-            this.leastScoreToSeeOthersCode = leastScoreToSeeOthersCode;
-            this.judgerhost = judgerhost;
-            this.c = c;
-            this.cpp = cpp;
-            this.java = java;
-            this.python2 = python2;
-            this.python3 = python3;
-            this.go = go;
-        }
-
         public UpdateConfig(Config config) {
             setLeastScoreToSeeOthersCode(config.getLeastScoreToSeeOthersCode());
+            setLeastScoreToPostBlog(config.getLeastScoreToPostBlog());
             setJudgerhost(config.getJudgerhost());
             setC(config.getC());
             setCpp(config.getCpp());
