@@ -11,9 +11,12 @@
 - jdk8
 
 ## 部署：
-### 代码部署:
-打包成jar包，运行即可，配置文件目录应与jar包在一个目录下，配置文件为 yml
-### docker (RECOMMENDED):
+### 源代码部署:
+```sh
+./gradlew bootJar
+```
+打包成jar包，运行`./build/lib/`目录下的jar即可`java -jar jar-name.jar`，配置文件目录应与jar包在一个目录下，配置文件为 yml
+### Docker部署 (RECOMMENDED):
 ```
 export DOCKER_IMG=registry.cn-hangzhou.aliyuncs.com/jinmingyi/onlinejudge #或者jinmingyi1998/onlinejudge
 docker pull $DOCKER_IMG
@@ -45,7 +48,7 @@ server:
  - log/ 运行日志
 
 ## 浏览器支持：
-Chrome ~~Firefox Edge~~
+Chrome ~~Firefox, Edge without Chromium, IE~~
 
 ## 功能简介：
 ### 题目分类功能：
