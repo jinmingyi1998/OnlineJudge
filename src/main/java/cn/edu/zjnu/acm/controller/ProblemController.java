@@ -37,7 +37,7 @@ class ProblemViewController {
         return "problem/showproblem";
     }
 
-    @GetMapping("/article/{id:[0-9]}")
+    @GetMapping("/article/{id:[0-9]+}")
     public String problemArticle() {
         return "problem/article";
     }
@@ -205,7 +205,7 @@ public class ProblemController {
         return new RestfulResult(200, "success", null);
     }
 
-    @PostMapping("/analysis/comment/post/{aid:[0-9]+}")
+    @PostMapping("/analysis/post/comment/{aid:[0-9]+}")
     public RestfulResult postAnalysisComment(@PathVariable Long aid, @SessionAttribute User currentUser,
                                              @RequestBody ContestController.CommentPost commentPost) {
         if (commentPost.replyText.length() < 4) {

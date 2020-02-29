@@ -131,7 +131,9 @@ public class ProblemService {
     }
 
     public List<Analysis> getAnalysisByProblem(Problem problem) {
-        return analysisRepository.findAllByProblem(problem);
+        List<Analysis> analyses = analysisRepository.findAllByProblem(problem);
+        analyses.forEach(a -> a.setComment(analysisCommentRepository.findAllByAnalysis(a)));
+        return analyses;
     }
 
     public Analysis getAnalysisById(Long id) {
