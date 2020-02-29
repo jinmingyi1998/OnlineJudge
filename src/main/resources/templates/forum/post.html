@@ -8,8 +8,11 @@
     <script src="/editor/editormd.min.js"></script>
 </head>
 <body>
-<main class="ui container segment">
-    <form onsubmit="return false" class="ui form" id="article">
+<main class="ui container" id="article">
+    <div class="ui message warning large attached">
+        <div class="ui center aligned header">高于{{scoreLimit}}分可发表</div>
+    </div>
+    <form onsubmit="return false" class="ui form segment attached">
         <div class="required field">
             <label for="title">Title</label>
             <input type="text" required="required" id="title" v-model="title">
@@ -47,33 +50,6 @@
             imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "ico", "JPG", "JPEG", "PNG"],
         });
     });
-
-    function render_md() {
-        $(function () {
-            $(".md-text").each(function () {
-                $(this).attr("id", "editormd-view");
-                editormd.markdownToHTML("editormd-view", {
-                    toc: true,
-                    tocStartLevel: 1,
-                    path: "/editor/lib/",
-                    pluginPath: "/editor/plugins",
-                    tocTitle: "目录",
-                    tocDropdown: false,
-                    tocContainer: "",
-                    pageBreak: true,
-                    atLink: true,    // for @link
-                    emailLink: true,    // for mail address auto link
-                    tex: true,
-                    taskList: true,   // Github Flavored Markdown task lists
-                    flowChart: true,
-                    sequenceDiagram: true,
-                    previewCodeHighlight: true
-                });
-                $(this).attr("id", "");
-            });
-        });
-    }
-
     var article = new Vue({
         el: "#article",
         data: {
@@ -99,7 +75,7 @@
                     .then(function (res) {
                         if (res.data.message == 'success') {
                             alert(res.data.message);
-                            location.href = "/forum/"+res.data.extra;
+                            location.href = "/forum/" + res.data.extra;
                         } else {
                             alert(res.data.message);
                         }
@@ -112,13 +88,12 @@
         },
         created() {
             let that = this;
-            axios.get("")
+            axios.get("/api/forum/post/score/limit")
                 .then(function (res) {
                     that.scoreLimit = res.data;
                 });
         }
     });
-    render_md();
 </script>
 </body>
 </html>
