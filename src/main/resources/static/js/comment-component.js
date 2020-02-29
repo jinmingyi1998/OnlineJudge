@@ -8,7 +8,7 @@ comment_group = Vue.component("comment-group", {
             <div class="md-text" style="padding: 0"><textarea style="display: none;">{{s.text}}</textarea></div>
             <div class="actions"><a class="reply" v-on:click="s.reply_action(s.id)"><i class="ui at icon"></i>Reply</a></div>
         </div>
-        <comment-group v-if="s.sons.length>0" v-bind:comments="s.sons" v-bind:level="1" v-on:reply="s.reply_action(s.id)"></comment-group>
+        <comment-group  style="padding-top: 2em" v-if="s.sons.length>0" v-bind:comments="s.sons" v-bind:level="1" v-on:reply="s.reply_action(s.id)"></comment-group>
     </div>
 </div>`
 });
