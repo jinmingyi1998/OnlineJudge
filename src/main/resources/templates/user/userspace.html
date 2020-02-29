@@ -37,10 +37,10 @@
                 <div class="description">
                     <p>用户名：{{user.username}}</p>
                     <p>个人介绍：{{user.intro}}</p>
-                    <p v-if="owner">Email：{{user.email}}</p>
+                    <p v-if="isOwner()">Email：{{user.email}}</p>
                 </div>
             </div>
-            <a :href="'/user/edit/'+id" class="ui button attached animated fade bottom" v-if="owner">
+            <a :href="'/user/edit/'+id" class="ui button attached animated fade bottom" v-if="isOwner()">
                 <div class="visible content"><i class="ui edit icon"></i>Update</div>
                 <div class="hidden content">更新个人信息</div>
             </a>
@@ -57,13 +57,16 @@
     var usr = new Vue({
         el: "#user",
         data: {
-            id:pid,
+            id:parseInt(pid),
             user: {},
-            ready: false,
-            owner: false
+            ready: false
+        },
+        methods:{
+            isOwner(){
+                return user_bar.user.id == this.id;
+            }
         },
         created() {
-            this.owner =user_bar.user.id == pid;
             var that = this;
             axios.get("/api/user/" + pid)
                 .then(function (res) {
