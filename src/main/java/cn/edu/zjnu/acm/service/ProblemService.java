@@ -1,10 +1,7 @@
 package cn.edu.zjnu.acm.service;
 
 import cn.edu.zjnu.acm.entity.User;
-import cn.edu.zjnu.acm.entity.oj.Analysis;
-import cn.edu.zjnu.acm.entity.oj.Problem;
-import cn.edu.zjnu.acm.entity.oj.Tag;
-import cn.edu.zjnu.acm.entity.oj.UserProblem;
+import cn.edu.zjnu.acm.entity.oj.*;
 import cn.edu.zjnu.acm.repo.problem.AnalysisCommentRepository;
 import cn.edu.zjnu.acm.repo.problem.AnalysisRepository;
 import cn.edu.zjnu.acm.repo.problem.ProblemRepository;
@@ -133,10 +130,21 @@ public class ProblemService {
                 .map(UserProblem::getProblem).collect(Collectors.toList());
     }
 
-    public List<Analysis>getAnalysisByProblem(Problem problem){
+    public List<Analysis> getAnalysisByProblem(Problem problem) {
         return analysisRepository.findAllByProblem(problem);
     }
-    public Analysis postAnalysis(Analysis analysis){
+
+    public Analysis getAnalysisById(Long id) {
+        return analysisRepository.findById(id).orElse(null);
+    }
+
+    public Analysis postAnalysis(Analysis analysis) {
         return analysisRepository.save(analysis);
+    }
+    public AnalysisComment postAnalysisComment(AnalysisComment comment){
+        return analysisCommentRepository.save(comment);
+    }
+    public AnalysisComment getFatherComment(Long id){
+        return analysisCommentRepository.findById(id).orElse(null);
     }
 }
