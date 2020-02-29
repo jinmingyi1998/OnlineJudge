@@ -40,7 +40,7 @@ public class GlobalExceptionResolver {
     @ExceptionHandler({MethodArgumentNotValidException.class})
     @ResponseBody
     public Result handleBindException(MethodArgumentNotValidException ex) {
-        RestfulResult errorResult = new RestfulResult(400,"Bad Request","");
+        RestfulResult errorResult = new RestfulResult(400, "Bad Request", "");
         StringBuilder msg = new StringBuilder();
         ex.getBindingResult().getAllErrors().forEach((e) -> {
             msg.append(e.getDefaultMessage() + "\n");
@@ -62,5 +62,12 @@ public class GlobalExceptionResolver {
     @ResponseStatus(value = HttpStatus.FORBIDDEN)
     public Result forbiddenExceptionHandle(ForbiddenException e) {
         return new Result(403, e.getMessage());
+    }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseBody
+    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
+    public Result serverExceptionHandle(Exception e) {
+        return new Result(500, "Internal Server Error");
     }
 }
