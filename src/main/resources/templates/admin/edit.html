@@ -84,9 +84,11 @@
 </div>
 <script>
     c = new TurndownService();
-    function html2Markdown(s){
+
+    function html2Markdown(s) {
         return c.turndown(s);
     }
+
     pid = location.pathname.split('/');
     pid = pid[pid.length - 1];
     $('.ui.checkbox').checkbox();
@@ -112,11 +114,11 @@
             tags: ""
         },
         methods: {
-            html2Markdown(){
-                editor_description.setMarkdown( html2Markdown(editor_description.getMarkdown()));
-                editor_input.setMarkdown( html2Markdown(editor_input.getMarkdown()));
-                editor_output.setMarkdown( html2Markdown(editor_output.getMarkdown()));
-                editor_hint.setMarkdown( html2Markdown(editor_hint.getMarkdown()));
+            html2Markdown() {
+                editor_description.setMarkdown(html2Markdown(editor_description.getMarkdown()));
+                editor_input.setMarkdown(html2Markdown(editor_input.getMarkdown()));
+                editor_output.setMarkdown(html2Markdown(editor_output.getMarkdown()));
+                editor_hint.setMarkdown(html2Markdown(editor_hint.getMarkdown()));
             },
             submit_problem() {
                 this.description = editor_description.getMarkdown();
@@ -175,7 +177,7 @@
                     editor_description = editormd({
                         id: "editor-description",
                         path: "/editor/lib/",
-                        pluginPath:"/editor/plugins/",
+                        pluginPath: "/editor/plugins/",
                         width: "90%",
                         height: 500,
                         autoFocus: false,
@@ -184,7 +186,7 @@
                         autoLoadKaTeX: true,
                         tex: true,
                         flowChart: true,
-                        htmlDecode:"style,script,iframe|on*",
+                        htmlDecode: "style,script,iframe|on*",
                         previewCodeHighlight: true,
                         imageUploadURL: "/api/media/upload",
                         imageUpload: true,
@@ -193,7 +195,7 @@
                     editor_input = editormd({
                         id: "editor-input",
                         path: "/editor/lib/",
-                        pluginPath:"/editor/plugins/",
+                        pluginPath: "/editor/plugins/",
                         width: "90%",
                         height: 500,
                         autoFocus: false,
@@ -203,7 +205,7 @@
                         tex: true,
                         flowChart: true,
                         previewCodeHighlight: true,
-                        htmlDecode:"style,script,iframe|on*",
+                        htmlDecode: "style,script,iframe|on*",
                         imageUploadURL: "/api/media/upload",
                         imageUpload: true,
                         imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "ico"],
@@ -211,14 +213,14 @@
                     editor_output = editormd({
                         id: "editor-output",
                         path: "/editor/lib/",
-                        pluginPath:"/editor/plugins/",
+                        pluginPath: "/editor/plugins/",
                         width: "90%",
                         height: 500,
                         autoFocus: false,
                         codeFold: true,
                         searchReplace: true,
                         autoLoadKaTeX: true,
-                        htmlDecode:"style,script,iframe|on*",
+                        htmlDecode: "style,script,iframe|on*",
                         tex: true,
                         flowChart: true,
                         previewCodeHighlight: true,
@@ -229,14 +231,14 @@
                     editor_hint = editormd({
                         id: "editor-hint",
                         path: "/editor/lib/",
-                        pluginPath:"/editor/plugins/",
+                        pluginPath: "/editor/plugins/",
                         width: "90%",
                         height: 500,
                         autoFocus: false,
                         codeFold: true,
                         searchReplace: true,
                         autoLoadKaTeX: true,
-                        htmlDecode:"style,script,iframe|on*",
+                        htmlDecode: "style,script,iframe|on*",
                         tex: true,
                         flowChart: true,
                         previewCodeHighlight: true,

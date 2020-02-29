@@ -57,12 +57,12 @@
     var usr = new Vue({
         el: "#user",
         data: {
-            id:parseInt(pid),
+            id: parseInt(pid),
             user: {},
             ready: false
         },
-        methods:{
-            isOwner(){
+        methods: {
+            isOwner() {
                 return user_bar.user.id == this.id;
             }
         },

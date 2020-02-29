@@ -62,7 +62,7 @@
         methods: {
             submit_form() {
                 console.log(this.content);
-                axios.post("/api/contest/background/"+this.tid, this.content)
+                axios.post("/api/contest/background/" + this.tid, this.content)
                     .then(function (res) {
                         res = res.data;
                         if (res == "success") {
@@ -81,7 +81,7 @@
             let that = this;
             axios.get("/api/contest/background/" + cid)
                 .then(function (res) {
-                    that.content={
+                    that.content = {
                         title: res.data.title,
                         tid: cid,
                         description: res.data.description,

@@ -54,7 +54,7 @@
                     .then(function (res) {
                         if (res.data.message == 'success') {
                             alert(res.data.message);
-                            location.href = "/forum/"+res.data.extra;
+                            location.href = "/forum/" + res.data.extra;
                         } else {
                             alert(res.data.message);
                         }

@@ -13,10 +13,10 @@
 </head>
 <body>
 <main class="ui container" id="contest-list">
-        <form class="ui icon input" v-on:submit.prevent="search_contest()">
-            <input type="text" v-model="search_string" placeholder="搜索比赛">
-            <i class="search link icon" v-on:click="search_contest()"></i>
-        </form>
+    <form class="ui icon input" v-on:submit.prevent="search_contest()">
+        <input type="text" v-model="search_string" placeholder="搜索比赛">
+        <i class="search link icon" v-on:click="search_contest()"></i>
+    </form>
     <div class="ui centered grid">
         <div class="ui pagination menu">
             <pagination :class="{disabled:first}" content='<i class="angle double left icon"></i>'
@@ -44,7 +44,7 @@
             <div class="right floated">
                 <div class="ui big label">{{c.runStatu}}
                     <div class="detail"> {{c.normalStartTime}} <i class="ui hourglass icon"
-                    :class="{start:c.runStatu=='未开始',half:c.runStatu=='进行中',end:c.runStatu=='已结束'}"></i>
+                                                                  :class="{start:c.runStatu=='未开始',half:c.runStatu=='进行中',end:c.runStatu=='已结束'}"></i>
                         {{c.normalEndTime}}
                     </div>
                 </div>

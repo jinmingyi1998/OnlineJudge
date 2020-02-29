@@ -25,8 +25,8 @@
         el: "#contest-content",
         data: {
             info: "",
-            cid:cid,
-            creator:false
+            cid: cid,
+            creator: false
         },
         created() {
             var that = this;
@@ -43,7 +43,7 @@
                 .catch(function (e) {
                     console.log(e);
                     if (e.response.status == 404) {
-                        location.href="/4O4";
+                        location.href = "/4O4";
                     }
                 });
             axios.get("/api/contest/background/access/" + cid)

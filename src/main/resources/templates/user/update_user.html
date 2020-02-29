@@ -9,12 +9,15 @@
             background-color: #EEEEEE;
             margin: -5rem;
         }
+
         body > .grid {
             height: 100%;
         }
+
         .image {
             margin-top: -100px;
         }
+
         .column {
             max-width: 450px;
         }
@@ -170,7 +173,7 @@
         data: {
             username: "",
             password: "",
-            oldpassword:"",
+            oldpassword: "",
             name: "",
             email: "",
             intro: "",
@@ -182,8 +185,8 @@
                     return;
                 this.ready = false;
                 var that = this;
-                axios.post('/api/user/edit/'+uid, {
-                    oldpassword:this.oldpassword,
+                axios.post('/api/user/edit/' + uid, {
+                    oldpassword: this.oldpassword,
                     password: this.password,
                     name: this.name,
                     email: this.email,
@@ -206,17 +209,17 @@
                     });
             }
         },
-        created(){
+        created() {
             var that = this;
-            axios.get("/api/user/"+uid)
+            axios.get("/api/user/" + uid)
                 .then(function (res) {
-                     res = res.data;
-                     that.username = res.username;
-                     that.name=res.name;
-                     that.email = res.email;
-                     that.intro=res.intro;
-                     that.id=res.id;
-                     that.ready=true;
+                    res = res.data;
+                    that.username = res.username;
+                    that.name = res.name;
+                    that.email = res.email;
+                    that.intro = res.intro;
+                    that.id = res.id;
+                    that.ready = true;
                 });
         }
     })

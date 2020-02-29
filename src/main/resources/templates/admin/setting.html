@@ -166,7 +166,7 @@
         el: "#setting",
         data: {
             leastScoreToSeeOthersCode: 1000,
-            leastScoreToPostBlog:750,
+            leastScoreToPostBlog: 750,
             judgerhost: [{str: ""}],
             c: language_config,
             cpp: language_config,
@@ -188,10 +188,10 @@
                 for (host of this.judgerhost) {
                     hosts.push(host.str);
                 }
-                this.notice=editor_notice.getMarkdown();
+                this.notice = editor_notice.getMarkdown();
                 axios.post("/api/admin/config", {
                     leastScoreToSeeOthersCode: this.leastScoreToSeeOthersCode,
-                    leastScoreToPostBlog:this.leastScoreToPostBlog,
+                    leastScoreToPostBlog: this.leastScoreToPostBlog,
                     judgerhost: hosts,
                     c: this.c,
                     cpp: this.cpp,
@@ -217,7 +217,7 @@
             axios.get("/api/admin/config")
                 .then(function (res) {
                     that.leastScoreToSeeOthersCode = res.data.leastScoreToSeeOthersCode;
-                    that.leastScoreToPostBlog=res.data.leastScoreToPostBlog;
+                    that.leastScoreToPostBlog = res.data.leastScoreToPostBlog;
                     that.judgerhost = [];
                     for (host of res.data.judgerhost) {
                         that.judgerhost.push({str: host});
@@ -233,7 +233,7 @@
                         editor_notice = editormd({
                             id: "editor-notice",
                             path: "/editor/lib/",
-                            pluginPath:"/editor/plugins/",
+                            pluginPath: "/editor/plugins/",
                             width: "100%",
                             height: 500,
                             autoFocus: false,

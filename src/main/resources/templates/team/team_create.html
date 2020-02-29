@@ -45,13 +45,13 @@
                 }).then(function (res) {
                     if (res.data != "success") {
                         alert(res.data);
-                } else {
+                    } else {
                         alert("success");
                         location.href = "/team";
                     }
                 })
             }
-    }
+        }
     })
 </script>
 <footer th:replace="~{fragment/footer :: footer}"></footer>

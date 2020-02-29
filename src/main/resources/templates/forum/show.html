@@ -17,7 +17,7 @@
             <div class="ui sub header" v-html="article.user.name"></div>
         </div>
         <a :href="'/forum/edit/'+article.id" class="ui button right floated mini"
-        v-if="isAuthor"><i class="ui edit icon"></i>Edit</a>
+           v-if="isAuthor"><i class="ui edit icon"></i>Edit</a>
         <div class="md-text">
             <textarea style="display: none" v-html="article.text"></textarea>
         </div>
@@ -43,6 +43,7 @@
 <script>
     aid = location.pathname.split('/');
     aid = aid[aid.length - 1];
+
     function render_md() {
         $(function () {
             $(".md-text").each(function () {
@@ -70,6 +71,7 @@
             });
         });
     }
+
     var mdeditor;
     $(function () {
         mdeditor = editormd("comment-editor", {
@@ -115,25 +117,25 @@
                 this.reply_text = mdeditor.getMarkdown();
                 if (this.reply_text.length < 2) this.reply_id = 0;
             },
-            post_comment(){
-              axios.post("/api/forum/post/comment/"+aid,{
-                  replyText:this.reply_text,
-                  replyId:this.reply_id
-              }).then(function (res) {
-                  if (res.data == "success") {
-                      console.log(res);
-                      location.reload();
-                  }else{
-                      alert(res.data);
-                  }
-              }).catch(function (e) {
-                  console.log(e);
-              })
+            post_comment() {
+                axios.post("/api/forum/post/comment/" + aid, {
+                    replyText: this.reply_text,
+                    replyId: this.reply_id
+                }).then(function (res) {
+                    if (res.data == "success") {
+                        console.log(res);
+                        location.reload();
+                    } else {
+                        alert(res.data);
+                    }
+                }).catch(function (e) {
+                    console.log(e);
+                })
             },
             normalPostTime(s) {
                 return new Date(s).toLocaleString();
             },
-            doreply(id){
+            doreply(id) {
                 this.reply_id = id;
                 var name = "";
                 for (c of this.article.comment) {
@@ -152,16 +154,16 @@
                 .then(function (res) {
                     that.article = res.data;
                     $("title").html(res.data.title);
-                    for(c of that.article.comment){
+                    for (c of that.article.comment) {
                         c.fatherId = null;
                         c.sons = [];
-                        c.reply_action=that.doreply;
+                        c.reply_action = that.doreply;
                     }
                     for (c of that.article.comment) {
                         for (s of that.article.comment) {
                             if (s.father != undefined && s.father.id == c.id) {
                                 c.sons.push(s);
-                                s.fatherId=c.id;
+                                s.fatherId = c.id;
                             }
                         }
                     }
