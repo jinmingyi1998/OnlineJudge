@@ -44,7 +44,7 @@
                 <a v-bind:href="'/status?pid='+problem_id">More</a>
             </div>
             <div class="ui red segment" v-if="isAccepted">
-                <a class="ui blue button inverted  fluid">题解</a>
+                <a class="ui blue button inverted fluid" :href="'/problems/article/'+problem_id">题解</a>
             </div>
         </div>
         <div class="ui container twelve wide column">
