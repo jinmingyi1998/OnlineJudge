@@ -118,8 +118,8 @@
         },
         methods: {
             send_article() {
-                var that=this;
-                this.ready=false;
+                var that = this;
+                this.ready = false;
                 if (this.title == "") {
                     alert("Title cannot be empty");
                     return;
@@ -135,6 +135,7 @@
                     .then(function (res) {
                         if (res.data.code == 200) {
                             alert(res.data.message);
+                            editor.setMarkdown("");
                             that.loadData();
                         } else {
                             alert(res.data.message);
@@ -186,17 +187,17 @@
                 $('.modal').modal('show');
             },
             post_comment() {
-                var that=this;
-                that.ready=false;
+                $('.modal').modal('hide');
+                var that = this;
+                that.ready = false;
                 axios.post("/api/problems/analysis/post/comment/" + this.replyAna, {
                     replyText: this.reply_text,
                     replyId: this.reply_id
                 }).then(function (res) {
-                    console.log(res.data);
                     if (res.data.code == 200) {
                         that.loadData();
-                        $('.modal').modal('hide');
                     } else {
+                        console.log(res.data);
                         alert(res.data.message + " " + res.data.data);
                     }
                 }).catch(function (e) {
@@ -232,7 +233,7 @@
                                 }
                             }
                             render_md();
-                            that.ready=true;
+                            that.ready = true;
                         }
                     })
                     .catch(function (e) {
