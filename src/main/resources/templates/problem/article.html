@@ -52,13 +52,15 @@
             </div>
         </div>
     </div>
-    <div class="ui modal">
+    <div class="ui fullscreen modal">
         <div class="dividing header">Comment</div>
         <div class="content">
-            <div id="comment-editor">
-                <textarea style="display: none" v-model="reply_text"></textarea>
+            <div class="ui form">
+                <div class="field">
+                    <textarea v-model="reply_text"></textarea>
+                </div>
             </div>
-            <div class="ui blue labeled submit icon button" v-on:click="post_comment()">
+            <div class="ui blue labeled submit icon button" v-on:change="change()" v-on:click="post_comment()">
                 <i class="icon edit"></i> Add Reply
             </div>
         </div>
@@ -69,7 +71,6 @@
 <script>
     aid = location.pathname.split('/');
     aid = aid[aid.length - 1];
-    var mdeditor;
     var analysis = new Vue({
         el: "#ana",
         data: {
@@ -80,12 +81,16 @@
             reply_text: "",
             reply_id: "",
             replyAna: "",
+            rHead: ""
         },
         methods: {
             change() {
-                this.reply_text = mdeditor.getMarkdown();
-                if (this.reply_text.length < 2) this.reply_id = 0;
-            },
+                if (this.reply_text.indexOf(this.rHead) != 0) {
+                    this.reply_id = 0;
+                    this.rHead = "";
+                }
+            }
+            ,
             normalPostTime(s) {
                 return new Date(s).toLocaleString();
             },
@@ -94,8 +99,11 @@
                 return colors[Math.floor(Math.random() * 10)];
             },
             add_comment(aid) {
-                $(".modal").modal('show');
                 this.replyAna = aid;
+                this.reply_id = 0;
+                this.reply_text = "";
+                this.rHead = "";
+                $(".modal").modal('show');
             },
             replya(id) {
                 this.reply_id = id;
@@ -104,13 +112,13 @@
                     for (c of aa.comment) {
                         if (c.id == id) {
                             name = c.user.username;
-                            this.replyAna=aa.id;
+                            this.replyAna = aa.id;
                             break;
                         }
                     }
                 }
                 this.reply_text = "@" + name + " : ";
-                mdeditor.setMarkdown(this.reply_text);
+                this.rHead = this.reply_text;
                 $('.modal').modal('show');
             },
             post_comment() {
@@ -122,7 +130,7 @@
                     if (res.data.code == 200) {
                         location.reload();
                     } else {
-                        alert(res.data.message+" "+res.data.data);
+                        alert(res.data.message + " " + res.data.data);
                     }
                 }).catch(function (e) {
                     console.log(e);
@@ -151,40 +159,11 @@
                                     for (c2 of aa.comment) {
                                         if (c2.father != undefined && c2.father.id == c1.id) {
                                             c1.sons.push(c2);
+                                            c2.fatherId=c1.id;
                                         }
                                     }
                                 }
                             }
-                            mdeditor = editormd({
-                                id: "comment-editor",
-                                path: "/editor/lib/",
-                                pluginPath: "/editor/plugins/",
-                                width: "720",
-                                height: 350,
-                                watch: false,
-                                toolbar: false,
-                                codeFold: true,
-                                searchReplace: true,
-                                placeholder: "comment",
-                                autoFocus: false,
-                                tocTitle: "目录",
-                                pageBreak: true,
-                                atLink: true,    // for @link
-                                emailLink: true,    // for mail address auto link
-                                tex: true,
-                                taskList: true,   // Github Flavored Markdown task lists
-                                flowChart: true,
-                                sequenceDiagram: true,
-                                previewCodeHighlight: true,
-                                imageUploadURL: "/api/media/upload",
-                                imageUpload: true,
-                                imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "ico", "JPG", "JPEG", "PNG"],
-                                onchange: function () {
-                                    analysis.change();
-                                    analysis.reply_text=this.getMarkdown();
-                                    console.log(this.getMarkdown());
-                                }
-                            });
                             render_md();
                         }
                     })
@@ -205,6 +184,7 @@
             this.loadData();
         }
     });
+
     function render_md() {
 
         $(function () {
