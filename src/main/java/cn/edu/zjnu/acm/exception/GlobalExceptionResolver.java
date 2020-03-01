@@ -68,6 +68,7 @@ public class GlobalExceptionResolver {
     @ResponseBody
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
     public Result serverExceptionHandle(Exception e) {
+        e.printStackTrace();
         return new Result(500, "Internal Server Error");
     }
 }

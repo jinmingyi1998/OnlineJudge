@@ -41,6 +41,11 @@ class ProblemViewController {
     public String problemArticle() {
         return "problem/article";
     }
+
+    @GetMapping("/article/edit/{id:[0-9]+}")
+    public String editArticle() {
+        return "problem/edit_analysis";
+    }
 }
 
 @Slf4j
@@ -202,6 +207,37 @@ public class ProblemController {
         analysis.setPostTime(Instant.now());
         analysis.setProblem(problem);
         problemService.postAnalysis(analysis);
+        return new RestfulResult(200, "success", null);
+    }
+
+    @GetMapping("/analysis/edit/{aid:[0-9]+}")
+    public RestfulResult getOneAnalysis(@PathVariable Long aid, @SessionAttribute User currentUser) {
+        Analysis analysis = problemService.getAnalysisById(aid);
+        if (analysis == null) {
+            throw new NotFoundException("Analysis not found");
+        }
+        if (analysis.getUser().getId() != currentUser.getId()) {
+            throw new ForbiddenException("Permission denied");
+        }
+        analysis.getUser().hideInfo();
+        analysis.setProblem(null);
+        analysis.setComment(null);
+        return new RestfulResult(200, "success", analysis);
+    }
+
+    @PostMapping("/analysis/edit/{aid:[0-9]+}")
+    public RestfulResult editAnalysis(@PathVariable Long aid,
+                                      @SessionAttribute User currentUser,
+                                      @RequestBody @Validated Analysis analysis) {
+        Analysis ana = problemService.getAnalysisById(aid);
+        if (analysis == null) {
+            throw new NotFoundException("Analysis not found");
+        }
+        if (ana.getUser().getId() != currentUser.getId()) {
+            throw new ForbiddenException("Permission denied");
+        }
+        ana.setText(analysis.getText());
+        problemService.postAnalysis(ana);
         return new RestfulResult(200, "success", null);
     }
 
