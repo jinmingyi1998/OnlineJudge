@@ -21,9 +21,9 @@ public class Article {
     private Long id;
     @Column(nullable = false)
     @NotNull(message = "title can't be null")
-    @Size(min = 1, message = "title too short")
+    @Size(min = 1, max = 50)
     private String title;
-    @Size(min = 15, message = "text too short")
+    @Size(min = 15, max = 5000)
     @NotNull(message = "text cannot be null")
     @Column(nullable = false, columnDefinition = "LONGTEXT DEFAULT ''")
     private String text;

@@ -15,7 +15,7 @@ public class Analysis {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Size(min = 15)
+    @Size(min = 15,max = 5000)
     @Column(nullable = false, columnDefinition = "LONGTEXT DEFAULT ''")
     private String text;
     @ManyToOne(optional = false)
@@ -31,7 +31,7 @@ public class Analysis {
     public Analysis() {
     }
 
-    public Analysis(@Size(min = 15) String text, User user, Problem problem, Instant postTime, List<AnalysisComment> comment) {
+    public Analysis(@Size(min = 15,max = 5000) String text, User user, Problem problem, Instant postTime, List<AnalysisComment> comment) {
         this.text = text;
         this.user = user;
         this.problem = problem;
