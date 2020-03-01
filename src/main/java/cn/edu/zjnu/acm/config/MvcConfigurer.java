@@ -68,7 +68,9 @@ public class MvcConfigurer implements WebMvcConfigurer {
                 .excludePathPatterns("/api/contest/gate/*")
                 .excludePathPatterns("/api/contest/*")
                 .excludePathPatterns("/api/contest/background/**");
-        String[] apiNeedLogin = {"/api/problems/submit/*",
+        String[] apiNeedLogin = {
+                "/api/problems/submit/*",
+                "/api/problems/analysis/**",
                 "/api/status/view/*",
                 "/api/status/share/*",
                 "/api/user/edit/*",
