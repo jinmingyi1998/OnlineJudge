@@ -31,27 +31,36 @@
             <b>作弊者</b>。
         </div>
     </div>
-    <div class="ui segment" v-for="article in analyses">
-        <h2 class="ui dividing header">
+    <div class="ui stacked segment" v-for="article in analyses" :class="{loading:!ready}">
+        <h2 class="ui left floated header">
             <i class="user outline icon" :class="[randomColor()]"></i>
             <div class="content">
                 <a v-html="article.user.name" :href="'/user/'+article.user.id"></a>
                 <div class="sub header">{{normalPostTime(article.postTime)}}</div>
             </div>
         </h2>
+        <a href="" class="ui right floated button basic" v-if="isOwner(article.user.id)">Edit</a>
         <div class="md-text" style="padding: 0;">
             <textarea style="display: none;" v-html="article.text">TEXT</textarea>
         </div>
-        <div class="ui header right aligned" v-on:click="add_comment(article.id)"><i
-                class="comment alternate outline icon"></i>Comment
-        </div>
         <div class="ui accordion fluid styled">
+            <div class="ui top attached button" v-on:click="add_comment(article.id)"><i
+                    class="comment alternate outline icon"></i>Comment
+            </div>
             <div class="title"><i class="icon dropdown"></i>Comments</div>
             <div class="content">
                 <comment-group v-bind:comments="article.comment" v-bind:level="0"></comment-group>
             </div>
         </div>
     </div>
+    <form onsubmit="return false" class="ui form segment attached" :class="{loading:!ready}">
+        <div class="field">
+            <div id="editor-article">
+                <textarea style="display: none"></textarea>
+            </div>
+        </div>
+        <div class="button ui inverted green" v-on:click="send_article()"><i class="ui paper plane icon"></i>Post</div>
+    </form>
     <div class="ui fullscreen modal">
         <div class="dividing header">Comment</div>
         <div class="content">
@@ -65,12 +74,36 @@
             </div>
         </div>
     </div>
+
 </main>
 <footer th:replace="~{fragment/footer :: footer}"></footer>
 
 <script>
     aid = location.pathname.split('/');
     aid = aid[aid.length - 1];
+    var editor;
+    $(function () {
+        editor = editormd({
+            id: "editor-article",
+            path: "/editor/lib/",
+            pluginPath: "/editor/plugins/",
+            height: 500,
+            autoFocus: false,
+            markdown: "",
+            tocTitle: "目录",
+            pageBreak: true,
+            atLink: true,    // for @link
+            emailLink: true,    // for mail address auto link
+            tex: true,
+            taskList: true,   // Github Flavored Markdown task lists
+            flowChart: true,
+            sequenceDiagram: true,
+            previewCodeHighlight: true,
+            imageUploadURL: "/api/media/upload",
+            imageUpload: true,
+            imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "ico", "JPG", "JPEG", "PNG"],
+        });
+    });
     var analysis = new Vue({
         el: "#ana",
         data: {
@@ -84,6 +117,37 @@
             rHead: ""
         },
         methods: {
+            send_article() {
+                var that=this;
+                this.ready=false;
+                if (this.title == "") {
+                    alert("Title cannot be empty");
+                    return;
+                }
+                this.text = editor.getMarkdown();
+                if (this.text.length < 15) {
+                    alert("content too short! At least 15 letters");
+                    return;
+                }
+                axios.post("/api/problems/analysis/post/" + aid, {
+                    text: this.text
+                })
+                    .then(function (res) {
+                        if (res.data.code == 200) {
+                            alert(res.data.message);
+                            that.loadData();
+                        } else {
+                            alert(res.data.message);
+                        }
+                    })
+                    .catch(function (e) {
+                        console.log(e);
+                    }).finally(function () {
+                });
+            },
+            isOwner(id) {
+                return user_bar.user.id == id;
+            },
             change() {
                 if (this.reply_text.indexOf(this.rHead) != 0) {
                     this.reply_id = 0;
@@ -122,13 +186,16 @@
                 $('.modal').modal('show');
             },
             post_comment() {
+                var that=this;
+                that.ready=false;
                 axios.post("/api/problems/analysis/post/comment/" + this.replyAna, {
                     replyText: this.reply_text,
                     replyId: this.reply_id
                 }).then(function (res) {
                     console.log(res.data);
                     if (res.data.code == 200) {
-                        location.reload();
+                        that.loadData();
+                        $('.modal').modal('hide');
                     } else {
                         alert(res.data.message + " " + res.data.data);
                     }
@@ -159,12 +226,13 @@
                                     for (c2 of aa.comment) {
                                         if (c2.father != undefined && c2.father.id == c1.id) {
                                             c1.sons.push(c2);
-                                            c2.fatherId=c1.id;
+                                            c2.fatherId = c1.id;
                                         }
                                     }
                                 }
                             }
                             render_md();
+                            that.ready=true;
                         }
                     })
                     .catch(function (e) {
