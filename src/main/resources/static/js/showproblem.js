@@ -15,7 +15,7 @@ $(function () {
         theam: "dark",
         mode: "clike",
         path: '/editor/lib/',
-        pluginPath:"/editor/plugins/"
+        pluginPath: "/editor/plugins/"
     });
 });
 var prom = new Vue({
@@ -26,7 +26,7 @@ var prom = new Vue({
         language: "c",
         share: true,
         dataready: false,
-        isAccepted:false,
+        isAccepted: false,
         ready: false,
         tags: [],
         color: ["red", "blue", "green", "orange", "yellow", "pink", "brown", "purple", "olive", "teal"],
@@ -63,8 +63,9 @@ var prom = new Vue({
                 share: that.share
             }).then(function (res) {
                 console.log(res.data)
-                if (res.data != "success") {
-                    alert(res.data);
+                if (res.data.code != 200) {
+                    alert(res.data.message);
+                    return;
                 } else {
                     vue_history.get_data();
                     scrollTo(0, 0);//x,y
@@ -75,16 +76,20 @@ var prom = new Vue({
     created() {
         var that = this;
         axios.get('/api/problems/' + pid).then(function (response) {
-            that.problem = response.data;
+            if (response.data.code != 200) {
+                return;
+            }
+
+            that.problem = response.data.data;
             that.tags = that.problem.tags;
             that.ready = true;
-            $("title").text(response.data.title);
+            $("title").text(response.data.data.title);
             $(function () {
                 $(".md-text").each(function () {
                     $(this).attr("id", "editormd-view");
                     editormd.markdownToHTML("editormd-view", {
                         gfm: true,
-                        htmlDecode:"style,script,iframe|on*",
+                        htmlDecode: "style,script,iframe|on*",
                         toc: true,
                         tocm: false,
                         tocStartLevel: 1,
@@ -108,13 +113,13 @@ var prom = new Vue({
             that.dataready = true;
         }).catch(function (e) {
             console.log(e);
-            // location.href = "/4O4";
+            location.href = "/4O4";
         });
-        axios.get("/api/problems/is/accepted/"+pid)
+        axios.get("/api/problems/is/accepted/" + pid)
             .then(function (res) {
-                if (res.data.message=='success'){
-                    that.isAccepted=res.data.data;
-                } else{
+                if (res.data.message == 'success') {
+                    that.isAccepted = res.data.data;
+                } else {
                     console.log(res.data);
                 }
             }).catch(function (e) {

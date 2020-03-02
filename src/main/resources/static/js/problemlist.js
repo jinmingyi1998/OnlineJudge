@@ -80,7 +80,10 @@ var problems_list = new Vue({
         var that = this;
         axios.get('/api/problems')
             .then(function (response) {
-                response = response.data
+                if (response.data.code != 200) {
+                    return;
+                }
+                response = response.data.data;
                 that.problems = response.content;
                 that.totelement = response.totalElements;
                 that.size = response.size;
@@ -93,10 +96,17 @@ var problems_list = new Vue({
                 }
             })
             .catch(function (error) {
-                console.log(error);
+                console.log(error.response.data);
+                if (error.response.data.code == 404) {
+                    location.href = "/4O4";
+                }
             });
         axios.get("/api/problems/tags").then(function (response) {
-            that.tags = response.data;
+            if (response.data.code == 200) {
+                that.tags = response.data.data;
+                return;
+            }
+            console.log(response.data);
         });
         that.ready = true;
     }

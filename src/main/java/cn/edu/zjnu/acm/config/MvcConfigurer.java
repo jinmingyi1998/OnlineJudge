@@ -69,13 +69,12 @@ public class MvcConfigurer implements WebMvcConfigurer {
                 .excludePathPatterns("/api/contest/*")
                 .excludePathPatterns("/api/contest/background/**");
         String[] apiNeedLogin = {
-                "/api/problems/submit/*",
-                "/api/problems/analysis/**",
-                "/api/status/view/*",
-                "/api/status/share/*",
-                "/api/user/edit/*",
+                "/api/problems/**",
+                "/api/status/**",
+                "/api/user/**",
                 "/api/team/**",
-                "/api/forum/**"};
+                "/api/forum/**",
+                "/api/admin/**"};
         registry.addInterceptor(getLoginInterceptor())
                 .addPathPatterns(apiNeedLogin)
                 .addPathPatterns();

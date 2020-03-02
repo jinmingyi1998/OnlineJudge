@@ -1,7 +1,10 @@
 package cn.edu.zjnu.acm.controller;
 
 import cn.edu.zjnu.acm.entity.User;
-import cn.edu.zjnu.acm.entity.oj.*;
+import cn.edu.zjnu.acm.entity.oj.Analysis;
+import cn.edu.zjnu.acm.entity.oj.AnalysisComment;
+import cn.edu.zjnu.acm.entity.oj.Problem;
+import cn.edu.zjnu.acm.entity.oj.Solution;
 import cn.edu.zjnu.acm.exception.ForbiddenException;
 import cn.edu.zjnu.acm.exception.NeedLoginException;
 import cn.edu.zjnu.acm.exception.NotFoundException;
@@ -11,6 +14,7 @@ import cn.edu.zjnu.acm.service.ProblemService;
 import cn.edu.zjnu.acm.service.SolutionService;
 import cn.edu.zjnu.acm.service.UserService;
 import cn.edu.zjnu.acm.util.RestfulResult;
+import cn.edu.zjnu.acm.util.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -92,7 +96,7 @@ public class ProblemController {
     }
 
     @GetMapping("")
-    public Page<Problem> showProblemList(@RequestParam(value = "page", defaultValue = "0") int page,
+    public RestfulResult showProblemList(@RequestParam(value = "page", defaultValue = "0") int page,
                                          @RequestParam(value = "search", defaultValue = "") String search) {
         page = Math.max(page, 0);
         Page<Problem> problemPage;
@@ -118,28 +122,27 @@ public class ProblemController {
             p.setSampleInput(null);
             p.setSampleOutput(null);
         }
-        return problemPage;
+        return new RestfulResult(200, "success", problemPage);
     }
 
     @GetMapping("/{id:[0-9]+}")
-    public Problem showProblem(@PathVariable Long id) {
+    public RestfulResult showProblem(@PathVariable Long id) {
         Problem problem = problemService.getActiveProblemById(id);
         if (problem == null)
             throw new NotFoundException();
-        return problem;
+        return new RestfulResult(200, "success", problem);
     }
 
-    @GetMapping("/name/{id:[0-9]+}")
-    public String getProblemName(@PathVariable(value = "id") Long id) {
-        try {
-            return showProblem(id).getTitle();
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
+    //    @GetMapping("/name/{id:[0-9]+}")
+//    public String getProblemName(@PathVariable(value = "id") Long id) {
+//        try {
+//            return showProblem(id).getTitle();
+//        } catch (Exception e) {
+//            return null;
+//        }
+//    }
     @PostMapping("/submit/{id:[0-9]+}")
-    public String submitProblem(@PathVariable("id") Long id,
+    public Result submitProblem(@PathVariable("id") Long id,
                                 @RequestBody SubmitCodeObject submitCodeObject,
                                 HttpServletRequest request) {
         String source = submitCodeObject.getSource();
@@ -147,31 +150,31 @@ public class ProblemController {
         String language = submitCodeObject.getLanguage();
         String _temp = checkSubmitFrequncy(session, source);
         if (_temp != null)
-            return _temp;
+            return new Result(403, _temp);
         User user = (User) session.getAttribute("currentUser");
         if (user == null || userService.getUserById(user.getId()) == null) {
             throw new NeedLoginException();
         }
         Problem problem = problemService.getActiveProblemById(id);
         if (problem == null) {
-            return "Problem Not Exist";
+            throw new NotFoundException("Problem Not Exist");
         }
         //null检验完成
         Solution solution = solutionService.insertSolution(new Solution(user, problem, language, source, request.getRemoteAddr(), share));
         if (solution == null)
-            return "submitted failed";
+            return new Result(400, "submitted failed");
         try {
 //            return restService.submitCode(solution) == null ? "judge failed" : "success";
             judgeService.submitCode(solution);
-            return "success";
+            return new Result(200, "success");
         } catch (Exception e) {
-            return "Internal error";
+            return new Result(500, "Internal error");
         }
     }
 
     @GetMapping("/tags")
-    public List<Tag> showTags() {
-        return problemService.getAllTags();
+    public RestfulResult showTags() {
+        return new RestfulResult(200, "success", problemService.getAllTags());
     }
 
     @GetMapping("/is/accepted/{pid:[0-9]+}")
@@ -186,8 +189,10 @@ public class ProblemController {
     public RestfulResult getProblemArticle(@PathVariable Long pid,
                                            @SessionAttribute User currentUser) {
         Problem problem = checkProblemExist(pid);
-        if (!problemService.isUserAcProblem(currentUser, problem)) {
-            throw new ForbiddenException("Access after passing the question");
+        if (userService.getUserPermission(currentUser) == -1) {
+            if (!problemService.isUserAcProblem(currentUser, problem)) {
+                throw new ForbiddenException("Access after passing the question");
+            }
         }
         List<Analysis> analyses = problemService.getAnalysisByProblem(problem);
         analyses.forEach(a -> a.getUser().hideInfo());
@@ -199,8 +204,10 @@ public class ProblemController {
                                       @SessionAttribute User currentUser,
                                       @RequestBody @Validated Analysis analysis) {
         Problem problem = checkProblemExist(pid);
-        if (!problemService.isUserAcProblem(currentUser, problem)) {
-            throw new ForbiddenException("Access after passing the question");
+        if (userService.getUserPermission(currentUser) == -1) {
+            if (!problemService.isUserAcProblem(currentUser, problem)) {
+                throw new ForbiddenException("Access after passing the question");
+            }
         }
         analysis.setUser(currentUser);
         analysis.setComment(null);
@@ -216,8 +223,10 @@ public class ProblemController {
         if (analysis == null) {
             throw new NotFoundException("Analysis not found");
         }
-        if (analysis.getUser().getId() != currentUser.getId()) {
-            throw new ForbiddenException("Permission denied");
+        if (userService.getUserPermission(currentUser) == -1) {
+            if (analysis.getUser().getId() != currentUser.getId()) {
+                throw new ForbiddenException("Permission denied");
+            }
         }
         analysis.getUser().hideInfo();
         analysis.setProblem(null);
@@ -233,8 +242,10 @@ public class ProblemController {
         if (analysis == null) {
             throw new NotFoundException("Analysis not found");
         }
-        if (ana.getUser().getId() != currentUser.getId()) {
-            throw new ForbiddenException("Permission denied");
+        if (userService.getUserPermission(currentUser) == -1) {
+            if (ana.getUser().getId() != currentUser.getId()) {
+                throw new ForbiddenException("Permission denied");
+            }
         }
         ana.setText(analysis.getText());
         problemService.postAnalysis(ana);
@@ -251,9 +262,11 @@ public class ProblemController {
         if (analysis == null) {
             throw new NotFoundException("Analysis not found");
         }
-        if (!problemService.isUserAcProblem(currentUser,
-                checkProblemExist(analysis.getProblem().getId()))) {
-            throw new ForbiddenException("Access after passing the question");
+        if (userService.getUserPermission(currentUser) == -1) {
+            if (!problemService.isUserAcProblem(currentUser,
+                    checkProblemExist(analysis.getProblem().getId()))) {
+                throw new ForbiddenException("Access after passing the question");
+            }
         }
         AnalysisComment father = problemService.getFatherComment(commentPost.getReplyId());
         problemService.postAnalysisComment(new AnalysisComment(currentUser, commentPost.replyText, father, analysis));

@@ -108,17 +108,19 @@ public class StatusController {
         try {
             assert solution != null;
             User user = (User) session.getAttribute("currentUser");
-            if (user != null) {
-                if (user.getId() == solution.getUser().getId()) {
+            if (user == null) {
+                solution.setSource("This Source Code Is Not Shared!");
+            }
+            if (userService.getUserPermission(user) == -1) {
+                if (user.getId() != solution.getUser().getId()) {
                     // This submit belongs to this user.
-                    return solutionFilter(solution);
+                    solution.setSource("This Source Code Is Not Shared!");
                 }
-                if (user.getUserProfile().getScore() > config.getLeastScoreToSeeOthersCode() && solution.getShare()) {
-                    // This submit is shared
-                    return solutionFilter(solution);
+                if (user.getUserProfile().getScore() < config.getLeastScoreToSeeOthersCode() && solution.getShare()) {
+                    // This submit is shared and user has enough score
+                    solution.setSource("This Source Code Is Not Shared!");
                 }
             }
-            solution.setSource("This Source Code Is Not Shared!");
             return solutionFilter(solution);
         } catch (Exception e) {
             throw new NotFoundException();
@@ -149,20 +151,19 @@ public class StatusController {
         try {
             if (userService.getUserById(user.getId()) != null && problem != null) {
                 List<Solution> solutions = solutionService.getProblemSubmitOfUser(user, problem);
-//                List<Solution>solutions = solutionService.getStatus(0,50).getContent();
                 solutions = solutions.subList(0, Math.min(solutions.size(), 5));
-                for (Solution s : solutions) {
+                solutions.forEach(s -> {
                     s.setUser(null);
                     s.setProblem(null);
                     s.setIp(null);
                     s.setSource(null);
                     s.setContest(null);
-                }
+                });
                 return solutions;
             }
         } catch (Exception e) {
         }
-        return new LinkedList<Solution>();
+        return new LinkedList<>();
     }
 
 }
