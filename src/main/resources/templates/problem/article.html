@@ -39,7 +39,8 @@
                 <div class="sub header">{{normalPostTime(article.postTime)}}</div>
             </div>
         </h2>
-        <a :href="'/problems/article/edit/'+article.id" class="ui right floated button basic" v-if="isOwner(article.user.id)">Edit</a>
+        <a :href="'/problems/article/edit/'+article.id" class="ui right floated button basic"
+           v-if="isOwner(article.user.id)">Edit</a>
         <div class="md-text" style="padding: 0;">
             <textarea style="display: none;" v-html="article.text">TEXT</textarea>
         </div>

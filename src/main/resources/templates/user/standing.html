@@ -66,10 +66,12 @@
             npage: []
         },
         methods: {
-            acRatio(ac,su){
-                if(su==0){return "0%";}
-                let r = ac/su*100;
-                return Math.floor(r)+"%"
+            acRatio(ac, su) {
+                if (su == 0) {
+                    return "0%";
+                }
+                let r = ac / su * 100;
+                return Math.floor(r) + "%"
             },
             get_page(page) {
                 var that = this;
