@@ -28,7 +28,7 @@ public class Contest implements Cloneable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     // TODO check contest title unique when creating
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String title;
     @Column(nullable = false, columnDefinition = "LONGTEXT default ''")
     private String description;
