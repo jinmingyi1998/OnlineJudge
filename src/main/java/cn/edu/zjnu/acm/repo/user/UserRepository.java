@@ -1,6 +1,8 @@
 package cn.edu.zjnu.acm.repo.user;
 
 import cn.edu.zjnu.acm.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -21,6 +23,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     User save(User entity);
 
     Optional<User> findByUsername(String username);
+
+    Page<User> findAllByUsernameContains(Pageable pageable,String username);
 
     @Transactional
     @Modifying

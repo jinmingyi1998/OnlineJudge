@@ -5,6 +5,9 @@ import cn.edu.zjnu.acm.entity.UserProfile;
 import cn.edu.zjnu.acm.repo.user.TeacherRepository;
 import cn.edu.zjnu.acm.repo.user.UserProfileRepository;
 import cn.edu.zjnu.acm.repo.user.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +24,10 @@ public class UserService {
         this.userRepository = userRepository;
         this.userProfileRepository = userProfileRepository;
         this.teacherRepository = teacherRepository;
+    }
+
+    public Page<User> searchUser(int page, int size, String search) {
+        return userRepository.findAllByUsernameContains(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")), search);
     }
 
     public User getUserById(Long id) {

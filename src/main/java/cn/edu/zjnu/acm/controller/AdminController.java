@@ -96,14 +96,22 @@ public class AdminController {
     }
 
     @GetMapping("/contest")
-    public RestfulResult getAllContest(@RequestParam(value = "page", defaultValue = "0")int page,
-                                       @RequestParam(value = "search", defaultValue = "") String search){
-        Page<Contest> contestPage = contestService.getContestPage(page,PAGE_SIZE,search);
+    public RestfulResult getAllContest(@RequestParam(value = "page", defaultValue = "0") int page,
+                                       @RequestParam(value = "search", defaultValue = "") String search) {
+        Page<Contest> contestPage = contestService.getContestPage(page, PAGE_SIZE, search);
         contestPage.getContent().forEach(contest -> {
             contest.getCreator().hideInfo();
             contest.clearLazyRoles();
         });
-        return new RestfulResult(200,"success",contestPage);
+        return new RestfulResult(200, "success", contestPage);
+    }
+
+    @GetMapping("/user")
+    public RestfulResult getAllUsers(@RequestParam(value = "page", defaultValue = "0") int page,
+                                     @RequestParam(value = "search", defaultValue = "") String search) {
+        Page<User> users = userService.searchUser(page, PAGE_SIZE, search);
+        users.getContent().forEach(u -> u.setPassword(null));
+        return new RestfulResult(200, "success", users);
     }
 
     @PostMapping("/problem/insert")
@@ -349,7 +357,12 @@ class AdminViewController {
     }
 
     @GetMapping("/contest")
-    public String getAllContest(){
+    public String getAllContest() {
         return "admin/contests";
+    }
+
+    @GetMapping("/user")
+    public String getAllUsers() {
+        return "admin/users";
     }
 }

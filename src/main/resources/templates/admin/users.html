@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragment/header :: header}"></th:block>
+    <meta content="text/html;charset=UTF-8" http-equiv="Content-Type">
+    <title>Admin-Contests</title>
+    <script src="/js/pagination.js"></script>
+</head>
+<body>
+<main class="ui container" id="users">
+    <div class="ui segment">
+        <form class="ui icon input left floated" v-on:submit.prevent="search_contest()">
+            <input type="text" v-model="search_string" placeholder="搜索">
+            <i class="search link icon" v-on:click="search_contest()"></i>
+        </form>
+    </div>
+    <div class="ui centered grid">
+        <div class="ui pagination menu">
+            <pagination :class="{disabled:first}" content='<i class="angle double left icon"></i>'
+                        v-on:change_page="get_page"
+                        v-bind:to_page="0"></pagination>
+            <pagination :class="{disabled:first}" content="<i class='angle left icon'></i>"
+                        v-on:change_page="get_page" v-bind:to_page="number-1"></pagination>
+            <div v-for="n in npage">
+                <pagination :class="{active:number == n}" v-bind:content="n+1" v-on:change_page="get_page"
+                            v-bind:to_page="n"></pagination>
+            </div>
+            <pagination :class="{disabled:last}" content='<i class="angle right icon"></i>'
+                        v-on:change_page="get_page" v-bind:to_page="number+1"></pagination>
+            <pagination :class="{disabled:last}" content='<i class="angle double right icon"></i>'
+                        v-on:change_page="get_page"
+                        v-bind:to_page="totalPages-1"></pagination>
+        </div>
+    </div>
+    <div class="ui segment">
+        <div class="ui link celled list selection">
+            <div class="item" v-for="u in users">
+                <div class="content left floated">
+                    <a class="header" :href="'/user/'+u.id" v-html="u.id+'---'+u.name"></a>
+                </div>
+                <div class="ui blue button right floated" v-on:click="show_detail(u)">
+                    Detail
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="ui centered grid">
+        <div class="ui pagination menu">
+            <pagination :class="{disabled:first}" content='<i class="angle double left icon"></i>'
+                        v-on:change_page="get_page"
+                        v-bind:to_page="0"></pagination>
+            <pagination :class="{disabled:first}" content="<i class='angle left icon'></i>"
+                        v-on:change_page="get_page" v-bind:to_page="number-1"></pagination>
+            <div v-for="n in npage">
+                <pagination :class="{active:number == n}" v-bind:content="n+1" v-on:change_page="get_page"
+                            v-bind:to_page="n"></pagination>
+            </div>
+            <pagination :class="{disabled:last}" content='<i class="angle right icon"></i>'
+                        v-on:change_page="get_page" v-bind:to_page="number+1"></pagination>
+            <pagination :class="{disabled:last}" content='<i class="angle double right icon"></i>'
+                        v-on:change_page="get_page"
+                        v-bind:to_page="totalPages-1"></pagination>
+        </div>
+    </div>
+    <div class="ui modal">
+        <div class="header">{{muser.id}} ---- Name: {{muser.name}}</div>
+        <div class="content">
+            <div class="header">Username:{{muser.username}}</div>
+            <div class="description">
+                <p>Email:{{muser.email}}</p>
+                <p>Introduction:{{muser.intro}}</p>
+                <p>Create Time:{{muser.normalCreateTime}}</p>
+                <p>Score:{{muser.userProfile.score}} AC: {{muser.userProfile.accepted}}
+                    Submit:{{muser.userProfile.submitted}}</p>
+            </div>
+        </div>
+    </div>
+</main>
+<script>
+    var users = new Vue({
+        el: "#users",
+        data: {
+            users: [],
+            muser: {
+                id: "",
+                username: "",
+                name: "",
+                email: "",
+                intro: "",
+                createtime: "",
+                userProfile: {
+                    score: "",
+                    accepted: "",
+                    submitted: ""
+                }
+            },
+            search_string: "",
+            ready: false,
+            number: 0,
+            first: true,
+            last: true,
+            totalPages: 1,
+            totalElements: 1,
+            size: 30,
+            empty: false,
+            npage: []
+        },
+        methods: {
+            show_detail(user) {
+                this.muser = user;
+                this.muser.normalCreateTime = new Date(this.muser.createtime).toLocaleString();
+                $(".modal").modal("show");
+            },
+            search_contest() {
+                this.get_page(0);
+            },
+            get_page(to_page) {
+                if (to_page < 0 || to_page >= this.totalPages)
+                    return;
+                this.ready = false;
+                var that = this;
+                axios.get("/api/admin/user?page=" + to_page + "&search=" + this.search_string)
+                    .then(function (res) {
+                        if (res.data.code === 200) {
+                            that.users = res.data.data.content;
+                            that.totalElements = res.data.data.totalElements;
+                            that.size = res.data.data.size;
+                            that.totalPages = res.data.data.totalPages;
+                            that.last = res.data.data.last;
+                            that.first = res.data.data.first;
+                            that.number = res.data.data.number;
+                            that.empty = res.data.data.empty;
+                            that.npage = [];
+                            for (var i = Math.max(0, that.number - 5); i < Math.min(that.totalPages, that.number + 6); i++) {
+                                that.npage.push(i);
+                            }
+                            that.ready = true;
+                        } else {
+                            console.log(res.data.data);
+                        }
+                    }).catch(function (e) {
+                    console.log(e.response.data);
+                });
+            }
+        },
+        created() {
+            this.get_page(0);
+        }
+    });
+</script>
+</body>
+</html>
