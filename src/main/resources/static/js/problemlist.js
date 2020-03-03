@@ -58,7 +58,11 @@ var problems_list = new Vue({
             url = "/api/problems?page=" + to_page + "&search=" + this.search();
             axios.get(url)
                 .then(function (response) {
-                    response = response.data;
+                    if (response.data.code != 200) {
+                        console.log(response.data)
+                        return;
+                    }
+                    response = response.data.data;
                     that.problems = response.content;
                     that.totelement = response.totalElements;
                     that.size = response.size;
@@ -66,41 +70,19 @@ var problems_list = new Vue({
                     that.last = response.last;
                     that.first = response.first;
                     that.number = response.number;
-                    that.npage = [];
+                    that.npage=[];
                     for (var i = Math.max(0, that.number - 5); i < Math.min(that.totpage, that.number + 6); i++) {
                         that.npage.push(i)
                     }
                 })
                 .catch(function (error) {
-                    console.log(error);
+                    console.log(error.response.data);
                 });
         }
     },
     created() {
         var that = this;
-        axios.get('/api/problems')
-            .then(function (response) {
-                if (response.data.code != 200) {
-                    return;
-                }
-                response = response.data.data;
-                that.problems = response.content;
-                that.totelement = response.totalElements;
-                that.size = response.size;
-                that.totpage = response.totalPages;
-                that.last = response.last;
-                that.first = response.first;
-                that.number = response.number;
-                for (var i = Math.max(0, that.number - 5); i < Math.min(that.totpage, that.number + 6); i++) {
-                    that.npage.push(i)
-                }
-            })
-            .catch(function (error) {
-                console.log(error.response.data);
-                if (error.response.data.code == 404) {
-                    location.href = "/4O4";
-                }
-            });
+        this.get_page(0);
         axios.get("/api/problems/tags").then(function (response) {
             if (response.data.code == 200) {
                 that.tags = response.data.data;

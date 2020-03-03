@@ -32,8 +32,8 @@ cont = new Vue({
                     that.first = response.first;
                     that.number = response.number;
                     that.empty = response.empty;
-                    that.npage = []
-                    for (var i = Math.max(0, that.number - 3); i < Math.min(that.totalPages, that.number + 3); i++) {
+                    that.npage = [];
+                    for (var i = Math.max(0, that.number - 5); i < Math.min(that.totalPages, that.number + 6); i++) {
                         that.npage.push(i)
                     }
                 }).catch(function (error) {
@@ -56,7 +56,7 @@ cont = new Vue({
                 that.number = response.number;
                 that.empty = response.empty;
                 that.npage = [];
-                for (var i = Math.max(0, that.number - 3); i < Math.min(that.totalPages, that.number + 3); i++) {
+                for (var i = Math.max(0, that.number - 5); i < Math.min(that.totalPages, that.number + 6); i++) {
                     that.npage.push(i)
                 }
             })

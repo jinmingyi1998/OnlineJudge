@@ -4,11 +4,6 @@
     <th:block th:insert="~{fragment/header :: header}"></th:block>
     <meta charset="UTF-8">
     <title>训练&比赛</title>
-    <style>
-        .ui.fluid.container {
-            max-width: 85% !important;
-        }
-    </style>
     <script src="/js/pagination.js"></script>
 </head>
 <body>
@@ -37,7 +32,7 @@
     </div>
     <div class="ui animated huge selection vertically celled list segment" :class="{loading:!ready}">
         <a class="ui link item" target="_blank" v-for="c in contests" :href="'/contest/'+c.id">
-            <div class="ui relaxed header" v-html="c.title"></div>
+            <div class="ui relaxed header" v-html="c.id+' --- '+c.title"></div>
             <div class="ui relaxed meta">{{c.description.substring(0,35)}}</div>
             <div class="ui small ribbon label" :class="{blue:c.privilege=='public',orange:c.privilege=='team'}"
                  v-html="c.privilege.toUpperCase()"></div>
