@@ -32,7 +32,9 @@
             <div class="ui item" target="_blank" v-for="p in problems">
                 <a :href="'/problems/'+p.id" target="_blank"><h3>{{p.id}} - {{p.title}} - {{p.score}}积分</h3></a>
                 <div class="right floated">
-                    <!--                    <div class="ui inverted red button small">Delete</div>-->
+                    <div class="ui inverted red button small" v-on:click="delete_problem(p.id)" v-if="privilege==1">
+                        Delete
+                    </div>
                     <a class="ui button brown inverted small" :href="'/admin/problem/edit/'+p.id"
                        target="_blank">Update</a>
                 </div>
@@ -64,6 +66,7 @@
     var problems_list = new Vue({
         el: "#problem-list",
         data: {
+            privilege: user_bar.privilege,
             ready: false,
             problems: [],
             number: 0,
@@ -75,6 +78,25 @@
             color: ["red", "blue", "green", "orange", "yellow", "pink", "brown", "purple", "olive", "teal"]
         },
         methods: {
+            delete_problem(pid) {
+                if (!confirm("*****WARN*****\n" +
+                    "You are deleting problem " + pid + "\n" +
+                    "将删除问题 " + pid + " 此过程不可逆\n" +
+                    "将同时删除提交的代码，比赛内的题目，题解等")) {
+                    return;
+                }
+                var that = this;
+                axios.delete("/api/admin/problem/" + pid)
+                    .then(function (res) {
+                        alert(res.data.message);
+                        if (res.data.code == 200) {
+                            that.get_page(that.number);
+                        }
+                    })
+                    .catch(function (e) {
+                        console.log(e.response.data);
+                    });
+            },
             search() {
                 let ss = this.search_string;
                 return ss;
@@ -85,20 +107,6 @@
                 } catch (e) {
                     return this.color[Math.floor(Math.random() * 10)]
                 }
-            },
-            add_search_tag(event) {
-                ss = event.target.innerText.trim();
-                if (this.search_tag.indexOf(ss) === -1)
-                    this.search_tag.push(ss);
-                this.get_page(0);
-            },
-            remove_search_tag(event) {
-                ss = event.target.parentNode.innerText.trim();
-                if (this.search_tag.indexOf(ss) === -1) {
-                    return;
-                }
-                this.search_tag.remove(this.search_tag.indexOf(ss));
-                this.get_page(0);
             },
             search_problem: function () {
                 this.get_page(0);
@@ -130,6 +138,7 @@
             var that = this;
             axios.get('/api/admin/problem')
                 .then(function (response) {
+                    that.privilege = user_bar.privilege;
                     response = response.data;
                     that.problems = response.content;
                     that.totalPages = response.totalPages;

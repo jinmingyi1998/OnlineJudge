@@ -3,6 +3,7 @@ package cn.edu.zjnu.acm.repo.contest;
 
 import cn.edu.zjnu.acm.entity.oj.Contest;
 import cn.edu.zjnu.acm.entity.oj.ContestProblem;
+import cn.edu.zjnu.acm.entity.oj.Problem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -29,4 +30,5 @@ public interface ContestProblemRepository extends JpaRepository<ContestProblem, 
     @Query(value = "UPDATE contest_problem set submitted=submitted+:sub where id = :pid", nativeQuery = true)
     void updateSubmittedNumber(@Param(value = "pid") Long pid, @Param(value = "sub") int sub);
 
+    void deleteAllByProblem(Problem problem);
 }

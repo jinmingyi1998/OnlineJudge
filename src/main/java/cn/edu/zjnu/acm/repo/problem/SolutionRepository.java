@@ -119,5 +119,7 @@ public interface SolutionRepository extends JpaRepository<Solution, Long> {
                     "FROM user, solution AS ss, problem AS pp " +
                     "WHERE user.id = ss.user_id AND ss.problem_id=pp.id AND ss.result='Accepted' AND user.id = :uid)t1")
     Long calculateScoreOfUser(@Param("uid") Long user_id);
+
+    void deleteAllByProblem(Problem problem);
 }
 

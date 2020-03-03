@@ -2,6 +2,7 @@ package cn.edu.zjnu.acm.controller;
 
 import cn.edu.zjnu.acm.config.Config;
 import cn.edu.zjnu.acm.config.GlobalStatus;
+import cn.edu.zjnu.acm.entity.Teacher;
 import cn.edu.zjnu.acm.entity.User;
 import cn.edu.zjnu.acm.entity.oj.Contest;
 import cn.edu.zjnu.acm.entity.oj.ContestProblem;
@@ -9,6 +10,7 @@ import cn.edu.zjnu.acm.entity.oj.Problem;
 import cn.edu.zjnu.acm.exception.ForbiddenException;
 import cn.edu.zjnu.acm.exception.NotFoundException;
 import cn.edu.zjnu.acm.repo.contest.ContestProblemRepository;
+import cn.edu.zjnu.acm.repo.problem.AnalysisRepository;
 import cn.edu.zjnu.acm.repo.problem.ProblemRepository;
 import cn.edu.zjnu.acm.repo.problem.SolutionRepository;
 import cn.edu.zjnu.acm.repo.user.UserProblemRepository;
@@ -20,6 +22,7 @@ import cn.edu.zjnu.acm.service.UserService;
 import cn.edu.zjnu.acm.util.RestfulResult;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,8 +53,9 @@ public class AdminController {
     private final ContestProblemRepository contestProblemRepository;
     private final SolutionRepository solutionRepository;
     private final UserProfileRepository userProfileRepository;
+    private final AnalysisRepository analysisRepository;
 
-    public AdminController(UserProblemRepository userProblemRepository, ProblemService problemService, ContestService contestService, UserService userService, HttpSession session, Config config, SolutionService solutionService, ProblemRepository problemRepository, ContestProblemRepository contestProblemRepository, SolutionRepository solutionRepository, UserProfileRepository userProfileRepository) {
+    public AdminController(UserProblemRepository userProblemRepository, ProblemService problemService, ContestService contestService, UserService userService, HttpSession session, Config config, SolutionService solutionService, ProblemRepository problemRepository, ContestProblemRepository contestProblemRepository, SolutionRepository solutionRepository, UserProfileRepository userProfileRepository, AnalysisRepository analysisRepository) {
         this.userProblemRepository = userProblemRepository;
         this.problemService = problemService;
         this.contestService = contestService;
@@ -63,6 +67,7 @@ public class AdminController {
         this.contestProblemRepository = contestProblemRepository;
         this.solutionRepository = solutionRepository;
         this.userProfileRepository = userProfileRepository;
+        this.analysisRepository = analysisRepository;
     }
 
     @GetMapping("/config")
@@ -170,6 +175,24 @@ public class AdminController {
         if (problem == null)
             throw new NotFoundException();
         return problem;
+    }
+
+    @DeleteMapping("/problem/{id:[0-9]+}")
+    @Transactional
+    public RestfulResult deleteProblem(@SessionAttribute User currentUser,@PathVariable Long id){
+        if (userService.getUserPermission(currentUser)!= Teacher.ADMIN){
+            throw new ForbiddenException("Only Administrator can access");
+        }
+        Problem problem = problemRepository.findById(id).orElse(null);
+        if (problem==null){
+            throw new NotFoundException();
+        }
+        solutionRepository.deleteAllByProblem(problem);
+        analysisRepository.deleteAllByProblem(problem);
+        userProblemRepository.deleteAllByProblem(problem);
+        contestProblemRepository.deleteAllByProblem(problem);
+        problemRepository.delete(problem);
+        return new RestfulResult(200,"success",null);
     }
 
     @GetMapping("/correctData")
@@ -285,7 +308,6 @@ public class AdminController {
         log.info(user.getId() + "set status: teacherOnly to " + GlobalStatus.teacherOnly);
         return GlobalStatus.teacherOnly ? "maintaining now" : "not maintaining now";
     }
-
 
     @Data
     static class UpdateConfig {

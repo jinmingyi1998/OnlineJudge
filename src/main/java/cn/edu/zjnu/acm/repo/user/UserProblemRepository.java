@@ -23,4 +23,6 @@ public interface UserProblemRepository extends JpaRepository<UserProblem, Long> 
                     "FROM user_problem AS up, problem AS p " +
                     "WHERE p.id=up.problem_id AND up.user_id=:uid")
     Long calculateUserScore(@Param(value = "uid") Long uid);
+
+    void deleteAllByProblem(Problem problem);
 }

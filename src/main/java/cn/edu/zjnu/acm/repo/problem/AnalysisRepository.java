@@ -11,4 +11,6 @@ public interface AnalysisRepository extends JpaRepository<Analysis, Long> {
     List<Analysis> findAllByProblem(Problem problem);
 
     Optional<Analysis> findById(Long id);
+
+    void deleteAllByProblem(Problem problem);
 }
