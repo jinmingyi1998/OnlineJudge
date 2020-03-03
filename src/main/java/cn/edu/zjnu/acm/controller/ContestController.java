@@ -1,5 +1,6 @@
 package cn.edu.zjnu.acm.controller;
 
+import cn.edu.zjnu.acm.entity.Teacher;
 import cn.edu.zjnu.acm.entity.User;
 import cn.edu.zjnu.acm.entity.oj.*;
 import cn.edu.zjnu.acm.exception.ForbiddenException;
@@ -134,24 +135,25 @@ public class ContestController {
 
     @GetMapping("/gate/{cid:[0-9]+}")
     public String contestReady(@PathVariable("cid") Long cid) {
+        User user = (User) session.getAttribute("currentUser");
+        if (user == null)
+            throw new NeedLoginException();
         Contest contest = contestService.getContestById(cid);
         if (contest == null)
             throw new NotFoundException();
         if (!contest.isStarted())
             return "未开始 not started";
-        if (contest.getPrivilege().equals(Contest.TEAM)) {
-            User user = (User) session.getAttribute("currentUser");
-            if (user == null)
-                throw new NeedLoginException();
-            Team team = contest.getTeam();
-            if (teamService.isUserInTeam(user, team)) {
-                return "success";
-            } else {
-                return "没有权限";
+        if (userService.getUserPermission(user) == -1) {
+            if (contest.getPrivilege().equals(Contest.TEAM)) {
+                Team team = contest.getTeam();
+                if (teamService.isUserInTeam(user, team)) {
+                    return "success";
+                } else {
+                    return "没有权限";
+                }
             }
-        } else {
-            return "success";
         }
+        return "success";
     }
 
     private Boolean isContestCreator(Contest contest, User currentUser) {
@@ -165,7 +167,8 @@ public class ContestController {
     public String isAccessContestBackground(@PathVariable("cid") Long cid,
                                             @SessionAttribute User currentUser) {
         Contest contest = contestService.getContestById(cid);
-        if (isContestCreator(contest, currentUser)) {
+        if (isContestCreator(contest, currentUser) ||
+                userService.getUserPermission(currentUser) == Teacher.ADMIN) {
             return "success";
         }
         return "negative";
@@ -191,8 +194,8 @@ public class ContestController {
                                 @SessionAttribute User currentUser,
                                 @RequestBody EditContest editContest) {
         Contest contest = contestService.getContestById(cid);
-        if (!isContestCreator(contest, currentUser)) {
-            throw new ForbiddenException();
+        if (!isContestCreator(contest, currentUser)&&userService.getUserPermission(currentUser)!=Teacher.ADMIN) {
+            throw new ForbiddenException("Permission denied!");
         }
         contest.setTitle(editContest.getTitle());
         contest.setDescription(editContest.getDescription());

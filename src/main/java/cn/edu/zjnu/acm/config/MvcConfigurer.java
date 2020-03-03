@@ -75,7 +75,9 @@ public class MvcConfigurer implements WebMvcConfigurer {
                 "/api/user/**",
                 "/api/team/**",
                 "/api/forum/**",
-                "/api/admin/**"};
+                "/api/admin/**",
+                "/api/contest/**"
+        };
         registry.addInterceptor(getLoginInterceptor())
                 .addPathPatterns(apiNeedLogin)
                 .addPathPatterns();

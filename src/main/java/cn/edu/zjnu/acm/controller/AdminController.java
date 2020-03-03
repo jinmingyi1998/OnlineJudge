@@ -17,6 +17,7 @@ import cn.edu.zjnu.acm.service.ContestService;
 import cn.edu.zjnu.acm.service.ProblemService;
 import cn.edu.zjnu.acm.service.SolutionService;
 import cn.edu.zjnu.acm.service.UserService;
+import cn.edu.zjnu.acm.util.RestfulResult;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -92,6 +93,17 @@ public class AdminController {
         Page<Problem> problemPage;
         problemPage = problemService.getAllProblems(page, PAGE_SIZE, search);
         return problemPage;
+    }
+
+    @GetMapping("/contest")
+    public RestfulResult getAllContest(@RequestParam(value = "page", defaultValue = "0")int page,
+                                       @RequestParam(value = "search", defaultValue = "") String search){
+        Page<Contest> contestPage = contestService.getContestPage(page,PAGE_SIZE,search);
+        contestPage.getContent().forEach(contest -> {
+            contest.getCreator().hideInfo();
+            contest.clearLazyRoles();
+        });
+        return new RestfulResult(200,"success",contestPage);
     }
 
     @PostMapping("/problem/insert")
@@ -334,5 +346,10 @@ class AdminViewController {
     @GetMapping("/settings")
     public String setting() {
         return "admin/setting";
+    }
+
+    @GetMapping("/contest")
+    public String getAllContest(){
+        return "admin/contests";
     }
 }

@@ -1,101 +1,131 @@
-<!--
-  ~ Copyright (c) 2019. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-  ~ Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
-  ~ Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
-  ~ Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
-  ~ Vestibulum commodo. Ut rhoncus gravida arcu.
-  -->
-
 <!DOCTYPE html>
-<html th:fragment="header" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <th:block th:insert="~{fragment/header :: header}"></th:block>
     <meta content="text/html;charset=UTF-8" http-equiv="Content-Type">
-    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
-    <link rel="stylesheet" th:href="@{/css/font-awesome.css}">
-    <script th:src="@{/js/jquery-3.2.1.min.js}"></script>
-    <script th:src="@{/js/popper.min.js}"></script>
-    <script th:src="@{/js/bootstrap.min.js}"></script>
-    <script>
-        if (typeof (query.page) == "undefined") {
-            query.page = 0;
-        }
-        if (typeof (query.title) == "undefined") {
-            query.title = "";
-        }
-        $(function () {
-            for (var i = Math.max(0, parseInt(query.page) - 5); i < Math.min(parseInt(query.page) + 4, query.maxpage); i++) {
-                if (i == query.page)
-                    $("#Next").before("<li class=\"page-item active\" ><a class=\"page-link turnpage\"  page='" + i + "'>" + (parseInt(i) + 1) + "</a></li>");
-                else
-                    $("#Next").before("<li class=\"page-item\" ><a class=\"page-link turnpage\"  page='" + i + "'>" + (parseInt(i) + 1) + "</a></li>");
-            }
-            $(".turnpage").click(function () {
-                var act = $(this).attr("page");
-                if (act == "next-page") {
-                    query.page++;
-                } else if (act == "last-page") {
-                    query.page--;
-                } else {
-                    query.page = parseInt(act);
-                }
-                url = location.pathname + "?title=" + query.title + "&page=" + query.page;
-                location.href = url;
-            });
-            $("#search-btn").click(function () {
-                var act = $("#search-title").val();
-                query.title = act;
-                url = location.pathname + "?title=" + query.title + "&page=" + query.page;
-                location.href = url;
-            });
-        });
-
-    </script>
-    <script>
-        $(function () {
-            $(".remove-btn").click(function () {
-                if (confirm("You are going to delete problem " + $(this).attr("id"))) {
-                    $.ajax({
-                        type: "delete",
-                        url: "/oj/admin/delete/" + $(this).attr("id"),
-                        success: function () {
-                            location.reload();
-                        }
-                    });
-                }
-            });
-        });
-        $(function () {
-            $(".remove-btn").click(function () {
-                if (confirm("You are going to delete contest " + $(this).attr("id"))) {
-                    $.ajax({
-                        type: "delete",
-                        url: "/oj/admin/contest/delete/" + $(this).attr("id"),
-                        success: function () {
-                            location.reload();
-                        }
-                    });
-                }
-            });
-        })
-    </script>
     <title>Admin-Contests</title>
+    <script src="/js/pagination.js"></script>
 </head>
 <body>
-<div class="container">
-    <a class="btn btn-success" href="/oj/admin/contest/insert">Insert</a>
-    <div class="form-inline">Search Contest:<input id="search-title" type="text">
-        <a class="btn btn-sm btn-light" id="search-btn">Search</a></div>
-    <ul class="list-group">
-        <li class="list-group-item" th:each="contest:${contests}" th:object="${contest}">
-            <span class="text-center" th:text="*{id}+'  '+*{title}"></span>
-            <a class="btn-sm btn-primary float-right" th:href="'/oj/contest/background/'+*{id}">Update</a>
-            <a class="btn-danger btn-sm remove-btn float-right" th:id="*{id}">Remove</a></li>
-        </li>
-    </ul>
-    <ul class="pagination">
-        <li class="page-item"><a class="page-link turnpage" page="last-page">Last</a></li>
-        <li class="page-item" id="Next"><a class="page-link turnpage" page="next-page">Next</a></li>
-    </ul>
-</div>
+<main class="ui container" id="contest">
+    <div class="ui segment">
+        <form class="ui icon input left floated" v-on:submit.prevent="search_contest()">
+            <input type="text" v-model="search_string" placeholder="搜索比赛">
+            <i class="search link icon" v-on:click="search_contest()"></i>
+        </form>
+        <a class="ui button right floated" href="/contest/create/0"><i class="plus icon green"></i>Create Contest</a>
+    </div>
+    <div class="ui centered grid">
+        <div class="ui pagination menu">
+            <pagination :class="{disabled:first}" content='<i class="angle double left icon"></i>'
+                        v-on:change_page="get_page"
+                        v-bind:to_page="0"></pagination>
+            <pagination :class="{disabled:first}" content="<i class='angle left icon'></i>"
+                        v-on:change_page="get_page" v-bind:to_page="number-1"></pagination>
+            <div v-for="n in npage">
+                <pagination :class="{active:number == n}" v-bind:content="n+1" v-on:change_page="get_page"
+                            v-bind:to_page="n"></pagination>
+            </div>
+            <pagination :class="{disabled:last}" content='<i class="angle right icon"></i>'
+                        v-on:change_page="get_page" v-bind:to_page="number+1"></pagination>
+            <pagination :class="{disabled:last}" content='<i class="angle double right icon"></i>'
+                        v-on:change_page="get_page"
+                        v-bind:to_page="totalPages-1"></pagination>
+        </div>
+    </div>
+    <div class="ui segment">
+        <div class="ui link celled list selection">
+            <div class="item" v-for="c in contests">
+                <div class="content left floated">
+                    <a class="header" :href="'/contest/'+c.id" v-html="c.id+'---'+c.title"></a>
+                    <div class="description">
+                        {{c.description.substring(0,35)}} 创建者：{{c.creator.name}}
+                        组：{{c.team==undefined?null:c.team.name}}
+                    </div>
+                </div>
+                <div class="right floated">
+                    <div class="ui small label">{{c.runStatu}}
+                        <div class="detail"> {{c.normalStartTime}} <i class="ui hourglass icon"
+                                                                      :class="{start:c.runStatu=='未开始',half:c.runStatu=='进行中',end:c.runStatu=='已结束'}"></i>
+                            {{c.normalEndTime}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="ui centered grid">
+        <div class="ui pagination menu">
+            <pagination :class="{disabled:first}" content='<i class="angle double left icon"></i>'
+                        v-on:change_page="get_page"
+                        v-bind:to_page="0"></pagination>
+            <pagination :class="{disabled:first}" content="<i class='angle left icon'></i>"
+                        v-on:change_page="get_page" v-bind:to_page="number-1"></pagination>
+            <div v-for="n in npage">
+                <pagination :class="{active:number == n}" v-bind:content="n+1" v-on:change_page="get_page"
+                            v-bind:to_page="n"></pagination>
+            </div>
+            <pagination :class="{disabled:last}" content='<i class="angle right icon"></i>'
+                        v-on:change_page="get_page" v-bind:to_page="number+1"></pagination>
+            <pagination :class="{disabled:last}" content='<i class="angle double right icon"></i>'
+                        v-on:change_page="get_page"
+                        v-bind:to_page="totalPages-1"></pagination>
+        </div>
+    </div>
+</main>
+<script>
+    var contests = new Vue({
+        el: "#contest",
+        data: {
+            contests: [],
+            search_string: "",
+            ready: false,
+            number: 0,
+            first: true,
+            last: true,
+            totalPages: 1,
+            totalElements: 1,
+            size: 30,
+            empty: false,
+            npage: []
+        },
+        methods: {
+            search_contest() {
+                this.get_page(0);
+            },
+            get_page(to_page) {
+                if (to_page < 0 || to_page >= this.totalPages)
+                    return;
+                this.ready = false;
+                var that = this;
+                axios.get("/api/admin/contest?page=" + to_page + "&search=" + this.search_string)
+                    .then(function (res) {
+                        if (res.data.code === 200) {
+                            that.contests = res.data.data.content;
+                            that.totalElements = res.data.data.totalElements;
+                            that.size = res.data.data.size;
+                            that.totalPages = res.data.data.totalPages;
+                            that.last = res.data.data.last;
+                            that.first = res.data.data.first;
+                            that.number = res.data.data.number;
+                            that.empty = res.data.data.empty;
+                            that.npage = [];
+                            for (var i = Math.max(0, that.number - 5); i < Math.min(that.totalPages, that.number + 6); i++) {
+                                that.npage.push(i);
+                            }
+                            that.ready = true;
+                        } else {
+                            console.log(res.data.data);
+                        }
+                    }).catch(function (e) {
+                    console.log(e.response.data);
+                });
+            }
+        },
+        created() {
+            this.get_page(0);
+        }
+    });
+</script>
 </body>
 </html>

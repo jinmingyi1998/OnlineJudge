@@ -30,14 +30,17 @@
                         v-bind:to_page="totalPages-1"></pagination>
         </div>
     </div>
-    <div class="ui animated huge selection vertically celled list segment" :class="{loading:!ready}">
+    <div class="ui animated selection vertically celled list segment" :class="{loading:!ready}">
         <a class="ui link item" target="_blank" v-for="c in contests" :href="'/contest/'+c.id">
-            <div class="ui relaxed header" v-html="c.id+' --- '+c.title"></div>
-            <div class="ui relaxed meta">{{c.description.substring(0,35)}}</div>
-            <div class="ui small ribbon label" :class="{blue:c.privilege=='public',orange:c.privilege=='team'}"
-                 v-html="c.privilege.toUpperCase()"></div>
+            <div class="left floated content">
+                <div class="ui relaxed header" v-html="c.id+' --- '+c.title"></div>
+                <div class="ui relaxed meta">{{c.description.substring(0,35)}}</div>
+                <div class="ui small ribbon label" :class="{blue:c.privilege=='public',orange:c.privilege=='team'}"
+                     v-html="c.privilege.toUpperCase()">
+                </div>
+            </div>
             <div class="right floated">
-                <div class="ui big label">{{c.runStatu}}
+                <div class="ui label">{{c.runStatu}}
                     <div class="detail"> {{c.normalStartTime}} <i class="ui hourglass icon"
                                                                   :class="{start:c.runStatu=='未开始',half:c.runStatu=='进行中',end:c.runStatu=='已结束'}"></i>
                         {{c.normalEndTime}}
