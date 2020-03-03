@@ -33,13 +33,13 @@ public class ContestService {
     }
 
     public Page<Contest> getContestPage(int page, int size, String title) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "startTime"));
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
         if (title.length() == 0)
             return contestRepository.findAll(pageable);
         return contestRepository.findByTitleContains(pageable, title);
     }
     public Page<Contest>getContestWithoutTeam(int page,int size,String title){
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "startTime"));
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
         if (title.length() == 0)
             return contestRepository.findAllByPrivilegeContains(pageable,"p");
         return contestRepository.findByTitleContainsAndPrivilegeContains(pageable, title,"p");
