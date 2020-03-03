@@ -12,6 +12,12 @@
 </head>
 <body>
 <div class="ui container" id="contest">
+    Clone Contest:
+    <div class="ui action input">
+        <input type="text" v-model="clone_contest_id">
+        <div class="ui button" v-on:click="clone_contest()">Clone</div>
+    </div>
+
     <form class="ui form segment" v-on:submit.prevent>
         <div class="required field">
             <label>Title:</label><input name="title" required type="text" v-model="content.title">
@@ -70,9 +76,31 @@
                 startTime: "",
                 length: 300,
                 problems: [{id: "", tempTitle: "", name: ""}]
-            }
+            },
+            clone_contest_id: ""
         },
         methods: {
+            clone_contest() {
+                var that = this;
+                axios.get("/api/contest/clone/" + this.clone_contest_id)
+                    .then(function (res) {
+                        if (res.data.code == 200) {
+                            that.content.title = res.data.data.title;
+                            that.content.description = res.data.data.description;
+                            that.content.problems=[];
+                            for (p of res.data.data.problems) {
+                                that.content.problems.push({
+                                    id: p.id,
+                                    tempTitle: p.tempTitle,
+                                    name: p.problem.title
+                                });
+                            }
+                        } else {
+                            console.log(res.data);
+                            alert(res.data.message);
+                        }
+                    })
+            },
             get_problem(id, ind) {
                 var that = this;
                 console.log(id);

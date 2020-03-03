@@ -9,6 +9,7 @@ import cn.edu.zjnu.acm.repo.CommentRepository;
 import cn.edu.zjnu.acm.repo.contest.ContestProblemRepository;
 import cn.edu.zjnu.acm.service.*;
 import cn.edu.zjnu.acm.util.Rank;
+import cn.edu.zjnu.acm.util.RestfulResult;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -117,7 +118,21 @@ public class ContestController {
         return currentPage;
     }
 
-    @GetMapping("/gate/{cid:[0-9+]}")
+    @GetMapping("/clone/{id:[0-9]+}")
+    public RestfulResult cloneContest(@PathVariable Long id) {
+        Contest c = contestService.getContestById(id, true);
+        if (c == null) {
+            return new RestfulResult(404, "no contest found", null);
+        }
+        c.setSolutions(null);
+        c.setContestComments(null);
+        c.setCreator(null);
+        c.setPassword(null);
+        c.setTeam(null);
+        return new RestfulResult(200, "success", c);
+    }
+
+    @GetMapping("/gate/{cid:[0-9]+}")
     public String contestReady(@PathVariable("cid") Long cid) {
         Contest contest = contestService.getContestById(cid);
         if (contest == null)
