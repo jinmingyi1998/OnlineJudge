@@ -80,10 +80,15 @@
                     </a>
                 </div>
                 <div v-if="isLogin">
-                    <a :href="'/user/'+user.id" class="item animated fade ui button " v-if="isLogin">
+                    <a :href="'/user/'+user.id" class="item animated fade ui button">
                         <div class="visible content" v-html="user.name"></div>
                         <div class="hidden content"><i class="ui user circle icon"></i></div>
                     </a>
+                    <a href="/admin" class="item animated fade ui button" v-if="privilege!=-1">
+                        <div class="visible content">Background</div>
+                        <div class="hidden content"><i class="ui server icon"></i>后台管理</div>
+                    </a>
+
                     <a class="item animated fade ui button" href="/logout">
                         <div class="hidden content"><i class="ui sign-out icon"></i>注销</div>
                         <div class="visible content">log out</div>
@@ -98,17 +103,18 @@
         el: "#userbar",
         data: {
             user: {},
-            isLogin: false
+            isLogin: false,
+            privilege:-1
         },
         created() {
             var that = this;
             axios.get("/user/session").then(function (res) {
-                res = res.data;
-                if (res.username != undefined) {
-                    that.user = res;
+                if (res.data.code == 200) {
+                    that.user = res.data.data;
+                    that.privilege=res.data.message
                     that.isLogin = true;
                 }
-            })
+            });
         }
     })
 </script>
