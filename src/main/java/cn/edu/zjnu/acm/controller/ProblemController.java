@@ -133,14 +133,15 @@ public class ProblemController {
         return new RestfulResult(200, "success", problem);
     }
 
-    //    @GetMapping("/name/{id:[0-9]+}")
-//    public String getProblemName(@PathVariable(value = "id") Long id) {
-//        try {
-//            return showProblem(id).getTitle();
-//        } catch (Exception e) {
-//            return null;
-//        }
-//    }
+    @GetMapping("/name/{id:[0-9]+}")
+    public String getProblemName(@PathVariable(value = "id") Long id) {
+        try {
+            return ((Problem)showProblem(id).getData()).getTitle();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     @PostMapping("/submit/{id:[0-9]+}")
     public Result submitProblem(@PathVariable("id") Long id,
                                 @RequestBody SubmitCodeObject submitCodeObject,

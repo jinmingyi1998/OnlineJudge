@@ -38,6 +38,12 @@ public class ContestService {
             return contestRepository.findAll(pageable);
         return contestRepository.findByTitleContains(pageable, title);
     }
+    public Page<Contest>getContestWithoutTeam(int page,int size,String title){
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "startTime"));
+        if (title.length() == 0)
+            return contestRepository.findAllByPrivilegeContains(pageable,"p");
+        return contestRepository.findByTitleContainsAndPrivilegeContains(pageable, title,"p");
+    }
 
     public List<Contest> getContestList() {
         return contestRepository.findAll();

@@ -22,6 +22,8 @@ public interface ContestRepository extends JpaRepository<Contest, Long> {
     @Override
     Page<Contest> findAll(Pageable pageable);
 
+    Page<Contest> findAllByPrivilegeContains(Pageable pageable, String privilege);
+
     @Override
     List<Contest> findAll();
 
@@ -30,6 +32,8 @@ public interface ContestRepository extends JpaRepository<Contest, Long> {
     Optional<Contest> findById(Long aLong);
 
     Page<Contest> findByTitleContains(Pageable pageable, String title);
+
+    Page<Contest> findByTitleContainsAndPrivilegeContains(Pageable pageable, String title, String privilege);
 
     @Modifying
     void deleteAllByTeam(Team team);

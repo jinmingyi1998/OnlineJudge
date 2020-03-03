@@ -99,7 +99,7 @@ public class ContestController {
     public Page<Contest> showContests(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "search", defaultValue = "") String search) {
-        Page<Contest> currentPage = contestService.getContestPage(page, PAGE_SIZE, search);
+        Page<Contest> currentPage = contestService.getContestWithoutTeam(page, PAGE_SIZE, search);
         for (Contest c : currentPage.getContent()) {
             c.clearLazyRoles();
             c.setProblems(null);
