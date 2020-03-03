@@ -114,6 +114,18 @@ public class AdminController {
         return new RestfulResult(200, "success", users);
     }
 
+    @GetMapping("/user/reset/{uid:[0-9]+}")
+    public RestfulResult resetUserPassword(@PathVariable Long uid) {
+        User u = userService.getUserById(uid);
+        String pwd = "000000";
+        if (u == null) {
+            throw new NotFoundException("no user found");
+        }
+        u = userService.setUserPassword(u, pwd);
+        userService.updateUserInfo(u);
+        return new RestfulResult(200, "success", "reset password:" + pwd);
+    }
+
     @PostMapping("/problem/insert")
     public String addProblem(@RequestBody JsonProblem problem) {
         if (problemService.isProblemRepeated(problem.getTitle())) {

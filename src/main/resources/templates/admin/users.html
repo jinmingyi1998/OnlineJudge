@@ -74,6 +74,9 @@
                     Submit:{{muser.userProfile.submitted}}</p>
             </div>
         </div>
+        <div class="actions">
+            <div class="ui button red small" v-on:click="reset_pwd(muser.id)">reset password</div>
+        </div>
     </div>
 </main>
 <script>
@@ -106,6 +109,18 @@
             npage: []
         },
         methods: {
+            reset_pwd(id) {
+                axios.get("/api/admin/user/reset/" + id)
+                    .then(function (res) {
+                        if (res.data.code != 200) {
+                            alert(res.data.message);
+                        } else {
+                            alert(res.data.data);
+                        }
+                    }).catch(function (e) {
+                    console.log(e.response.data);
+                })
+            },
             show_detail(user) {
                 this.muser = user;
                 this.muser.normalCreateTime = new Date(this.muser.createtime).toLocaleString();
