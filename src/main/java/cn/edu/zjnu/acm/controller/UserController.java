@@ -5,6 +5,7 @@ import cn.edu.zjnu.acm.entity.User;
 import cn.edu.zjnu.acm.exception.NeedLoginException;
 import cn.edu.zjnu.acm.exception.NotFoundException;
 import cn.edu.zjnu.acm.service.UserService;
+import cn.edu.zjnu.acm.util.RestfulResult;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -65,10 +66,11 @@ public class UserController {
     }
 
     @GetMapping("/user/session")
-    public User getSession() {
+    public RestfulResult getSession() {
         User user = (User) session.getAttribute("currentUser");
+        int pri = userService.getUserPermission(user);
         if (user != null)
-            return user.hideInfo();
+            return new RestfulResult(200,pri+"",user.hideInfo());
         throw new NeedLoginException();
     }
 
