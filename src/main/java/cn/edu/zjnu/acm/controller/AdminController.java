@@ -318,7 +318,7 @@ class AdminViewController {
 
     @GetMapping("/problem")
     public String getAllProblem() {
-        return "admin/admin";
+        return "admin/problems";
     }
 
     @GetMapping("/problem/edit/{pid:[0-9]+}")
