@@ -101,6 +101,7 @@ public class UserSpaceController {
     @GetMapping("/list")
     public Map userList(@RequestParam(value = "page", defaultValue = "0") int page) {
         final int SIZE = 50;
+        page = Math.max(0,page);
         List<User> userList = userService.userList();
         User cu = (User) session.getAttribute("currentUser");
         userList.sort((o1, o2) -> (o1.getUserProfile().getScore() - o2.getUserProfile().getScore()) * -1);

@@ -101,6 +101,7 @@ public class ContestController {
     public Page<Contest> showContests(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "search", defaultValue = "") String search) {
+        page = Math.max(0,page);
         Page<Contest> currentPage = contestService.getContestWithoutTeam(page, PAGE_SIZE, search);
         for (Contest c : currentPage.getContent()) {
             c.clearLazyRoles();

@@ -74,6 +74,7 @@
                 return Math.floor(r) + "%"
             },
             get_page(page) {
+                if (page < 0 || page > this.totalPages) return;
                 var that = this;
                 axios.get("/api/user/list?page=" + page)
                     .then(function (res) {

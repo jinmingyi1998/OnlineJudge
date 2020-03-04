@@ -87,7 +87,7 @@
                 id: 0, name: "", creator: {name: ""}, normalCreateTime: "", attend: "public", teammates: []
             }],
             totalElements: 0,
-            totalPages: 0,
+            totalPages: 1,
             last: true,
             number: 0,
             size: 50,
@@ -96,7 +96,7 @@
             first: true,
             empty: true,
             npage: [],
-            readt: false,
+            ready: false,
             myteams: [{id: 0, name: ""}]
         },
         methods: {
@@ -123,6 +123,7 @@
                     });
             },
             get_page(to_page) {
+                if (to_page < 0 || to_page >= this.totalPages) return null;
                 var that = this;
                 that.ready = false;
                 if (to_page !== 0 && (to_page < 0 || to_page >= that.totalPages)) {

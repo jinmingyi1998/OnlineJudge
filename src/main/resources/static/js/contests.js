@@ -18,6 +18,9 @@ cont = new Vue({
             this.get_page(0);
         },
         get_page(to_page) {
+            if (to_page < 0 || to_page >= this.totalPages) {
+                return null;
+            }
             this.ready = false;
             var that = this;
             url = '/api/contest?page=' + to_page + '&search=' + this.search_string;
