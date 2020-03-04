@@ -71,7 +71,8 @@ public class ArticleController {
     }
 
     @PostMapping("/post")
-    public ArticleCallback postArticle(@RequestBody @Validated Article article, @SessionAttribute(required = false) User currentUser) {
+    public ArticleCallback postArticle(@RequestBody @Validated Article article,
+                                       @SessionAttribute(required = false) User currentUser) {
         if (currentUser == null) {
             throw new NeedLoginException();
         }

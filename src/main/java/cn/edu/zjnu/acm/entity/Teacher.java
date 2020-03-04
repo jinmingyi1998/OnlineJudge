@@ -17,12 +17,16 @@ public class Teacher {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @JsonIgnore
     @OneToOne(optional = false, fetch = FetchType.LAZY)
     private User user;
     @Column(nullable = false, columnDefinition = "INTEGER default 0")
     private Integer privilege = TEACHER;
 
     public Teacher() {
+    }
+
+    public Teacher(User user, Integer privilege) {
+        this.user = user;
+        this.privilege = privilege;
     }
 }

@@ -1,11 +1,14 @@
 package cn.edu.zjnu.acm.util;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
-@Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class RestfulResult extends Result {
+
+    @JsonIgnore
+    public static final String SUCCESS = "success";
 
     Object data;
 
@@ -24,6 +27,18 @@ public class RestfulResult extends Result {
                 ", message='" + message + '\'' +
                 ", data=" + data.toString() +
                 '}';
+    }
+
+    public Object getData() {
+        return data;
+    }
+
+    public void setData(Object data) {
+        this.data = data;
+    }
+
+    public static RestfulResult successResult(){
+        return new RestfulResult(200,SUCCESS,null);
     }
 
 }

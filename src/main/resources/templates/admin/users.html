@@ -14,6 +14,7 @@
             <i class="search link icon" v-on:click="search_contest()"></i>
         </form>
     </div>
+    <a href="/admin/user/teacher" class="ui button">Teachers</a>
     <div class="ui centered grid">
         <div class="ui pagination menu">
             <pagination :class="{disabled:first}" content='<i class="angle double left icon"></i>'
@@ -75,7 +76,8 @@
             </div>
         </div>
         <div class="actions">
-            <div class="ui button red small" v-on:click="reset_pwd(muser.id)">reset password</div>
+            <div class="ui button red small" v-on:click="reset_pwd(muser.id)">Reset Password</div>
+            <div class="ui button yellow small" v-on:click="add_teacher(muser.id)">Set Teacher</div>
         </div>
     </div>
 </main>
@@ -109,6 +111,16 @@
             npage: []
         },
         methods: {
+            add_teacher(id) {
+                axios.post("/api/admin/user/teacher/" + id)
+                    .then(function (res) {
+                        alert(res.data.message);
+                    }).catch(function (e) {
+                    console.log(e.response.data);
+                    if (e.response.data.code != undefined)
+                        alert(e.response.data.message);
+                });
+            },
             reset_pwd(id) {
                 axios.get("/api/admin/user/reset/" + id)
                     .then(function (res) {

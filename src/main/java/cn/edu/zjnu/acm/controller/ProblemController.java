@@ -254,7 +254,8 @@ public class ProblemController {
     }
 
     @PostMapping("/analysis/post/comment/{aid:[0-9]+}")
-    public RestfulResult postAnalysisComment(@PathVariable Long aid, @SessionAttribute User currentUser,
+    public RestfulResult postAnalysisComment(@PathVariable Long aid,
+                                             @SessionAttribute User currentUser,
                                              @RequestBody ContestController.CommentPost commentPost) {
         if (commentPost.replyText.length() < 4) {
             return new RestfulResult(400, "bad request", "too short!");

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragment/header :: header}"></th:block>
+    <meta content="text/html;charset=UTF-8" http-equiv="Content-Type">
+    <title>Admin-Contests</title>
+    <script src="/js/pagination.js"></script>
+</head>
+<body>
+<main class="ui container" id="users">
+    <div class="ui segment">
+        <div class="ui link celled list selection">
+            <div class="item" v-for="t in teachers">
+                <div class="content left floated">
+                    <a class="header" :href="'/user/'+t.user.id" v-html="t.user.id+'---'+t.user.name"></a>
+                </div>
+                <div class="ui red button right floated" v-on:click="remove(t.user.id)">
+                    Delete Teacher
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<script>
+    var users = new Vue({
+        el: "#users",
+        data: {
+            teachers: [],
+            ready: false,
+        },
+        methods: {
+            get_page() {
+                this.ready = false;
+                var that = this;
+                axios.get("/api/admin/user/teacher")
+                    .then(function (res) {
+                        if (res.data.code === 200) {
+                            that.teachers = res.data.data;
+                            that.ready = true;
+                        } else {
+                            console.log(res.data.data);
+                        }
+                    }).catch(function (e) {
+                    console.log(e.response.data);
+                });
+            },
+            remove(id) {
+                if (!confirm("Remove this teacher?")) return;
+                this.ready = false;
+                axios.delete("/api/admin/user/teacher/" + id)
+                    .then(function (res) {
+                        if (res.data.code != 200) {
+                            console.log(res.data);
+                        }
+                        alert(res.data.message);
+                    }).catch(function (e) {
+                    if (e.response.data.code != undefined) {
+                        alert(e.response.data.message);
+                    }
+                }).finally(this.get_page);
+            }
+        },
+        created() {
+            this.get_page();
+        }
+    });
+</script>
+</body>
+</html>

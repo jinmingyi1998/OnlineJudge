@@ -13,6 +13,7 @@ import cn.edu.zjnu.acm.repo.contest.ContestProblemRepository;
 import cn.edu.zjnu.acm.repo.problem.AnalysisRepository;
 import cn.edu.zjnu.acm.repo.problem.ProblemRepository;
 import cn.edu.zjnu.acm.repo.problem.SolutionRepository;
+import cn.edu.zjnu.acm.repo.user.TeacherRepository;
 import cn.edu.zjnu.acm.repo.user.UserProblemRepository;
 import cn.edu.zjnu.acm.repo.user.UserProfileRepository;
 import cn.edu.zjnu.acm.service.ContestService;
@@ -22,7 +23,6 @@ import cn.edu.zjnu.acm.service.UserService;
 import cn.edu.zjnu.acm.util.RestfulResult;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,8 +54,9 @@ public class AdminController {
     private final SolutionRepository solutionRepository;
     private final UserProfileRepository userProfileRepository;
     private final AnalysisRepository analysisRepository;
+    private final TeacherRepository teacherRepository;
 
-    public AdminController(UserProblemRepository userProblemRepository, ProblemService problemService, ContestService contestService, UserService userService, HttpSession session, Config config, SolutionService solutionService, ProblemRepository problemRepository, ContestProblemRepository contestProblemRepository, SolutionRepository solutionRepository, UserProfileRepository userProfileRepository, AnalysisRepository analysisRepository) {
+    public AdminController(UserProblemRepository userProblemRepository, ProblemService problemService, ContestService contestService, UserService userService, HttpSession session, Config config, SolutionService solutionService, ProblemRepository problemRepository, ContestProblemRepository contestProblemRepository, SolutionRepository solutionRepository, UserProfileRepository userProfileRepository, AnalysisRepository analysisRepository, TeacherRepository teacherRepository) {
         this.userProblemRepository = userProblemRepository;
         this.problemService = problemService;
         this.contestService = contestService;
@@ -68,6 +69,7 @@ public class AdminController {
         this.solutionRepository = solutionRepository;
         this.userProfileRepository = userProfileRepository;
         this.analysisRepository = analysisRepository;
+        this.teacherRepository = teacherRepository;
     }
 
     @GetMapping("/config")
@@ -131,6 +133,44 @@ public class AdminController {
         return new RestfulResult(200, "success", "reset password:" + pwd);
     }
 
+    @GetMapping("/user/teacher")
+    public RestfulResult manageTeachers() {
+        List<Teacher> teachers = teacherRepository.findAll();
+        teachers.forEach(t -> {
+            t.setUser(userService.getUserById(t.getUser().getId()));
+            t.getUser().hideInfo();
+        });
+        return new RestfulResult(200, "success", teachers);
+    }
+
+    @PostMapping("/user/teacher/{uid:[0-9]+}")
+    public RestfulResult addTeacher(@PathVariable Long uid) {
+        User user = userService.getUserById(uid);
+        if (user == null) {
+            throw new NotFoundException();
+        }
+        if (userService.getUserPermission(user) != -1) {
+            return new RestfulResult(200, "已经是Teacher!", null);
+        }
+        Teacher teacher = new Teacher(user, Teacher.TEACHER);
+        teacherRepository.save(teacher);
+        return RestfulResult.successResult();
+    }
+
+    @DeleteMapping("/user/teacher/{uid:[0-9]+}")
+    @Transactional
+    public RestfulResult deleteTeacher(@PathVariable Long uid, @SessionAttribute User currentUser) {
+        if (userService.getUserPermission(currentUser) != Teacher.ADMIN) {
+            throw new ForbiddenException("Only Administrator");
+        }
+        User user = userService.getUserById(uid);
+        if (user == null || userService.getUserPermission(user) == -1) {
+            throw new NotFoundException();
+        }
+        teacherRepository.deleteByUser(user);
+        return RestfulResult.successResult();
+    }
+
     @PostMapping("/problem/insert")
     public String addProblem(@RequestBody JsonProblem problem) {
         if (problemService.isProblemRepeated(problem.getTitle())) {
@@ -179,12 +219,12 @@ public class AdminController {
 
     @DeleteMapping("/problem/{id:[0-9]+}")
     @Transactional
-    public RestfulResult deleteProblem(@SessionAttribute User currentUser,@PathVariable Long id){
-        if (userService.getUserPermission(currentUser)!= Teacher.ADMIN){
+    public RestfulResult deleteProblem(@SessionAttribute User currentUser, @PathVariable Long id) {
+        if (userService.getUserPermission(currentUser) != Teacher.ADMIN) {
             throw new ForbiddenException("Only Administrator can access");
         }
         Problem problem = problemRepository.findById(id).orElse(null);
-        if (problem==null){
+        if (problem == null) {
             throw new NotFoundException();
         }
         solutionRepository.deleteAllByProblem(problem);
@@ -192,7 +232,7 @@ public class AdminController {
         userProblemRepository.deleteAllByProblem(problem);
         contestProblemRepository.deleteAllByProblem(problem);
         problemRepository.delete(problem);
-        return new RestfulResult(200,"success",null);
+        return new RestfulResult(200, "success", null);
     }
 
     @GetMapping("/correctData")
@@ -398,5 +438,10 @@ class AdminViewController {
     @GetMapping("/user")
     public String getAllUsers() {
         return "admin/users";
+    }
+
+    @GetMapping("/user/teacher")
+    public String getTeachers() {
+        return "admin/teachers";
     }
 }
