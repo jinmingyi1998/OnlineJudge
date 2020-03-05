@@ -26,11 +26,9 @@ import cn.edu.zjnu.acm.util.RestfulResult;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
 
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
@@ -359,6 +357,25 @@ public class AdminController {
         return GlobalStatus.teacherOnly ? "maintaining now" : "not maintaining now";
     }
 
+    @GetMapping("/tag")
+    public RestfulResult getAllTags() {
+        return new RestfulResult(200, RestfulResult.SUCCESS, problemService.getAllTags());
+    }
+
+    @PostMapping("/tag/add")
+    public RestfulResult addTag(@RequestBody Map<String, String> tagmap) {
+        String tagname = tagmap.getOrDefault("tagname", "");
+        if (tagname.length() == 0) {
+            return new RestfulResult(400, "need input tagname");
+        }
+        Tag tag = tagRepository.findByName(tagname).orElse(null);
+        if (tag == null) {
+            tagRepository.save(new Tag(tagname));
+            return RestfulResult.successResult();
+        }
+        return new RestfulResult(400, "already existed");
+    }
+
     @Data
     static class UpdateConfig {
         private Integer leastScoreToPostBlog = 750;
@@ -407,25 +424,6 @@ public class AdminController {
 
         public JsonProblem() {
         }
-    }
-
-    @GetMapping("/tag")
-    public RestfulResult getAllTags() {
-        return new RestfulResult(200, RestfulResult.SUCCESS, problemService.getAllTags());
-    }
-
-    @PostMapping("/tag/add")
-    public RestfulResult addTag(@RequestBody Map<String, String> tagmap) {
-        String tagname = tagmap.getOrDefault("tagname", "");
-        if (tagname.length() == 0) {
-            return new RestfulResult(400,"need input tagname");
-        }
-        Tag tag = tagRepository.findByName(tagname).orElse(null);
-        if (tag == null) {
-            tagRepository.save(new Tag(tagname));
-            return RestfulResult.successResult();
-        }
-        return new RestfulResult(400, "already existed");
     }
 
 }

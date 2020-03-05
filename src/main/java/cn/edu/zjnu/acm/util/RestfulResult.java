@@ -2,7 +2,6 @@ package cn.edu.zjnu.acm.util;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Data;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class RestfulResult extends Result {
@@ -22,7 +21,11 @@ public class RestfulResult extends Result {
 
     public RestfulResult(int code, String message) {
         super(code, message);
-        this.data=null;
+        this.data = null;
+    }
+
+    public static RestfulResult successResult() {
+        return new RestfulResult(200, SUCCESS, null);
     }
 
     @Override
@@ -40,10 +43,6 @@ public class RestfulResult extends Result {
 
     public void setData(Object data) {
         this.data = data;
-    }
-
-    public static RestfulResult successResult(){
-        return new RestfulResult(200,SUCCESS,null);
     }
 
 }

@@ -102,7 +102,7 @@ public class ContestController {
     public Page<Contest> showContests(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "search", defaultValue = "") String search) {
-        page = Math.max(0,page);
+        page = Math.max(0, page);
         Page<Contest> currentPage = contestService.getContestWithoutTeam(page, PAGE_SIZE, search);
         for (Contest c : currentPage.getContent()) {
             c.clearLazyRoles();
@@ -196,7 +196,7 @@ public class ContestController {
                                 @SessionAttribute User currentUser,
                                 @RequestBody EditContest editContest) {
         Contest contest = contestService.getContestById(cid);
-        if (!isContestCreator(contest, currentUser)&&userService.getUserPermission(currentUser)!=Teacher.ADMIN) {
+        if (!isContestCreator(contest, currentUser) && userService.getUserPermission(currentUser) != Teacher.ADMIN) {
             throw new ForbiddenException("Permission denied!");
         }
         contest.setTitle(editContest.getTitle());
@@ -278,7 +278,7 @@ public class ContestController {
         String language = submitCodeObject.getLanguage();
         String _temp = ProblemController.checkSubmitFrequncy(session, source);
         if (_temp != null)
-            new Result(403,_temp);
+            new Result(403, _temp);
         @NotNull User user;
         try {
             user = (User) session.getAttribute("currentUser");
@@ -292,14 +292,14 @@ public class ContestController {
             Contest contest = contestService.getContestById(cid);
             Contest scontest = (Contest) session.getAttribute("contest" + cid);
             if (scontest == null || scontest.getId() != contest.getId()) {
-                return new Result(403,"Need attendance!");
+                return new Result(403, "Need attendance!");
             }
             if (contest.isEnded() || !contest.isStarted()) {
-                return new Result(403,"The contest is not Running!");
+                return new Result(403, "The contest is not Running!");
             }
             ContestProblem cproblem = contestProblemRepository.findByContestAndTempId(contest, pid).orElse(null);
             if (cproblem == null) {
-                return new Result(404,"Problem Not Exist");
+                return new Result(404, "Problem Not Exist");
             }
             Problem problem = cproblem.getProblem();
             Solution solution = new Solution(user, problem, language, source, request.getRemoteAddr(), share);

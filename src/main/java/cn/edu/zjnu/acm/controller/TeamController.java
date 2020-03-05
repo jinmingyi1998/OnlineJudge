@@ -49,7 +49,7 @@ public class TeamController {
             t = teamService.fillTeamTeammate(t);
             t.hideInfo();
         }
-        return new RestfulResult(200,RestfulResult.SUCCESS,return_page);
+        return new RestfulResult(200, RestfulResult.SUCCESS, return_page);
     }
 
     @GetMapping("/myteams")
@@ -254,8 +254,7 @@ public class TeamController {
         if (currentUser == null) {
             throw new NeedLoginException();
         }
-        if (userService.getUserPermission(currentUser)==-1)
-        {
+        if (userService.getUserPermission(currentUser) == -1) {
             return "permission denied";
         }
         try {

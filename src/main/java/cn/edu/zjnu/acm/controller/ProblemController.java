@@ -136,7 +136,7 @@ public class ProblemController {
     @GetMapping("/name/{id:[0-9]+}")
     public String getProblemName(@PathVariable(value = "id") Long id) {
         try {
-            return ((Problem)showProblem(id).getData()).getTitle();
+            return ((Problem) showProblem(id).getData()).getTitle();
         } catch (Exception e) {
             return null;
         }

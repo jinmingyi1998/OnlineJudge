@@ -53,11 +53,12 @@ public class UserService {
         return u;
     }
 
-    public User setUserPassword(User u,String pwd){
+    public User setUserPassword(User u, String pwd) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         u.setPassword(encoder.encode(pwd));
         return u;
     }
+
     public void updateUserInfo(User user) {
         userRepository.updateUser(user.getId(), user.getName(), user.getPassword(), user.getEmail(), user.getIntro());
     }

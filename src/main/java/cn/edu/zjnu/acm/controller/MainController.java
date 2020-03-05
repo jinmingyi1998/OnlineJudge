@@ -23,8 +23,9 @@ public class MainController {
     public ModelAndView home() {
         return new ModelAndView("index");
     }
+
     @GetMapping("/donate")
-    public ModelAndView donatePage(){
+    public ModelAndView donatePage() {
         return new ModelAndView("donate");
     }
 

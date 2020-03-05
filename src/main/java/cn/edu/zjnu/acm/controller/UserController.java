@@ -35,9 +35,9 @@ public class UserController {
             User t_user = userService.registerUser(user);
             if (t_user != null)
                 return RestfulResult.successResult();
-            else return new RestfulResult(400,"用户名已存在 user already existed");
+            else return new RestfulResult(400, "用户名已存在 user already existed");
         } catch (ConstraintViolationException e) {
-            return new RestfulResult(400,"format error 格式错误");
+            return new RestfulResult(400, "format error 格式错误");
         }
     }
 
@@ -57,7 +57,7 @@ public class UserController {
     public RestfulResult loginUser(@RequestBody User user, HttpSession session, Model m) {
         User login_user = userService.loginUser(user);
         if (login_user == null) {
-            return new RestfulResult(400,"用户名或密码错误。");
+            return new RestfulResult(400, "用户名或密码错误。");
         }
         session.setMaxInactiveInterval(6 * 60 * 60);
         session.setAttribute("currentUser", login_user);
@@ -70,7 +70,7 @@ public class UserController {
         User user = (User) session.getAttribute("currentUser");
         int pri = userService.getUserPermission(user);
         if (user != null)
-            return new RestfulResult(200,pri+"",user.hideInfo());
+            return new RestfulResult(200, pri + "", user.hideInfo());
         throw new NeedLoginException();
     }
 
