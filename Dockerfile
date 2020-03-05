@@ -1,7 +1,9 @@
-FROM openjdk:11
+FROM alpine:3.9.5
 COPY .  /app
 WORKDIR /app
-RUN chmod 755 gradlew && ./gradlew --no-daemon bootJar \
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories \
+    && apk add openjdk11-jdk \
+    && chmod 755 gradlew && ./gradlew --no-daemon bootJar \
     && mv build/libs/acm-0.0.1-SNAPSHOT.jar . \
     &&  rm -rf .git src out .gradle build \
     && rm -rf /root/.gradle
