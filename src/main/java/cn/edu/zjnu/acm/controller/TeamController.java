@@ -11,6 +11,7 @@ import cn.edu.zjnu.acm.exception.NotFoundException;
 import cn.edu.zjnu.acm.service.ContestService;
 import cn.edu.zjnu.acm.service.TeamService;
 import cn.edu.zjnu.acm.service.UserService;
+import cn.edu.zjnu.acm.util.RestfulResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -40,7 +41,7 @@ public class TeamController {
     }
 
     @GetMapping("")
-    public Page<Team> teamPage(@RequestParam(value = "page", defaultValue = "0") int page) {
+    public RestfulResult teamPage(@RequestParam(value = "page", defaultValue = "0") int page) {
         page = Math.max(0, page);
         Page<Team> return_page = teamService.getAll(page, PAGE_SIZE);
         for (Team t : return_page.getContent()) {
@@ -48,7 +49,7 @@ public class TeamController {
             t = teamService.fillTeamTeammate(t);
             t.hideInfo();
         }
-        return return_page;
+        return new RestfulResult(200,RestfulResult.SUCCESS,return_page);
     }
 
     @GetMapping("/myteams")
