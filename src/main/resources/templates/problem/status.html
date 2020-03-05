@@ -158,7 +158,7 @@
                 url += "?pid=" + that.searchProblem;
             }
             axios.get(url).then(function (res) {
-                res = res.data;
+                res = res.data.data;
                 that.solutions = res.content;
                 that.totalPages = res.totalPages;
                 that.totalElements = res.totalElements;
@@ -180,7 +180,7 @@
                 var that = this;
                 url = "/api/status?page=" + page + "&user=" + that.searchUser + "&pid=" + that.searchProblem + "&AC=" + that.searchAC;
                 axios.get(url).then(function (res) {
-                    res = res.data;
+                    res = res.data.data;
                     that.solutions = res.content;
                     that.totalPages = res.totalPages;
                     that.totalElements = res.totalElements;
@@ -194,6 +194,8 @@
                     for (var i = Math.max(0, that.number - 5); i < Math.min(that.totalPages, that.number + 6); i++) {
                         that.npage.push(i)
                     }
+                }).catch(function (e) {
+                    console.log(e.response.data);
                 })
             },
             search() {

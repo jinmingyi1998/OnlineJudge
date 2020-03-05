@@ -8,6 +8,7 @@ import cn.edu.zjnu.acm.exception.NotFoundException;
 import cn.edu.zjnu.acm.service.ProblemService;
 import cn.edu.zjnu.acm.service.SolutionService;
 import cn.edu.zjnu.acm.service.UserService;
+import cn.edu.zjnu.acm.util.RestfulResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -76,10 +77,10 @@ public class StatusController {
     }
 
     @GetMapping("")
-    public Page searchStatus(@RequestParam(value = "page", defaultValue = "0") Integer page,
-                             @RequestParam(value = "user", defaultValue = "") String username,
-                             @RequestParam(value = "pid", defaultValue = "") Long pid,
-                             @RequestParam(value = "AC", defaultValue = "") String AC) throws Exception {
+    public RestfulResult searchStatus(@RequestParam(value = "page", defaultValue = "0") Integer page,
+                                      @RequestParam(value = "user", defaultValue = "") String username,
+                                      @RequestParam(value = "pid", defaultValue = "") Long pid,
+                                      @RequestParam(value = "AC", defaultValue = "") String AC) throws Exception {
         if (AC.equals("true"))
             AC = "Accepted";
         else
@@ -93,13 +94,16 @@ public class StatusController {
         Page<Solution> page_return = getAll ?
                 solutionService.getStatus(page, PAGE_SIZE) :
                 solutionService.getStatus(user, problem, AC, page, PAGE_SIZE);
-        for (Solution s : page_return.getContent()) {
-            s.setUser(s.getUser().clone());
+        page_return.getContent().forEach(s -> {
+            try {
+                s.setUser(s.getUser().clone());
+            } catch (CloneNotSupportedException ignored) {
+            }
             s.setSource(null);
             s.setInfo(null);
-            s = solutionFilter(s);
-        }
-        return page_return;
+            solutionFilter(s);
+        });
+        return new RestfulResult(200, "success", page_return);
     }
 
     @GetMapping("/view/{id:[0-9]+}")
@@ -139,13 +143,13 @@ public class StatusController {
                     return solution.getShare();
                 }
             }
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
         throw new NotFoundException();
     }
 
     @GetMapping("/user/latest/submit/{id:[0-9]+}")
-    public List<Solution> userSubmitLatestHistory(@PathVariable("id") Long pid) {
+    public RestfulResult userSubmitLatestHistory(@PathVariable("id") Long pid) {
         User user = (User) session.getAttribute("currentUser");
         Problem problem = problemService.getActiveProblemById(pid);
         try {
@@ -159,11 +163,11 @@ public class StatusController {
                     s.setSource(null);
                     s.setContest(null);
                 });
-                return solutions;
+                return new RestfulResult(200, RestfulResult.SUCCESS, solutions);
             }
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
-        return new LinkedList<>();
+        return new RestfulResult(200, RestfulResult.SUCCESS, new LinkedList<>());
     }
 
 }

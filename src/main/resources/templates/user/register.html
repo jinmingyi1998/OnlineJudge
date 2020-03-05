@@ -7,7 +7,7 @@
     <style type="text/css">
         body {
             background-color: #EEEEEE;
-            margin: -5rem;
+            margin: 0;
         }
 
         body > .grid {
@@ -174,12 +174,14 @@
                     .then(function (response) {
                         $('form').form('reset')
                         console.log(response);
-                        if (response.data == "success") {
+                        if (response.data.code == 200) {
                             location.href = "/login"
+                        } else {
+                            setTimeout(function () {
+                                that.ready = true;
+                            }, 1500);
+                            alert(response.data.message);
                         }
-                        setTimeout(function () {
-                            that.ready = true;
-                        }, 1500)
                     })
                     .catch(function (error) {
                         console.log(error);

@@ -26,8 +26,9 @@ public class GlobalExceptionResolver {
 
     @ExceptionHandler(UnavailableException.class)
     @ResponseBody
+    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
     public Result unavilableHandle() {
-        return new Result(200, "维护中，不可用");
+        return new Result(503, "维护中，不可用");
     }
 
     @ExceptionHandler({BindException.class, ConstraintViolationException.class})

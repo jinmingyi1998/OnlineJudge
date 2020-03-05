@@ -30,14 +30,14 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public String registerUser(@RequestBody User user) {
+    public RestfulResult registerUser(@RequestBody User user) {
         try {
             User t_user = userService.registerUser(user);
             if (t_user != null)
-                return "success";
-            else return "用户名已存在 user already existed";
+                return RestfulResult.successResult();
+            else return new RestfulResult(400,"用户名已存在 user already existed");
         } catch (ConstraintViolationException e) {
-            return "format error 格式错误";
+            return new RestfulResult(400,"format error 格式错误");
         }
     }
 
@@ -54,15 +54,15 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String loginUser(@RequestBody User user, HttpSession session, Model m) {
+    public RestfulResult loginUser(@RequestBody User user, HttpSession session, Model m) {
         User login_user = userService.loginUser(user);
         if (login_user == null) {
-            return "用户名或密码错误。";
+            return new RestfulResult(400,"用户名或密码错误。");
         }
         session.setMaxInactiveInterval(6 * 60 * 60);
         session.setAttribute("currentUser", login_user);
         session.setAttribute("loginTime", Instant.now());
-        return "success";
+        return RestfulResult.successResult();
     }
 
     @GetMapping("/user/session")

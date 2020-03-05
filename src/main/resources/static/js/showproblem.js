@@ -36,9 +36,10 @@ var prom = new Vue({
     methods: {
         get_history_data() {
             var that = this;
-            axios.get('/api/status/user/latest/submit/' + pid).then(function (res) {
-                that.status = res.data;
-            })
+            axios.get('/api/status/user/latest/submit/' + pid)
+                .then(function (res) {
+                that.status = res.data.data;
+            });
         },
         colorClass() {
             return this.color[Math.floor(Math.random() * 10)]
@@ -70,7 +71,7 @@ var prom = new Vue({
                     vue_history.get_data();
                     scrollTo(0, 0);//x,y
                 }
-            })
+            });
         }
     },
     created() {
