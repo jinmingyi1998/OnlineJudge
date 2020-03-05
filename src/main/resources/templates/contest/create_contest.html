@@ -9,6 +9,10 @@
             max-width: 85% !important;
         }
     </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/bootstrap-datetimepicker.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"></script>
+    <script src="/js/bootstrap-datetimepicker.min.js"></script>
 </head>
 <body>
 <div class="ui container" id="contest">
@@ -39,8 +43,9 @@
         </div>
         <div class="required field">
             <label>开始时间Start Time(yyyy-MM-dd HH:mm):</label>
-            <input name="startTime" placeholder="2020-02-20 02:02" required
-                   type="text" v-model="content.startTime">
+<!--            <input name="startTime" placeholder="2020-02-20 02:02" required type="text" v-model="content.startTime">-->
+            <input class="form-datetime form-control" data-date-format="yyyy-mm-dd hh:ii" id="startTime" minuteStep="1"
+                   name="startTime" type="text" v-model="content.startTime">
         </div>
         <div class="required field">
             长度Length(分钟minutes):
@@ -61,6 +66,9 @@
     </form>
 </div>
 <script type="text/javascript">
+    $(function () {
+        $(".form-datetime").datetimepicker();
+    });
     var gid = location.pathname.split('/');
     gid = gid[gid.length - 1];
     var contest = new Vue({
@@ -87,7 +95,7 @@
                         if (res.data.code == 200) {
                             that.content.title = res.data.data.title;
                             that.content.description = res.data.data.description;
-                            that.content.problems=[];
+                            that.content.problems = [];
                             for (p of res.data.data.problems) {
                                 that.content.problems.push({
                                     id: p.id,
@@ -118,6 +126,7 @@
                 }
             },
             submit_form() {
+                this.content.startTime=$("#startTime").val();
                 console.log(this.content);
                 axios.post("/api/contest/create", this.content)
                     .then(function (res) {

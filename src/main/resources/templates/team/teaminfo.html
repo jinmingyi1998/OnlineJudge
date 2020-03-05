@@ -11,10 +11,13 @@
         <div class="twelve wide column">
             <div class="ui raised segments">
                 <h2 class="ui header">比赛</h2>
-                <div class="ui segment" v-for="c in contests">
-                    <div class="content">
+                <div class="ui clearing segment" v-for="c in contests">
+                    <div class="ui left floated header">
                         <a :href="'/contest/'+c.id" class="ui header" v-html="c.title"></a>
+                    </div>
+                    <div class="ui right floated header">
                         <div class="description" v-html="c.normalStartTime"></div>
+                        <div class="description" v-html="c.normalEndTime"></div>
                     </div>
                 </div>
             </div>

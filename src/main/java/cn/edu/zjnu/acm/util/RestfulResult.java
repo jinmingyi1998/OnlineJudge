@@ -10,7 +10,7 @@ public class RestfulResult extends Result {
     @JsonIgnore
     public static final String SUCCESS = "success";
 
-    Object data;
+    private Object data;
 
     public RestfulResult() {
     }
@@ -18,6 +18,11 @@ public class RestfulResult extends Result {
     public RestfulResult(Integer code, String message, Object data) {
         super(code, message);
         this.data = data;
+    }
+
+    public RestfulResult(int code, String message) {
+        super(code, message);
+        this.data=null;
     }
 
     @Override

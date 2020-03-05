@@ -11,6 +11,7 @@ import cn.edu.zjnu.acm.repo.contest.ContestProblemRepository;
 import cn.edu.zjnu.acm.service.*;
 import cn.edu.zjnu.acm.util.Rank;
 import cn.edu.zjnu.acm.util.RestfulResult;
+import cn.edu.zjnu.acm.util.Result;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -267,7 +268,7 @@ public class ContestController {
     }
 
     @PostMapping("/submit/{pid:[0-9]+}/{cid:[0-9]+}")
-    public String submitProblemInContest(@PathVariable("pid") Long pid,
+    public Result submitProblemInContest(@PathVariable("pid") Long pid,
                                          @PathVariable("cid") Long cid,
                                          HttpServletRequest request,
                                          @RequestBody ProblemController.SubmitCodeObject submitCodeObject) {
@@ -277,29 +278,28 @@ public class ContestController {
         String language = submitCodeObject.getLanguage();
         String _temp = ProblemController.checkSubmitFrequncy(session, source);
         if (_temp != null)
-            return _temp;
+            new Result(403,_temp);
         @NotNull User user;
         try {
             user = (User) session.getAttribute("currentUser");
             if (userService.getUserById(user.getId()) == null) {// user doesn't login
-                log.debug("User not exist");
-                return "Please Login";
+                throw new NeedLoginException();
             }
         } catch (Exception e) {
-            return "Please Login";
+            throw new NeedLoginException();
         }
         try {
             Contest contest = contestService.getContestById(cid);
             Contest scontest = (Contest) session.getAttribute("contest" + cid);
             if (scontest == null || scontest.getId() != contest.getId()) {
-                return "Need attendance!";
+                return new Result(403,"Need attendance!");
             }
             if (contest.isEnded() || !contest.isStarted()) {
-                return "The contest is not!";
+                return new Result(403,"The contest is not Running!");
             }
             ContestProblem cproblem = contestProblemRepository.findByContestAndTempId(contest, pid).orElse(null);
             if (cproblem == null) {
-                return "Problem Not Exist";
+                return new Result(404,"Problem Not Exist");
             }
             Problem problem = cproblem.getProblem();
             Solution solution = new Solution(user, problem, language, source, request.getRemoteAddr(), share);
@@ -307,7 +307,7 @@ public class ContestController {
             solution = solutionService.insertSolution(solution);
             assert solution.getContest() != null;
             judgeService.submitCode(solution);
-            return "success";
+            return RestfulResult.successResult();
         } catch (Exception e) {
             throw new NotFoundException();
         }

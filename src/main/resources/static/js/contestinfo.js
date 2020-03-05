@@ -23,7 +23,7 @@ function render_md() {
                 flowChart: true,
                 sequenceDiagram: true,
                 previewCodeHighlight: true,
-                htmlDecode:"style,script,iframe|on*",
+                htmlDecode: "style,script,iframe|on*",
             });
             $(this).attr("id", tid);
         });
@@ -33,7 +33,7 @@ function render_md() {
 var cont = new Vue({
     el: "#contest-content",
     data: {
-        cid:cid,
+        cid: cid,
         password: "",
         attend: false,
         dataready: false,
@@ -140,7 +140,7 @@ var cont = new Vue({
             $("#problem-hint").empty();
             $("#problem-hint").append(" <textarea style=\"display: none;\"></textarea>");
             $("#problem-hint").children("textarea").text(this.problem.problem.hint);
-            render_md()
+            render_md();
             this.dataready = true;
         },
         submit() {
@@ -151,11 +151,15 @@ var cont = new Vue({
                 source: that.code,
                 share: that.share
             }).then(function (res) {
-                console.log(res.data)
-                if (res.data != "success") {
+                console.log(res.data);
+                if (res.data.code != 200) {
                     alert(res.data);
                 } else {
                     scrollTo(0, 0);//x,y
+                }
+            }).catch(function (e) {
+                if (e.response.data.code != undefined) {
+                    alert(e.response.data.message);
                 }
             })
         },
