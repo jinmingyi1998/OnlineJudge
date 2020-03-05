@@ -167,6 +167,9 @@ public class AdminController {
         if (user == null || userService.getUserPermission(user) == -1) {
             throw new NotFoundException();
         }
+        if (user.getId() == currentUser.getId()) {
+            return new RestfulResult(400, "You cannot remove yourself");
+        }
         teacherRepository.deleteByUser(user);
         return RestfulResult.successResult();
     }

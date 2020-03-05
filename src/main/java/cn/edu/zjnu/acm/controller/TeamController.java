@@ -253,6 +253,10 @@ public class TeamController {
         if (currentUser == null) {
             throw new NeedLoginException();
         }
+        if (userService.getUserPermission(currentUser)==-1)
+        {
+            return "permission denied";
+        }
         try {
             currentUser = userService.getUserById(currentUser.getId());
         } catch (NullPointerException e) {

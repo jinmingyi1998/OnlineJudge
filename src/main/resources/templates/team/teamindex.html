@@ -61,7 +61,7 @@
         </div>
         <div class="six wide column">
             <div class="ui segment raised">
-                <p><a class="ui button inverted blue small" href="/team/create">创建队伍</a></p>
+                <p><a class="ui button inverted blue small" href="/team/create" v-if="getPrivilege()!=-1">创建队伍</a></p>
                 <div class="ui labeled icon input">
                     <label class="ui label">加入队伍：</label>
                     <input type="text" placeholder="邀请码" v-model="inviteCode">
@@ -100,6 +100,9 @@
             myteams: [{id: 0, name: ""}]
         },
         methods: {
+            getPrivilege(){
+                return user_bar.privilege;
+            },
             apply(id) {
                 axios.post("/api/team/apply/" + id).then(function (res) {
                     if (res.data == "success") {
