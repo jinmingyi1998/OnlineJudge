@@ -57,10 +57,12 @@ public class MvcConfigurer implements WebMvcConfigurer {
         registry.addInterceptor(getAdminCheckInterceptor())
                 .addPathPatterns("/admin/settings")
                 .addPathPatterns("/admin/user/**")
+                .addPathPatterns("/admin/tag/**")
                 .addPathPatterns("/api/admin/config")
                 .addPathPatterns("/api/admin/correctData")
                 .addPathPatterns("/api/admin/maintain")
-                .addPathPatterns("/api/admin/user/**");
+                .addPathPatterns("/api/admin/user/**")
+                .addPathPatterns("/api/admin/tag/**");
         registry.addInterceptor(getContestInterceptor())
                 .addPathPatterns("/contest/*/**")
                 .excludePathPatterns("/contest/*")

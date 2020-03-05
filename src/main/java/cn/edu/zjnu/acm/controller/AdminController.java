@@ -7,12 +7,14 @@ import cn.edu.zjnu.acm.entity.User;
 import cn.edu.zjnu.acm.entity.oj.Contest;
 import cn.edu.zjnu.acm.entity.oj.ContestProblem;
 import cn.edu.zjnu.acm.entity.oj.Problem;
+import cn.edu.zjnu.acm.entity.oj.Tag;
 import cn.edu.zjnu.acm.exception.ForbiddenException;
 import cn.edu.zjnu.acm.exception.NotFoundException;
 import cn.edu.zjnu.acm.repo.contest.ContestProblemRepository;
 import cn.edu.zjnu.acm.repo.problem.AnalysisRepository;
 import cn.edu.zjnu.acm.repo.problem.ProblemRepository;
 import cn.edu.zjnu.acm.repo.problem.SolutionRepository;
+import cn.edu.zjnu.acm.repo.problem.TagRepository;
 import cn.edu.zjnu.acm.repo.user.TeacherRepository;
 import cn.edu.zjnu.acm.repo.user.UserProblemRepository;
 import cn.edu.zjnu.acm.repo.user.UserProfileRepository;
@@ -24,13 +26,16 @@ import cn.edu.zjnu.acm.util.RestfulResult;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -55,8 +60,9 @@ public class AdminController {
     private final UserProfileRepository userProfileRepository;
     private final AnalysisRepository analysisRepository;
     private final TeacherRepository teacherRepository;
+    private final TagRepository tagRepository;
 
-    public AdminController(UserProblemRepository userProblemRepository, ProblemService problemService, ContestService contestService, UserService userService, HttpSession session, Config config, SolutionService solutionService, ProblemRepository problemRepository, ContestProblemRepository contestProblemRepository, SolutionRepository solutionRepository, UserProfileRepository userProfileRepository, AnalysisRepository analysisRepository, TeacherRepository teacherRepository) {
+    public AdminController(UserProblemRepository userProblemRepository, ProblemService problemService, ContestService contestService, UserService userService, HttpSession session, Config config, SolutionService solutionService, ProblemRepository problemRepository, ContestProblemRepository contestProblemRepository, SolutionRepository solutionRepository, UserProfileRepository userProfileRepository, AnalysisRepository analysisRepository, TeacherRepository teacherRepository, TagRepository tagRepository) {
         this.userProblemRepository = userProblemRepository;
         this.problemService = problemService;
         this.contestService = contestService;
@@ -70,6 +76,7 @@ public class AdminController {
         this.userProfileRepository = userProfileRepository;
         this.analysisRepository = analysisRepository;
         this.teacherRepository = teacherRepository;
+        this.tagRepository = tagRepository;
     }
 
     @GetMapping("/config")
@@ -402,13 +409,32 @@ public class AdminController {
         }
     }
 
+    @GetMapping("/tag")
+    public RestfulResult getAllTags() {
+        return new RestfulResult(200, RestfulResult.SUCCESS, problemService.getAllTags());
+    }
+
+    @PostMapping("/tag/add")
+    public RestfulResult addTag(@RequestBody Map<String, String> tagmap) {
+        String tagname = tagmap.getOrDefault("tagname", "");
+        if (tagname.length() == 0) {
+            return new RestfulResult(400,"need input tagname");
+        }
+        Tag tag = tagRepository.findByName(tagname).orElse(null);
+        if (tag == null) {
+            tagRepository.save(new Tag(tagname));
+            return RestfulResult.successResult();
+        }
+        return new RestfulResult(400, "already existed");
+    }
+
 }
 
 
 @Controller
 @RequestMapping("/admin")
 class AdminViewController {
-    @GetMapping
+    @GetMapping("")
     public String adminHome() {
         return "admin/index";
     }
@@ -446,5 +472,10 @@ class AdminViewController {
     @GetMapping("/user/teacher")
     public String getTeachers() {
         return "admin/teachers";
+    }
+
+    @GetMapping("/tag")
+    public String getTags() {
+        return "admin/tagManage";
     }
 }
