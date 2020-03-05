@@ -134,7 +134,8 @@
                     return null;
                 }
                 axios.get('/api/team?page=' + to_page).then(function (res) {
-                    res = res.data;
+                    if (res.data.code!=200){return;}
+                    res = res.data.data;
                     that.vteams = res.content;
                     that.totalPages = res.totalPages;
                     that.totalElements = res.totalElements;
