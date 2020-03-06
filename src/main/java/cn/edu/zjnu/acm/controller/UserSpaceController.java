@@ -9,8 +9,11 @@ import cn.edu.zjnu.acm.service.UserService;
 import cn.edu.zjnu.acm.util.PageHolder;
 import cn.edu.zjnu.acm.util.UserGraph;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +23,8 @@ import javax.servlet.http.HttpSession;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Size;
 import java.io.IOException;
+import java.io.Serializable;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,6 +37,9 @@ public class UserSpaceController {
     private final SolutionService solutionService;
     private final ProblemService problemService;
     private final HttpSession session;
+
+    @Autowired
+    RedisTemplate redisTemplate;
 
     public UserSpaceController(UserService userService, SolutionService solutionService, ProblemService problemService, HttpSession session) {
         this.userService = userService;
@@ -105,11 +113,30 @@ public class UserSpaceController {
         final int SIZE = 50;
         page = Math.max(0, page);
         List<User> userList = userService.userList();
-        User cu = (User) session.getAttribute("currentUser");
+        User currentUser = (User) session.getAttribute("currentUser");
         userList.sort((o1, o2) -> (o1.getUserProfile().getScore() - o2.getUserProfile().getScore()) * -1);
+        RankUser cuser = null;
+        List<RankUser> users = getRankUsers(userList);
+        for (RankUser ru : users) {
+            if (ru.getId() == currentUser.getId()) {
+                cuser = ru;
+                break;
+            }
+        }
+        PageHolder pageHolder = new PageHolder(users, PageRequest.of(page, SIZE));
+        Map<String, Object> map = new HashMap<>();
+        map.put("page", pageHolder);
+        map.put("userself", cuser);
+        return map;
+    }
+
+    public List<RankUser> getRankUsers(List<User> userList) {
+        ValueOperations<String, List<RankUser>> vop = redisTemplate.opsForValue();
+        if (redisTemplate.hasKey("userList")) {
+            return vop.get("userList");
+        }
         int rank = 1;
         List<RankUser> users = new LinkedList<>();
-        RankUser cuser = null;
         for (int i = 0; i < userList.size(); i++) {
             User u = userList.get(i);
             if (i > 0 && u.getUserProfile().getScore() < userList.get(i - 1).getUserProfile().getScore()) {
@@ -117,17 +144,9 @@ public class UserSpaceController {
             }
             users.add(new RankUser(u.getId(), u.getUsername(), u.getName(), u.getUserProfile().getScore(),
                     u.getUserProfile().getAccepted(), u.getUserProfile().getSubmitted(), rank));
-            if (cu != null && cu.getId() == u.getId()) {
-                cuser = users.get(users.size() - 1);
-            }
         }
-        PageHolder pageHolder = new PageHolder(users, PageRequest.of(page, SIZE));
-        Map<String, Object> map = new HashMap<>();
-        map.put("page", pageHolder);
-        if (cuser != null) {
-            map.put("userself", cuser);
-        }
-        return map;
+        vop.setIfAbsent("userList", users, Duration.ofSeconds(120));
+        return users;
     }
 
     @GetMapping("/username/{username}")
@@ -160,7 +179,7 @@ public class UserSpaceController {
     }
 
     @Data
-    class RankUser {
+    static class RankUser implements Serializable {
         private Long id;
         private String username;
         private String name;
@@ -168,6 +187,9 @@ public class UserSpaceController {
         private Integer accepted;
         private Integer submitted;
         private Integer rank;
+
+        public RankUser() {
+        }
 
         public RankUser(Long id, String username, String name, Integer score, Integer accepted, Integer submitted, Integer rank) {
             this.id = id;
