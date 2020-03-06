@@ -8,11 +8,12 @@ import cn.edu.zjnu.acm.entity.oj.Solution;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.time.Duration;
 import java.util.*;
 
 @Data
-public class Rank {
+public class Rank implements Serializable {
     @JsonIgnore
     private Map<User, RankRow> rowMap = new HashMap<>();
     private Integer problemsNumber = 0;
@@ -20,6 +21,9 @@ public class Rank {
     private Map<Long, ContestProblem> cpmap = new HashMap<>();
     @JsonIgnore
     private List<Boolean> problemHasAc;
+
+    public Rank() {
+    }
 
     public Rank(Contest c) {
         init(c);
@@ -84,10 +88,10 @@ public class Rank {
             s.setProblem(p);
             User u = solution.getUser();
             if (rowMap.containsKey(u)) {
-                rowMap.get(u).update(s);
+                rowMap.get(u).update(s, problemHasAc);
             } else {
                 RankRow row = new RankRow(problemsNumber, s.getUser());
-                row.update(s);
+                row.update(s, problemHasAc);
                 rowMap.put(s.getUser(), row);
             }
         } catch (Exception e) {
@@ -97,7 +101,44 @@ public class Rank {
     }
 
     @Data
-    class RankRow implements Comparable {
+    public static class RankBox implements Serializable {
+        private Boolean accepted;
+        private Long time;
+        private Integer submit;
+        private Integer pid;
+        private Boolean first;
+
+        public RankBox() {
+        }
+
+        public RankBox(int pid) {
+            this.pid = pid;
+            time = 0l;
+            submit = 0;
+            accepted = false;
+            first = false;
+        }
+
+        public RankBox update(Solution s, List<Boolean> problemHasAc) {
+            if (accepted)
+                return this;
+            submit += 1;
+            if (s.getResult().equals(Solution.AC)) {
+                time = Duration.between(s.getContest().getStartTime(), s.getSubmitTime()).toMinutes();
+                accepted = true;
+                if (!problemHasAc.get(pid - 1)) {
+                    first = true;
+                    problemHasAc.set(pid - 1, true);
+                }
+            } else {
+                time += 20;
+            }
+            return this;
+        }
+    }
+
+    @Data
+    public static class RankRow implements Comparable, Serializable {
         private Integer level;
         private User user;
         private Long penalty = 0L;
@@ -105,11 +146,16 @@ public class Rank {
         private Integer order = null;
         private Integer solved = 0;
 
+        public RankRow() {
+        }
+
         public RankRow(int problemNumber, User user) throws CloneNotSupportedException {
             this.user = user.clone();
             this.user.setIntro(null);
             this.user.setPassword(null);
             this.user.setEmail(null);
+            this.user.setUserProfile(null);
+            this.user.setCreatetime(null);
             level = 0;
             boxes = new ArrayList<>();
             for (int i = 0; i < problemNumber; i++) {
@@ -123,7 +169,7 @@ public class Rank {
             return order == null ? 0 : order;
         }
 
-        public RankRow update(Solution solution) {
+        public RankRow update(Solution solution, List<Boolean> problemHasAc) {
             if (solution.getResult().equals(Solution.PENDING)) {
                 return this;
             }
@@ -131,7 +177,7 @@ public class Rank {
             if (box.getAccepted()) {
                 return this;
             }
-            box.update(solution);
+            box.update(solution, problemHasAc);
             if (solution.getResult().equals(Solution.AC)) {
                 penalty += box.getTime();
                 penalty += (box.getSubmit() - 1) * 20;
@@ -149,38 +195,5 @@ public class Rank {
         }
     }
 
-    @Data
-    class RankBox {
-        private Boolean accepted;
-        private Long time;
-        private Integer submit;
-        private Integer pid;
-        private Boolean first;
-
-        public RankBox(int pid) {
-            this.pid = pid;
-            time = 0l;
-            submit = 0;
-            accepted = false;
-            first = false;
-        }
-
-        public RankBox update(Solution s) {
-            if (accepted)
-                return this;
-            submit += 1;
-            if (s.getResult().equals(Solution.AC)) {
-                time = Duration.between(s.getContest().getStartTime(), s.getSubmitTime()).toMinutes();
-                accepted = true;
-                if (!getProblemHasAc().get(pid - 1)) {
-                    first = true;
-                    getProblemHasAc().set(pid - 1, true);
-                }
-            } else {
-                time += 20;
-            }
-            return this;
-        }
-    }
 
 }

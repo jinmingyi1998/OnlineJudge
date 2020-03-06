@@ -14,8 +14,13 @@ spring:
     show-sql: false
     open-in-view: false
   redis:
-    host: localhost
+    host: ${REDIS_URL}
     port: 6379
+  devtools:
+    restart:
+      enabled: false
+    livereload:
+      enabled: false
   thymeleaf:
     encoding: utf-8
     cache: false

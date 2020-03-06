@@ -9,6 +9,7 @@ import cn.edu.zjnu.acm.service.UserService;
 import cn.edu.zjnu.acm.util.PageHolder;
 import cn.edu.zjnu.acm.util.UserGraph;
 import lombok.Data;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -48,32 +49,33 @@ public class UserSpaceController {
     }
 
     @GetMapping("/pie/{uid:[0-9]+}")
+    @Cacheable(value = "usergraph", key = "#uid")
     public UserGraph getUserGraph(@PathVariable(value = "uid") Long uid) {
         User user = userService.getUserById(uid);
         if (user == null)
             throw new NotFoundException();
         UserGraph userGraph = new UserGraph();
-        userGraph.getPie().setPrime(solutionService.countSolveProblemByTag(user,
+        userGraph.getPie().setPrime(problemService.countSolveProblemByTag(user,
                 problemService.getTagByName("初级"), false));
-        userGraph.getPie().setMedium(solutionService.countSolveProblemByTag(user,
+        userGraph.getPie().setMedium(problemService.countSolveProblemByTag(user,
                 problemService.getTagByName("中级"), false));
-        userGraph.getPie().setAdvance(solutionService.countSolveProblemByTag(user,
+        userGraph.getPie().setAdvance(problemService.countSolveProblemByTag(user,
                 problemService.getTagByName("高级"), false));
-        userGraph.getRadar().setData_structure(solutionService.countSolveProblemByTag(user,
+        userGraph.getRadar().setData_structure(problemService.countSolveProblemByTag(user,
                 problemService.getTagByName("数据结构"), true));
-        userGraph.getRadar().setDynamic_programming(solutionService.countSolveProblemByTag(user,
+        userGraph.getRadar().setDynamic_programming(problemService.countSolveProblemByTag(user,
                 problemService.getTagByName("动态规划"), true));
-        userGraph.getRadar().setSearch(solutionService.countSolveProblemByTag(user,
+        userGraph.getRadar().setSearch(problemService.countSolveProblemByTag(user,
                 problemService.getTagByName("搜索"), true));
-        userGraph.getRadar().setGraph_theory(solutionService.countSolveProblemByTag(user,
+        userGraph.getRadar().setGraph_theory(problemService.countSolveProblemByTag(user,
                 problemService.getTagByName("图论"), true));
-        userGraph.getRadar().setProbability(solutionService.countSolveProblemByTag(user,
+        userGraph.getRadar().setProbability(problemService.countSolveProblemByTag(user,
                 problemService.getTagByName("概率论"), true));
-        userGraph.getRadar().setMath(solutionService.countSolveProblemByTag(user,
+        userGraph.getRadar().setMath(problemService.countSolveProblemByTag(user,
                 problemService.getTagByName("数论"), true));
-        userGraph.getRadar().setString(solutionService.countSolveProblemByTag(user,
+        userGraph.getRadar().setString(problemService.countSolveProblemByTag(user,
                 problemService.getTagByName("字符串"), true));
-        userGraph.getRadar().setGeometry(solutionService.countSolveProblemByTag(user,
+        userGraph.getRadar().setGeometry(problemService.countSolveProblemByTag(user,
                 problemService.getTagByName("计算几何"), true));
         userGraph.getRadar().init();
         return userGraph;

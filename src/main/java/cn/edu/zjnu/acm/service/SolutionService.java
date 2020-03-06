@@ -30,11 +30,7 @@ public class SolutionService {
         this.solutionRepository = solutionRepository;
     }
 
-    public Integer countSolveProblemByTag(User user, Tag tag, boolean isScore) {
-        return isScore ?
-                solutionRepository.userSolveTagScore(user.getId(), tag.getId()) :
-                solutionRepository.userSolveTagCount(user.getId(), tag.getId());
-    }
+
 
     public Solution getSolutionById(Long id) {
         return solutionRepository.findById(id).orElse(null);

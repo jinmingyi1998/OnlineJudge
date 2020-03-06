@@ -14,6 +14,7 @@ import cn.edu.zjnu.acm.util.RestfulResult;
 import cn.edu.zjnu.acm.util.Result;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -379,7 +380,8 @@ public class ContestController {
     }
 
     @GetMapping("/ranklist/{cid:[0-9]+}")
-    public Rank getRankOfContest(@PathVariable Long cid) {
+    @Cacheable(value = "contestRank",key = "#cid")
+    public Map<String,Object> getRankOfContest(@PathVariable Long cid) {
         try {
             @NotNull Contest contest = contestService.getContestById(cid, true);
             contest.setTeam(null);
@@ -388,7 +390,10 @@ public class ContestController {
             for (int i = solutions.size() - 1; i >= 0; i--) {
                 rank.update(solutions.get(i));
             }
-            return rank;
+            Map<String,Object> result = new HashMap<>();
+            result.put("problemsNumber",rank.getProblemsNumber());
+            result.put("rows",rank.getRows());
+            return result;
         } catch (Exception e) {
             e.printStackTrace();
         }

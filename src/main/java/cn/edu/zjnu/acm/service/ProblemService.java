@@ -151,4 +151,10 @@ public class ProblemService {
     public AnalysisComment getFatherComment(Long id) {
         return analysisCommentRepository.findById(id).orElse(null);
     }
+
+    public Integer countSolveProblemByTag(User user, Tag tag, boolean isScore) {
+        return isScore ?
+                userProblemRepository.userSolveTagScore(user.getId(), tag.getId()) :
+                userProblemRepository.userSolveTagCount(user.getId(), tag.getId());
+    }
 }

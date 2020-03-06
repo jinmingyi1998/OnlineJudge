@@ -1,9 +1,15 @@
 package cn.edu.zjnu.acm.util;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class UserGraph {
+public class UserGraph implements Serializable {
+    @JsonIgnore
+    private static final long serialVersionUID = 7156526077883281629L;
+
     private PieGraph pie;
     private RadarGraph radar;
 
@@ -13,7 +19,7 @@ public class UserGraph {
     }
 
     @Data
-    public class PieGraph {
+    public static class PieGraph implements Serializable {
         private Integer prime;
         private Integer medium;
         private Integer advance;
@@ -32,7 +38,7 @@ public class UserGraph {
     }
 
     @Data
-    public class RadarGraph {
+    public static class RadarGraph implements Serializable {
         private Integer data_structure;
         private Integer string;
         private Integer probability;

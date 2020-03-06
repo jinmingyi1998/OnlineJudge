@@ -25,4 +25,16 @@ public interface UserProblemRepository extends JpaRepository<UserProblem, Long> 
     Long calculateUserScore(@Param(value = "uid") Long uid);
 
     void deleteAllByProblem(Problem problem);
+
+    @Query(value = "SELECT COALESCE (SUM(p.score),0) " +
+            "FROM user_problem AS upr ,problem_tags AS pta ,problem AS p " +
+            "WHERE upr.problem_id=pta.problem_id AND p.id = pta.problem_id AND " +
+            "upr.user_id=:uid and pta.tags_id=:tid", nativeQuery = true)
+    Integer userSolveTagScore(@Param(value = "uid") Long user_id, @Param(value = "tid") Long tag_id);
+
+    @Query(value = "SELECT COUNT(DISTINCT pta.problem_id) " +
+            "FROM user_problem AS upr ,problem_tags AS pta " +
+            "WHERE upr.problem_id=pta.problem_id AND " +
+            "upr.user_id=:uid AND pta.tags_id=:tid", nativeQuery = true)
+    Integer userSolveTagCount(@Param(value = "uid") Long user_id, @Param(value = "tid") Long tag_id);
 }
