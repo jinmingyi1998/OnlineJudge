@@ -380,8 +380,8 @@ public class ContestController {
     }
 
     @GetMapping("/ranklist/{cid:[0-9]+}")
-    @Cacheable(value = "contestRank",key = "#cid")
-    public Map<String,Object> getRankOfContest(@PathVariable Long cid) {
+    @Cacheable(value = "contestRank", key = "#cid")
+    public Map<String, Object> getRankOfContest(@PathVariable Long cid) {
         try {
             @NotNull Contest contest = contestService.getContestById(cid, true);
             contest.setTeam(null);
@@ -390,9 +390,9 @@ public class ContestController {
             for (int i = solutions.size() - 1; i >= 0; i--) {
                 rank.update(solutions.get(i));
             }
-            Map<String,Object> result = new HashMap<>();
-            result.put("problemsNumber",rank.getProblemsNumber());
-            result.put("rows",rank.getRows());
+            Map<String, Object> result = new HashMap<>();
+            result.put("problemsNumber", rank.getProblemsNumber());
+            result.put("rows", rank.getRows());
             return result;
         } catch (Exception e) {
             e.printStackTrace();
