@@ -27,6 +27,7 @@ docker run -d --name onlinejudge \
     -e MYSQL_USER=$MYSQL_USER \
     -e MYSQL_PASSWORD=$MYSQL_PASSWORD \
     -e MYSQL_URL=db:3306/oj \
+    -e REDIS_URL=redis
     -e JUDGER_SERVICE=http://judgerserver:12345/judge \
     $DOCKER_IMG
 ```
@@ -46,7 +47,15 @@ server:
  - media/ 存放上传的图片
  - config/ 运行时配置，将覆盖默认配置
  - log/ 运行日志
-
+ 
+#### 环境变量设置：
+ - MYSQL_USER (default = root)
+ - MYSQL_PASSWORD (default = 1234)
+ - MYSQL_URL
+ - REDIS_URL (default = localhost)
+ - REDIS_PORT (default = 6379)
+ - JUDGE_SERVICE (**one** link to submit codes)
+ 
 ## 浏览器支持：
 Chrome ~~Firefox, Edge without Chromium, IE~~
 

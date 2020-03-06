@@ -1,39 +1,66 @@
 version: "3"
 services:
   db:
-   image: mariadb:10.2.8
-   ports:
-     - 3306:3306
-   environment:
-    - MYSQL_ROOT_PASSWORD=1234
-    - MYSQL_DATABASE=oj
-    - MYSQL_USER=user # optional
-    - MYSQL_PASSWORD=1234 # optional
-   volumes:
-     - /mysql:/var/lib/mysql  # data storage path
-     - /mariadb.conf.d:/etc/mysql/mariadb.conf.d  # config file. set encoding : utf8mb4_bin
+    image: mariadb:10.4
+    container_name: db
+    ports:
+      - 3306:3306
+    volumes:
+      - /mysql:/var/lib/mysql  # data storage path
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=1234
+      - MYSQL_DATABASE=oj
+      - MYSQL_USER=user # optional
+      - MYSQL_PASSWORD=1234 # optional
+      - TZ=Asia/Shanghai
+      - LC_ALL=C
+    command: [
+      "--character-set-server=utf8mb4",
+      "--collation-server=utf8mb4_bin"]
 
   judgerserver:
-   image: registry.cn-hangzhou.aliyuncs.com/jinmingyi/judgerserver
-   volumes:
-     - /ojdata:/ojdata # problem test data path
-   ports:
-     - 12345:12345
-   environment:
-    - SERVICE_PORT=12345
-    - OJ_BACKEND_CALLBACK=http://onlinejudge:8080/judge/callback
+    image: registry.cn-hangzhou.aliyuncs.com/jinmingyi/judgerserver
+    container_name: judger
+    volumes:
+      - /ojdata:/ojdata # problem test data path
+    ports:
+      - 12345:12345
+      - 8000:8000
+    restart: always
+    environment:
+      - SERVICE_PORT=12345
+      - OJ_BACKEND_CALLBACK=http://onlinejudge:8080/judge/callback
+      - TZ=Asia/Shanghai
+      - LC_ALL=C
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    environment:
+      - TZ=Asia/Shanghai
+      - LC_ALL=C
+      - LANG=zh_CN.UTF-8
 
   onlinejudge:
-   image: registry.cn-hangzhou.aliyuncs.com/jinmingyi/onlinejudge
-   depends_on:
-    - db
-   ports:
-     - 80:8080
-   volumes:
-     - /onlinejudge:/onlinejudge/log # log files
-     # - /config:/config #config files 'application.yml'
-   environment:
-   - MYSQL_USER=jinmy
-   - MYSQL_PASSWORD=1234
-   - MYSQL_URL=db:3306/oj
-   - JUDGER_SERVICE=http://judgerserver:12345/judge
+    image: registry.cn-hangzhou.aliyuncs.com/jinmingyi/onlinejudge
+    container_name: oj
+    depends_on:
+      - db
+      - judger
+      - redis
+    ports:
+      - 8080:8080
+    volumes:
+      - /onlinejudge:/onlinejudge # log files
+    restart: always
+    environment:
+      - TZ=Asia/Shanghai
+      - LC_ALL=C
+      - LANG=zh_CN.UTF-8
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=1234
+      - MYSQL_URL=db:3306/oj
+      - REDIS_URL=redis
+      - REDIS_PORT=6379
+      - JUDGER_SERVICE=http://judgerserver:12345/judge
