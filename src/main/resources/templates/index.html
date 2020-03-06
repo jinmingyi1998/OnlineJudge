@@ -4,6 +4,16 @@
     <th:block th:insert="~{fragment/header :: header}"></th:block>
     <meta charset="UTF-8">
     <title>Home</title>
+    <link rel="stylesheet" href="/editor/css/editormd.min.css">
+    <script src="/editor/lib/marked.min.js"></script>
+    <script src="/editor/lib/raphael.min.js"></script>
+    <script src="/editor/lib/underscore.min.js"></script>
+    <script src="/editor/lib/sequence-diagram.min.js"></script>
+    <script src="/editor/lib/flowchart.min.js"></script>
+    <script src="/editor/lib/jquery.flowchart.min.js"></script>
+    <script src="/editor/lib/underscore.min.js"></script>
+    <script src="/editor/editormd.min.js"></script>
+    <link rel="stylesheet" href="/js/prettify/skins/sunburst.css">
 </head>
 <body>
 <main class="ui fluid container" height="100%" width="100%">
@@ -24,18 +34,38 @@
     </div>
     <div class="ui divider"></div>
     <div class="ui container">
-        <!--                <img class="ui fluid image" src="http://12452007.s61i.faiusr.com/2/AD0Ip4H4BRACGAAg5P_WwwUon8zbvgUw4AM4rAI.jpg" alt="">-->
         <div class="ui content">
-            <div class="ui header center aligned">公告</div>
-            <div id="notice">
-
+            <h1 class="ui header center aligned">公告</h1>
+            <div id="editormd-view">
+                <textarea style="display: none"></textarea>
             </div>
         </div>
     </div>
 </main>
 <script>
     $.get("/notice", function (data, status) {
-        $("#notice").html(data);
+        editormd.markdownToHTML("editormd-view", {
+            markdown: data,
+            gfm: true,
+            toc: true,
+            tocm: false,
+            tocStartLevel: 1,
+            tocTitle: "目录",
+            htmlDecode: "style,script,iframe|on*",
+            tocDropdown: false,
+            tocContainer: "",
+            emoji: true,
+            autoLoadKaTeX: true,
+            pageBreak: true,
+            atLink: true,    // for @link
+            emailLink: true,    // for mail address auto link
+            tex: true,
+            taskList: false,   // Github Flavored Markdown task lists
+            flowChart: true,
+            sequenceDiagram: true,
+            previewCodeHighlight: true,
+            lineNumbers: false,
+        });
     });
 </script>
 <footer th:replace="~{fragment/footer :: footer}"></footer>

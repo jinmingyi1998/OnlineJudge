@@ -4,7 +4,7 @@
     <th:block th:insert="~{fragment/header :: header}"></th:block>
     <meta charset="UTF-8">
     <title>个人中心</title>
-    <script src="/js/echarts.min.js"></script>
+    <script src="/js/lib/echarts.min.js"></script>
 </head>
 <body>
 <main class="ui container" id="user">
@@ -37,11 +37,11 @@
                 <div class="description">
                     <p>用户名：{{user.username}}</p>
                     <p>个人介绍：{{user.intro}}</p>
-                    <p v-if="owner">Email：{{user.email}}</p>
+                    <p v-if="isOwner()">Email：{{user.email}}</p>
                 </div>
             </div>
-            <a :href="'/user/edit/'+id" class="ui button attached animated fade bottom" v-if="owner">
-                <div class="visible content"><i class="ui edit icon"></i></div>
+            <a :href="'/user/edit/'+id" class="ui button attached animated fade bottom" v-if="isOwner()">
+                <div class="visible content"><i class="ui edit icon"></i>Update</div>
                 <div class="hidden content">更新个人信息</div>
             </a>
         </div>
@@ -57,10 +57,14 @@
     var usr = new Vue({
         el: "#user",
         data: {
-            id:pid,
+            id: parseInt(pid),
             user: {},
-            ready: false,
-            owner: user_bar.user.id == pid
+            ready: false
+        },
+        methods: {
+            isOwner() {
+                return user_bar.user.id == this.id;
+            }
         },
         created() {
             var that = this;

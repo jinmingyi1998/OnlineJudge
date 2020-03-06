@@ -90,6 +90,7 @@
         editor_description = editormd({
             id: "editor-description",
             path: "/editor/lib/",
+            pluginPath: "/editor/plugins/",
             width: "90%",
             height: 500,
             autoFocus: false,
@@ -98,11 +99,15 @@
             autoLoadKaTeX: true,
             tex: true,
             flowChart: true,
-            previewCodeHighlight: true
+            previewCodeHighlight: true,
+            imageUploadURL: "/api/media/upload",
+            imageUpload: true,
+            imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "ico"],
         });
         editor_input = editormd({
             id: "editor-input",
             path: "/editor/lib/",
+            pluginPath: "/editor/plugins/",
             width: "90%",
             height: 500,
             autoFocus: false,
@@ -111,11 +116,15 @@
             autoLoadKaTeX: true,
             tex: true,
             flowChart: true,
-            previewCodeHighlight: true
+            previewCodeHighlight: true,
+            imageUploadURL: "/api/media/upload",
+            imageUpload: true,
+            imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "ico"],
         });
         editor_output = editormd({
             id: "editor-output",
             path: "/editor/lib/",
+            pluginPath: "/editor/plugins/",
             width: "90%",
             height: 500,
             autoFocus: false,
@@ -124,11 +133,15 @@
             autoLoadKaTeX: true,
             tex: true,
             flowChart: true,
-            previewCodeHighlight: true
+            previewCodeHighlight: true,
+            imageUploadURL: "/api/media/upload",
+            imageUpload: true,
+            imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "ico"],
         });
         editor_hint = editormd({
             id: "editor-hint",
             path: "/editor/lib/",
+            pluginPath: "/editor/plugins/",
             width: "90%",
             height: 500,
             autoFocus: false,
@@ -137,7 +150,10 @@
             autoLoadKaTeX: true,
             tex: true,
             flowChart: true,
-            previewCodeHighlight: true
+            previewCodeHighlight: true,
+            imageUploadURL: "/api/media/upload",
+            imageUpload: true,
+            imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "ico"],
         });
     });
     var vproblem = new Vue({
@@ -163,27 +179,27 @@
                 this.input = editor_input.getMarkdown();
                 this.output = editor_output.getMarkdown();
                 this.hint = editor_hint.getMarkdown();
-                axios.post("/api/admin/problem/insert",{
-                    title:this.title,
-                    description:this.description,
-                    input:this.input,
-                    output:this.output,
-                    sampleInput:this.sampleInput,
+                axios.post("/api/admin/problem/insert", {
+                    title: this.title,
+                    description: this.description,
+                    input: this.input,
+                    output: this.output,
+                    sampleInput: this.sampleInput,
                     sampleOutput: this.sampleOutput,
-                    hint:this.hint,
-                    source:this.source,
-                    time:this.time,
-                    memory:this.memory,
-                    active:this.active,
-                    score:this.score,
-                    tags:this.tags
+                    hint: this.hint,
+                    source: this.source,
+                    time: this.time,
+                    memory: this.memory,
+                    active: this.active,
+                    score: this.score,
+                    tags: this.tags
                 }).then(function (res) {
                     res = res.data;
                     if (res !== "success") {
                         console.log(res);
                         alert(res);
                     }
-                    location.href="/admin/problem";
+                    location.href = "/admin/problem";
                 })
             }
         }

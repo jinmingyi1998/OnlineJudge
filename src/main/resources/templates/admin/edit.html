@@ -6,6 +6,7 @@
     <meta content="text/html;charset=UTF-8" http-equiv="Content-Type">
     <link rel="stylesheet" href="/editor/css/editormd.min.css">
     <script src="/editor/editormd.min.js"></script>
+    <script src="/js/turndown.js"></script>
 </head>
 <body>
 <div class="ui container segment" id="vproblem">
@@ -46,6 +47,7 @@
         <div class="field">
             题目分数Score: <input name="score" type="number" required v-model="score">
         </div>
+        <div class="ui button" v-on:click="html2Markdown">Html To Markdown</div>
         <div class="field">
             题目描述Description:
             <div id="editor-description">
@@ -81,6 +83,12 @@
     </form>
 </div>
 <script>
+    c = new TurndownService();
+
+    function html2Markdown(s) {
+        return c.turndown(s);
+    }
+
     pid = location.pathname.split('/');
     pid = pid[pid.length - 1];
     $('.ui.checkbox').checkbox();
@@ -106,61 +114,70 @@
             tags: ""
         },
         methods: {
+            html2Markdown() {
+                editor_description.setMarkdown(html2Markdown(editor_description.getMarkdown()));
+                editor_input.setMarkdown(html2Markdown(editor_input.getMarkdown()));
+                editor_output.setMarkdown(html2Markdown(editor_output.getMarkdown()));
+                editor_hint.setMarkdown(html2Markdown(editor_hint.getMarkdown()));
+            },
             submit_problem() {
                 this.description = editor_description.getMarkdown();
                 this.input = editor_input.getMarkdown();
                 this.output = editor_output.getMarkdown();
                 this.hint = editor_hint.getMarkdown();
-                axios.post("/api/admin/problem/edit/"+pid,{
-                    title:this.title,
-                    description:this.description,
-                    input:this.input,
-                    output:this.output,
-                    sampleInput:this.sampleInput,
+                axios.post("/api/admin/problem/edit/" + pid, {
+                    title: this.title,
+                    description: this.description,
+                    input: this.input,
+                    output: this.output,
+                    sampleInput: this.sampleInput,
                     sampleOutput: this.sampleOutput,
-                    hint:this.hint,
-                    source:this.source,
-                    time:this.time,
-                    memory:this.memory,
-                    active:this.active,
-                    score:this.score,
-                    tags:this.tags
+                    hint: this.hint,
+                    source: this.source,
+                    time: this.time,
+                    memory: this.memory,
+                    active: this.active,
+                    score: this.score,
+                    tags: this.tags
                 }).then(function (res) {
                     res = res.data;
                     if (res !== "success") {
                         console.log(res);
                         alert(res);
+                    } else {
+                        alert("success")
+                        location.reload();
                     }
-                    location.href="/admin/problem";
                 })
             }
         },
-        created(){
+        created() {
             var that = this;
-            axios.get("/api/admin/problem/"+pid).then(function (res) {
+            axios.get("/api/admin/problem/" + pid).then(function (res) {
                 res = res.data;
-                that.title =res.title;
+                that.title = res.title;
                 that.description = res.description;
                 that.input = res.input;
-                that.output=res.output;
+                that.output = res.output;
                 that.active = res.active;
                 that.time = res.timeLimit;
                 that.memory = res.memoryLimit;
-                that.score =res.score;
-                that.sampleInput=res.sampleInput;
-                that.sampleOutput=res.sampleOutput;
+                that.score = res.score;
+                that.sampleInput = res.sampleInput;
+                that.sampleOutput = res.sampleOutput;
                 that.hint = res.hint;
                 that.source = res.source;
-                that.tags="";
-                if (res.tags.length>0)
+                that.tags = "";
+                if (res.tags.length > 0)
                     that.tags = res.tags[0].name;
                 for (let i = 1; i < res.tags.length; i++) {
-                    that.tags+=","+res.tags[i].name;
+                    that.tags += "," + res.tags[i].name;
                 }
                 $(function () {
                     editor_description = editormd({
                         id: "editor-description",
                         path: "/editor/lib/",
+                        pluginPath: "/editor/plugins/",
                         width: "90%",
                         height: 500,
                         autoFocus: false,
@@ -169,11 +186,16 @@
                         autoLoadKaTeX: true,
                         tex: true,
                         flowChart: true,
-                        previewCodeHighlight: true
+                        htmlDecode: "style,script,iframe|on*",
+                        previewCodeHighlight: true,
+                        imageUploadURL: "/api/media/upload",
+                        imageUpload: true,
+                        imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "ico"],
                     });
                     editor_input = editormd({
                         id: "editor-input",
                         path: "/editor/lib/",
+                        pluginPath: "/editor/plugins/",
                         width: "90%",
                         height: 500,
                         autoFocus: false,
@@ -182,33 +204,47 @@
                         autoLoadKaTeX: true,
                         tex: true,
                         flowChart: true,
-                        previewCodeHighlight: true
+                        previewCodeHighlight: true,
+                        htmlDecode: "style,script,iframe|on*",
+                        imageUploadURL: "/api/media/upload",
+                        imageUpload: true,
+                        imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "ico"],
                     });
                     editor_output = editormd({
                         id: "editor-output",
                         path: "/editor/lib/",
+                        pluginPath: "/editor/plugins/",
                         width: "90%",
                         height: 500,
                         autoFocus: false,
                         codeFold: true,
                         searchReplace: true,
                         autoLoadKaTeX: true,
+                        htmlDecode: "style,script,iframe|on*",
                         tex: true,
                         flowChart: true,
-                        previewCodeHighlight: true
+                        previewCodeHighlight: true,
+                        imageUploadURL: "/api/media/upload",
+                        imageUpload: true,
+                        imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "ico"],
                     });
                     editor_hint = editormd({
                         id: "editor-hint",
                         path: "/editor/lib/",
+                        pluginPath: "/editor/plugins/",
                         width: "90%",
                         height: 500,
                         autoFocus: false,
                         codeFold: true,
                         searchReplace: true,
                         autoLoadKaTeX: true,
+                        htmlDecode: "style,script,iframe|on*",
                         tex: true,
                         flowChart: true,
-                        previewCodeHighlight: true
+                        previewCodeHighlight: true,
+                        imageUploadURL: "/api/media/upload",
+                        imageUpload: true,
+                        imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "ico"],
                     });
                 });
             })

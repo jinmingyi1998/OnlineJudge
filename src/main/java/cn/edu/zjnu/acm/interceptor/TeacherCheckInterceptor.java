@@ -2,9 +2,7 @@ package cn.edu.zjnu.acm.interceptor;
 
 import cn.edu.zjnu.acm.entity.Teacher;
 import cn.edu.zjnu.acm.entity.User;
-import cn.edu.zjnu.acm.exception.ForbiddenException;
-import cn.edu.zjnu.acm.exception.NotFoundException;
-import cn.edu.zjnu.acm.repo.TeacherRepository;
+import cn.edu.zjnu.acm.repo.user.TeacherRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
@@ -27,15 +25,16 @@ public class TeacherCheckInterceptor implements HandlerInterceptor {
         try {
             User user = (User) session.getAttribute("currentUser");
             if (user != null) {
-                log.info("admin page intercepted:" + user.getId() + user.getUsername());
+                log.info(String.format("admin page intercepted:%s %s at %s", user.getId() + "", user.getUsername(), request.getRemoteAddr()));
                 Teacher teacher = teacherRepository.findByUser(user).orElse(null);
                 if (teacher != null)
                     return true;
             }
-            throw new ForbiddenException();
+            response.sendError(403);
         } catch (Exception e) {
-            throw new NotFoundException();
+            response.sendError(404);
         }
+        return false;
     }
 
     @Override

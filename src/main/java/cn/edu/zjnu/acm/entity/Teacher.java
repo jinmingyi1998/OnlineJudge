@@ -1,12 +1,10 @@
 package cn.edu.zjnu.acm.entity;
 
-import cn.edu.zjnu.acm.entity.oj.Contest;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @Data
@@ -19,12 +17,16 @@ public class Teacher {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @JsonIgnore
     @OneToOne(optional = false, fetch = FetchType.LAZY)
     private User user;
     @Column(nullable = false, columnDefinition = "INTEGER default 0")
     private Integer privilege = TEACHER;
 
     public Teacher() {
+    }
+
+    public Teacher(User user, Integer privilege) {
+        this.user = user;
+        this.privilege = privilege;
     }
 }

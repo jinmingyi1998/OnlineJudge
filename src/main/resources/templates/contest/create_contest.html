@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Insert</title>
+    <title>Create Contest</title>
     <meta charset="UTF-8">
     <th:block th:insert="~{fragment/header :: header}"></th:block>
     <style>
@@ -9,9 +9,19 @@
             max-width: 85% !important;
         }
     </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/bootstrap-datetimepicker.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"></script>
+    <script src="/js/lib/bootstrap-datetimepicker.min.js"></script>
 </head>
 <body>
 <div class="ui container" id="contest">
+    Clone Contest:
+    <div class="ui action input">
+        <input type="text" v-model="clone_contest_id">
+        <div class="ui button" v-on:click="clone_contest()">Clone</div>
+    </div>
+
     <form class="ui form segment" v-on:submit.prevent>
         <div class="required field">
             <label>Title:</label><input name="title" required type="text" v-model="content.title">
@@ -33,14 +43,15 @@
         </div>
         <div class="required field">
             <label>开始时间Start Time(yyyy-MM-dd HH:mm):</label>
-            <input name="startTime" placeholder="2020-02-20 02:02" required
-                   type="text" v-model="content.startTime">
+<!--            <input name="startTime" placeholder="2020-02-20 02:02" required type="text" v-model="content.startTime">-->
+            <input class="form-datetime form-control" data-date-format="yyyy-mm-dd hh:ii" id="startTime" minuteStep="1"
+                   name="startTime" type="text" v-model="content.startTime">
         </div>
         <div class="required field">
             长度Length(分钟minutes):
             <input name="lastTime" placeholder="300" required type="number" v-model="content.length">
         </div>
-        Problems :
+        Problems (不可修改):
         <div class="ui icon mini buttons">
             <button @click="update_problem(1)" class="ui green inverted button"><i class="ui plus icon"></i></button>
             <button @click="update_problem(0)" class="ui red inverted button"><i class="ui minus icon"></i></button>
@@ -55,24 +66,49 @@
     </form>
 </div>
 <script type="text/javascript">
+    $(function () {
+        $(".form-datetime").datetimepicker();
+    });
     var gid = location.pathname.split('/');
     gid = gid[gid.length - 1];
     var contest = new Vue({
         el: "#contest",
         data: {
-            tid:gid,
+            tid: gid,
             content: {
                 title: "",
-                tid:gid,
+                tid: gid,
                 description: "",
-                privilege: gid==0?"public":"team",
+                privilege: gid == 0 ? "public" : "team",
                 password: "",
                 startTime: "",
                 length: 300,
                 problems: [{id: "", tempTitle: "", name: ""}]
-            }
+            },
+            clone_contest_id: ""
         },
         methods: {
+            clone_contest() {
+                var that = this;
+                axios.get("/api/contest/clone/" + this.clone_contest_id)
+                    .then(function (res) {
+                        if (res.data.code == 200) {
+                            that.content.title = res.data.data.title;
+                            that.content.description = res.data.data.description;
+                            that.content.problems = [];
+                            for (p of res.data.data.problems) {
+                                that.content.problems.push({
+                                    id: p.id,
+                                    tempTitle: p.tempTitle,
+                                    name: p.problem.title
+                                });
+                            }
+                        } else {
+                            console.log(res.data);
+                            alert(res.data.message);
+                        }
+                    })
+            },
             get_problem(id, ind) {
                 var that = this;
                 console.log(id);
@@ -90,6 +126,7 @@
                 }
             },
             submit_form() {
+                this.content.startTime=$("#startTime").val();
                 console.log(this.content);
                 axios.post("/api/contest/create", this.content)
                     .then(function (res) {

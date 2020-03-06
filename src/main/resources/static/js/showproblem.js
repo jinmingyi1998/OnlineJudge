@@ -3,7 +3,7 @@ $(function () {
     code_editor = editormd("code-editor", {
         width: "100%",
         gfm: true,
-        height: 500,
+        height: 300,
         watch: false,
         toolbar: false,
         codeFold: true,
@@ -15,42 +15,8 @@ $(function () {
         theam: "dark",
         mode: "clike",
         path: '/editor/lib/',
+        pluginPath: "/editor/plugins/"
     });
-});
-vue_history = new Vue({
-    el: "#vue-history",
-    data: {
-        status: [],
-        problem_id: pid
-    },
-    methods: {
-        get_data() {
-            console.log("refresh")
-            var that = this;
-            axios.get('/api/status/user/latest/submit/' + pid).then(function (res) {
-                that.status = res.data;
-            })
-        }
-    },
-    created: function () {
-        var that = this;
-        axios.get('/api/status/user/latest/submit/' + pid).then(function (res) {
-            that.status = res.data;
-        })
-    }
-});
-var tags = new Vue({
-    el: "#vue-tags",
-    data: {
-        ready: false,
-        tags: [],
-        color: ["red", "blue", "green", "orange", "yellow", "pink", "brown", "purple", "olive", "teal"]
-    },
-    methods: {
-        colorClass() {
-            return this.color[Math.floor(Math.random() * 10)]
-        }
-    }
 });
 var prom = new Vue({
     el: '#vue-problem',
@@ -59,9 +25,25 @@ var prom = new Vue({
         code: "",
         language: "c",
         share: true,
-        dataready: false
+        dataready: false,
+        isAccepted: false,
+        ready: false,
+        tags: [],
+        color: ["red", "blue", "green", "orange", "yellow", "pink", "brown", "purple", "olive", "teal"],
+        status: [],
+        problem_id: pid
     },
     methods: {
+        get_history_data() {
+            var that = this;
+            axios.get('/api/status/user/latest/submit/' + pid)
+                .then(function (res) {
+                that.status = res.data.data;
+            });
+        },
+        colorClass() {
+            return this.color[Math.floor(Math.random() * 10)]
+        },
         change_lang() {
             if (this.language === "java") {
                 code_editor.setCodeMirrorOption("mode", "clike");
@@ -69,8 +51,8 @@ var prom = new Vue({
                 code_editor.setCodeMirrorOption("mode", "python");
             } else if (this.language.indexOf("c") === 0) {
                 code_editor.setCodeMirrorOption("mode", "clike");
-            }else if (this.language.indexOf("go")===0){
-                code_editor.setCodeMirrorOption("mode","go");
+            } else if (this.language.indexOf("go") === 0) {
+                code_editor.setCodeMirrorOption("mode", "go");
             }
         },
         submit: function () {
@@ -82,27 +64,33 @@ var prom = new Vue({
                 share: that.share
             }).then(function (res) {
                 console.log(res.data)
-                if (res.data != "success") {
-                    alert(res.data);
+                if (res.data.code != 200) {
+                    alert(res.data.message);
+                    return;
                 } else {
                     vue_history.get_data();
                     scrollTo(0, 0);//x,y
                 }
-            })
+            });
         }
     },
     created() {
         var that = this;
         axios.get('/api/problems/' + pid).then(function (response) {
-            that.problem = response.data;
-            tags.tags = that.problem.tags;
-            tags.ready = true;
-            $("title").text(response.data.title);
+            if (response.data.code != 200) {
+                return;
+            }
+
+            that.problem = response.data.data;
+            that.tags = that.problem.tags;
+            that.ready = true;
+            $("title").text(response.data.data.title);
             $(function () {
                 $(".md-text").each(function () {
                     $(this).attr("id", "editormd-view");
                     editormd.markdownToHTML("editormd-view", {
                         gfm: true,
+                        htmlDecode: "style,script,iframe|on*",
                         toc: true,
                         tocm: false,
                         tocStartLevel: 1,
@@ -127,6 +115,17 @@ var prom = new Vue({
         }).catch(function (e) {
             console.log(e);
             location.href = "/4O4";
-        })
+        });
+        axios.get("/api/problems/is/accepted/" + pid)
+            .then(function (res) {
+                if (res.data.message == 'success') {
+                    that.isAccepted = res.data.data;
+                } else {
+                    console.log(res.data);
+                }
+            }).catch(function (e) {
+            console.log(e);
+        });
+        this.get_history_data();
     }
 });

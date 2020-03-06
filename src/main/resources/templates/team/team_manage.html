@@ -53,9 +53,9 @@
                 </div>
                 <div class="ui divider"></div>
                 <div class="ui middle aligned divided list selection" v-for="m in teammates">
-                    <div class="item">{{m.user.name}}
-                        <div class="ui small orange label" v-if="m.level==0">master</div>
-                        <div class="ui small label" v-if="m.level==1">manager</div>
+                    <div class="link item"><a v-bind:href="'/user/'+m.user.id">{{m.user.name}}</a>
+                        <div class="ui mini basic orange label" v-if="m.level==0">master</div>
+                        <div class="ui mini teal basic label" v-if="m.level==1">manager</div>
                         <div class="right floated">
                             <div @click="set_manager(m.id)" class="ui button orange tiny"
                                  v-if="m.level==2">设为管理员
@@ -165,14 +165,17 @@
             update_attend() {
                 var that = this;
                 that.dim = true;
-                console.log(this.attend);
                 axios.get("/api/team/update/attend/" + tid + "?attend=" + this.attend)
                     .then(function (res) {
                         if (res.data != "success") {
                             alert(res.data);
                         }
                     }).catch(function (e) {
-                    alert("Unknown error");
+                    if (e.response.status === 403) {
+                        alert("Permission denied")
+                    } else {
+                        alert("error");
+                    }
                 }).finally(function () {
                     that.dim = false;
                 });

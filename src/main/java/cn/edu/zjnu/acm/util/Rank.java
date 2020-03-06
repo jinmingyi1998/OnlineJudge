@@ -169,7 +169,7 @@ public class Rank {
             if (accepted)
                 return this;
             submit += 1;
-            if (s.getResult().equals(s.AC)) {
+            if (s.getResult().equals(Solution.AC)) {
                 time = Duration.between(s.getContest().getStartTime(), s.getSubmitTime()).toMinutes();
                 accepted = true;
                 if (!getProblemHasAc().get(pid - 1)) {

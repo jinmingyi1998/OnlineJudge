@@ -4,6 +4,8 @@
     <th:block th:insert="~{fragment/header :: header}"></th:block>
     <meta charset="UTF-8">
     <title>Setting</title>
+    <link rel="stylesheet" href="/editor/css/editormd.min.css">
+    <script src="/editor/editormd.min.js"></script>
 </head>
 <body>
 <main class="ui container" id="setting">
@@ -11,6 +13,10 @@
         <div class="field">
             <label>least-score-to-see-others-code</label>
             <input type="text" v-model="leastScoreToSeeOthersCode">
+        </div>
+        <div class="field">
+            <label>least-score-to-post-blog</label>
+            <input type="text" v-model="leastScoreToPostBlog">
         </div>
         <div class="ui divider"></div>
         <div class="ui header">judger services</div>
@@ -23,7 +29,9 @@
         <div class="ui divider"></div>
         <h3>Home Notice</h3>
         <div class="field">
-            <textarea type="text" v-model="notice"></textarea>
+            <div id="editor-notice">
+                <textarea name="description" style="display: none" v-model="notice"></textarea>
+            </div>
         </div>
         <div class="ui divider"></div>
         <div class="ui header">Language</div>
@@ -146,6 +154,7 @@
     </div>
 </main>
 <script>
+    var editor_notice;
     var language_config = {
         src: "",
         seccomp_rule: "",
@@ -157,6 +166,7 @@
         el: "#setting",
         data: {
             leastScoreToSeeOthersCode: 1000,
+            leastScoreToPostBlog: 750,
             judgerhost: [{str: ""}],
             c: language_config,
             cpp: language_config,
@@ -178,8 +188,10 @@
                 for (host of this.judgerhost) {
                     hosts.push(host.str);
                 }
+                this.notice = editor_notice.getMarkdown();
                 axios.post("/api/admin/config", {
                     leastScoreToSeeOthersCode: this.leastScoreToSeeOthersCode,
+                    leastScoreToPostBlog: this.leastScoreToPostBlog,
                     judgerhost: hosts,
                     c: this.c,
                     cpp: this.cpp,
@@ -205,6 +217,7 @@
             axios.get("/api/admin/config")
                 .then(function (res) {
                     that.leastScoreToSeeOthersCode = res.data.leastScoreToSeeOthersCode;
+                    that.leastScoreToPostBlog = res.data.leastScoreToPostBlog;
                     that.judgerhost = [];
                     for (host of res.data.judgerhost) {
                         that.judgerhost.push({str: host});
@@ -216,9 +229,29 @@
                     that.python3 = res.data.python3;
                     that.go = res.data.go;
                     that.notice = res.data.notice;
+                    $(function () {
+                        editor_notice = editormd({
+                            id: "editor-notice",
+                            path: "/editor/lib/",
+                            pluginPath: "/editor/plugins/",
+                            width: "100%",
+                            height: 500,
+                            autoFocus: false,
+                            codeFold: true,
+                            searchReplace: true,
+                            autoLoadKaTeX: true,
+                            tex: true,
+                            flowChart: true,
+                            previewCodeHighlight: true,
+                            imageUploadURL: "/api/media/upload",
+                            imageUpload: true,
+                            imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "ico"],
+                        });
+                    });
                 })
         }
-    })
+    });
+
 </script>
 </body>
 </html>

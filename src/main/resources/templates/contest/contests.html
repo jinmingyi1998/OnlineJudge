@@ -4,50 +4,68 @@
     <th:block th:insert="~{fragment/header :: header}"></th:block>
     <meta charset="UTF-8">
     <title>训练&比赛</title>
-    <style>
-        .ui.fluid.container {
-            max-width: 85% !important;
-        }
-    </style>
     <script src="/js/pagination.js"></script>
 </head>
 <body>
 <main class="ui container" id="contest-list">
-        <form class="ui icon input" v-on:submit.prevent="search_contest()">
-            <input type="text" v-model="search_string" placeholder="搜索比赛">
-            <i class="search link icon" v-on:click="search_contest()"></i>
-        </form>
-    <div class="ui animated huge selection vertically celled list segment" :class="{loading:!ready}">
+    <form class="ui icon input" v-on:submit.prevent="search_contest()">
+        <input type="text" v-model="search_string" placeholder="搜索比赛">
+        <i class="search link icon" v-on:click="search_contest()"></i>
+    </form>
+    <div class="ui centered grid">
+        <div class="ui pagination menu">
+            <pagination :class="{disabled:first}" content='<i class="angle double left icon"></i>'
+                        v-on:change_page="get_page"
+                        v-bind:to_page="0"></pagination>
+            <pagination :class="{disabled:first}" content="<i class='angle left icon'></i>"
+                        v-on:change_page="get_page" v-bind:to_page="number-1"></pagination>
+            <div v-for="n in npage">
+                <pagination :class="{active:number == n}" v-bind:content="n+1" v-on:change_page="get_page"
+                            v-bind:to_page="n"></pagination>
+            </div>
+            <pagination :class="{disabled:last}" content='<i class="angle right icon"></i>'
+                        v-on:change_page="get_page" v-bind:to_page="number+1"></pagination>
+            <pagination :class="{disabled:last}" content='<i class="angle double right icon"></i>'
+                        v-on:change_page="get_page"
+                        v-bind:to_page="totalPages-1"></pagination>
+        </div>
+    </div>
+    <div class="ui animated selection vertically celled list segment" :class="{loading:!ready}">
         <a class="ui link item" target="_blank" v-for="c in contests" :href="'/contest/'+c.id">
-            <div class="ui relaxed header" v-html="c.title"></div>
-            <div class="ui relaxed meta">{{c.description.substring(0,35)}}</div>
-            <div class="ui small ribbon label" :class="{blue:c.privilege=='public',orange:c.privilege=='team'}"
-                 v-html="c.privilege.toUpperCase()"></div>
+            <div class="left floated content">
+                <div class="ui relaxed header" v-html="c.id+' --- '+c.title"></div>
+                <div class="ui relaxed meta">{{c.description.substring(0,35)}}</div>
+                <div class="ui small ribbon label" :class="{blue:c.privilege=='public',orange:c.privilege=='team'}"
+                     v-html="c.privilege.toUpperCase()">
+                </div>
+            </div>
             <div class="right floated">
-                <div class="ui big label">{{c.runStatu}}
+                <div class="ui label">{{c.runStatu}}
                     <div class="detail"> {{c.normalStartTime}} <i class="ui hourglass icon"
-                    :class="{start:c.runStatu=='未开始',half:c.runStatu=='进行中',end:c.runStatu=='已结束'}"></i>
+                                                                  :class="{start:c.runStatu=='未开始',half:c.runStatu=='进行中',end:c.runStatu=='已结束'}"></i>
                         {{c.normalEndTime}}
                     </div>
                 </div>
             </div>
         </a>
     </div>
-    <div class="ui center aligned pagination menu">
-        <pagination :class="{disabled:first}" content='<i class="angle double left icon"></i>'
-                    v-on:change_page="get_page"
-                    v-bind:to_page="0"></pagination>
-        <pagination :class="{disabled:first}" content="<i class='angle left icon'></i>"
-                    v-on:change_page="get_page" v-bind:to_page="number-1"></pagination>
-        <div v-for="n in npage">
-            <pagination :class="{active:number == n}" v-bind:content="n+1" v-on:change_page="get_page"
-                        v-bind:to_page="n"></pagination>
+    <div class="ui centered grid">
+        <div class="ui pagination menu">
+            <pagination :class="{disabled:first}" content='<i class="angle double left icon"></i>'
+                        v-on:change_page="get_page"
+                        v-bind:to_page="0"></pagination>
+            <pagination :class="{disabled:first}" content="<i class='angle left icon'></i>"
+                        v-on:change_page="get_page" v-bind:to_page="number-1"></pagination>
+            <div v-for="n in npage">
+                <pagination :class="{active:number == n}" v-bind:content="n+1" v-on:change_page="get_page"
+                            v-bind:to_page="n"></pagination>
+            </div>
+            <pagination :class="{disabled:last}" content='<i class="angle right icon"></i>'
+                        v-on:change_page="get_page" v-bind:to_page="number+1"></pagination>
+            <pagination :class="{disabled:last}" content='<i class="angle double right icon"></i>'
+                        v-on:change_page="get_page"
+                        v-bind:to_page="totalPages-1"></pagination>
         </div>
-        <pagination :class="{disabled:last}" content='<i class="angle right icon"></i>'
-                    v-on:change_page="get_page" v-bind:to_page="number+1"></pagination>
-        <pagination :class="{disabled:last}" content='<i class="angle double right icon"></i>'
-                    v-on:change_page="get_page"
-                    v-bind:to_page="totalPages-1"></pagination>
     </div>
 </main>
 <script src="/js/contests.js"></script>

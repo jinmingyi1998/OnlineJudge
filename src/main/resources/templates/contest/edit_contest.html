@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Update Contest</title>
+    <meta charset="UTF-8">
+    <th:block th:insert="~{fragment/header :: header}"></th:block>
+    <style>
+        .ui.fluid.container {
+            max-width: 85% !important;
+        }
+    </style>
+</head>
+<body>
+<div class="ui container" id="contest">
+    <form class="ui form segment" v-on:submit.prevent>
+        <div class="required field">
+            <label>Title:</label><input name="title" required type="text" v-model="content.title">
+        </div>
+        <div class="field">
+            <label>Description:</label><input name="description" type="text" v-model="content.description">
+        </div>
+        <div class="field" :class="{disabled:content.privilege=='team'}">
+            <label>Privilege:</label>
+            <select name="privilege" v-model="content.privilege">
+                <option value="public">Public</option>
+                <option value="private">Private</option>
+                <option value="team" disabled="">Team</option>
+            </select>
+        </div>
+        <div class="field">
+            <label>Password:(Private 填写)</label>
+            <input name="password" type="text" v-model="content.password">
+        </div>
+        <div class="required field">
+            <label>开始时间Start Time(yyyy-MM-dd HH:mm):</label>
+            <input name="startTime" placeholder="2020-02-20 02:02" required
+                   type="text" v-model="content.startTime">
+        </div>
+        <div class="required field">
+            长度Length(分钟minutes):
+            <input name="lastTime" placeholder="300" required type="text" v-model="content.length">
+        </div>
+        <a @click="submit_form()" class="ui button green" id="submit-contest">提交Submit</a>
+    </form>
+</div>
+<script type="text/javascript">
+    var cid = location.pathname.split('/');
+    cid = cid[cid.length - 1];
+    var contest = new Vue({
+        el: "#contest",
+        data: {
+            tid: cid,
+            content: {
+                title: "",
+                description: "",
+                privilege: "public",
+                password: "",
+                startTime: "",
+                length: 300,
+            }
+        },
+        methods: {
+            submit_form() {
+                console.log(this.content);
+                axios.post("/api/contest/background/" + this.tid, this.content)
+                    .then(function (res) {
+                        res = res.data;
+                        if (res == "success") {
+                            alert("success");
+                            location.reload();
+                        } else {
+                            alert(res);
+                        }
+                    })
+                    .catch(function () {
+                        alert("Error");
+                    });
+            }
+        },
+        created() {
+            let that = this;
+            axios.get("/api/contest/background/" + cid)
+                .then(function (res) {
+                    that.content = {
+                        title: res.data.title,
+                        tid: cid,
+                        description: res.data.description,
+                        privilege: res.data.privilege,
+                        password: res.data.password,
+                        startTime: res.data.normalStartTime,
+                        length: res.data.length,
+                    };
+                }).catch(function (e) {
+                console.log(e.response.status);
+            })
+        }
+    })
+</script>
+</body>
+</html>

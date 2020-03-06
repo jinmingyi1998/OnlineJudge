@@ -8,6 +8,7 @@ import cn.edu.zjnu.acm.exception.NotFoundException;
 import cn.edu.zjnu.acm.service.ProblemService;
 import cn.edu.zjnu.acm.service.SolutionService;
 import cn.edu.zjnu.acm.service.UserService;
+import cn.edu.zjnu.acm.util.RestfulResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -76,10 +77,10 @@ public class StatusController {
     }
 
     @GetMapping("")
-    public Page searchStatus(@RequestParam(value = "page", defaultValue = "0") Integer page,
-                             @RequestParam(value = "user", defaultValue = "") String username,
-                             @RequestParam(value = "pid", defaultValue = "") Long pid,
-                             @RequestParam(value = "AC", defaultValue = "") String AC) throws Exception {
+    public RestfulResult searchStatus(@RequestParam(value = "page", defaultValue = "0") Integer page,
+                                      @RequestParam(value = "user", defaultValue = "") String username,
+                                      @RequestParam(value = "pid", defaultValue = "") Long pid,
+                                      @RequestParam(value = "AC", defaultValue = "") String AC) throws Exception {
         if (AC.equals("true"))
             AC = "Accepted";
         else
@@ -93,13 +94,16 @@ public class StatusController {
         Page<Solution> page_return = getAll ?
                 solutionService.getStatus(page, PAGE_SIZE) :
                 solutionService.getStatus(user, problem, AC, page, PAGE_SIZE);
-        for (Solution s : page_return.getContent()) {
-            s.setUser(s.getUser().clone());
+        page_return.getContent().forEach(s -> {
+            try {
+                s.setUser(s.getUser().clone());
+            } catch (CloneNotSupportedException ignored) {
+            }
             s.setSource(null);
             s.setInfo(null);
-            s = solutionFilter(s);
-        }
-        return page_return;
+            solutionFilter(s);
+        });
+        return new RestfulResult(200, "success", page_return);
     }
 
     @GetMapping("/view/{id:[0-9]+}")
@@ -108,17 +112,19 @@ public class StatusController {
         try {
             assert solution != null;
             User user = (User) session.getAttribute("currentUser");
-            if (user != null) {
-                if (user.getId() == solution.getUser().getId()) {
+            if (user == null) {
+                solution.setSource("This Source Code Is Not Shared!");
+            }
+            if (userService.getUserPermission(user) == -1) {
+                if (user.getId() != solution.getUser().getId()) {
                     // This submit belongs to this user.
-                    return solutionFilter(solution);
+                    solution.setSource("This Source Code Is Not Shared!");
                 }
-                if (user.getUserProfile().getScore() > config.getLeastScoreToSeeOthersCode() && solution.getShare()) {
-                    // This submit is shared
-                    return solutionFilter(solution);
+                if (user.getUserProfile().getScore() < config.getLeastScoreToSeeOthersCode() && solution.getShare()) {
+                    // This submit is shared and user has enough score
+                    solution.setSource("This Source Code Is Not Shared!");
                 }
             }
-            solution.setSource("This Source Code Is Not Shared!");
             return solutionFilter(solution);
         } catch (Exception e) {
             throw new NotFoundException();
@@ -137,32 +143,31 @@ public class StatusController {
                     return solution.getShare();
                 }
             }
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
         throw new NotFoundException();
     }
 
     @GetMapping("/user/latest/submit/{id:[0-9]+}")
-    public List<Solution> userSubmitLatestHistory(@PathVariable("id") Long pid) {
+    public RestfulResult userSubmitLatestHistory(@PathVariable("id") Long pid) {
         User user = (User) session.getAttribute("currentUser");
         Problem problem = problemService.getActiveProblemById(pid);
         try {
             if (userService.getUserById(user.getId()) != null && problem != null) {
                 List<Solution> solutions = solutionService.getProblemSubmitOfUser(user, problem);
-//                List<Solution>solutions = solutionService.getStatus(0,50).getContent();
                 solutions = solutions.subList(0, Math.min(solutions.size(), 5));
-                for (Solution s : solutions) {
+                solutions.forEach(s -> {
                     s.setUser(null);
                     s.setProblem(null);
                     s.setIp(null);
                     s.setSource(null);
                     s.setContest(null);
-                }
-                return solutions;
+                });
+                return new RestfulResult(200, RestfulResult.SUCCESS, solutions);
             }
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
-        return new LinkedList<Solution>();
+        return new RestfulResult(200, RestfulResult.SUCCESS, new LinkedList<>());
     }
 
 }

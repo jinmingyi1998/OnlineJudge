@@ -14,9 +14,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Size;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -99,6 +101,7 @@ public class UserSpaceController {
     @GetMapping("/list")
     public Map userList(@RequestParam(value = "page", defaultValue = "0") int page) {
         final int SIZE = 50;
+        page = Math.max(0, page);
         List<User> userList = userService.userList();
         User cu = (User) session.getAttribute("currentUser");
         userList.sort((o1, o2) -> (o1.getUserProfile().getScore() - o2.getUserProfile().getScore()) * -1);
@@ -123,6 +126,20 @@ public class UserSpaceController {
             map.put("userself", cuser);
         }
         return map;
+    }
+
+    @GetMapping("/username/{username}")
+    public void getUserByUsername(@PathVariable String username, HttpServletResponse response) {
+        User user = userService.getUserByUsername(username);
+        if (user == null) {
+            throw new NotFoundException();
+        }
+        try {
+            response.sendRedirect("/user/" + user.getId());
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new NotFoundException();
+        }
     }
 
     @Data

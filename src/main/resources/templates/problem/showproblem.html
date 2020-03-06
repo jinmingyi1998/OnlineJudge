@@ -4,36 +4,28 @@
     <th:block th:insert="~{fragment/header :: header}"></th:block>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="/editor/css/editormd.min.css">
-    <script src="/editor/lib/marked.min.js"></script>
-    <script src="/editor/lib/raphael.min.js"></script>
-    <script src="/editor/lib/underscore.min.js"></script>
-    <script src="/editor/lib/sequence-diagram.min.js"></script>
-    <script src="/editor/lib/flowchart.min.js"></script>
-    <script src="/editor/lib/jquery.flowchart.min.js"></script>
-    <script src="/editor/editormd.min.js"></script>
-    <script src="/js/clipboard.min.js"></script>
+    <script src="/js/submit_button.js"></script>
     <link rel="stylesheet" href="/js/prettify/skins/sunburst.css">
     <title></title>
-    <script src="/js/submit_button.js"></script>
     <style>
-        .ui.fluid.container{
-            max-width:95%!important;
+        .ui.fluid.container {
+            max-width: 95% !important;
         }
     </style>
 </head>
 <body>
-<main class="ui container fluid">
+<main class="ui container fluid" id="vue-problem">
     <div class="ui grid two column row">
         <div class="ui four wide column">
-            <div class="ui padded blue segment" id="vue-tags" :class="{loading:!ready}">
+            <div class="ui padded blue segment" :class="{loading:!ready}">
                 <div class="ui dividing center aligned grey header">标签</div>
                 <div v-for="t in tags" v-html="t.name" class="ui small label" :class="[colorClass()]"></div>
             </div>
-            <div class="ui  green segment" id="vue-history">
+            <div class="ui  green segment">
                 <table class="ui selectable single line very compact small striped center aligned table">
                     <thead>
                     <tr>
-                        <th>提交结果 <i class="ui icon green sync link" @click="get_data()"></i></th>
+                        <th>提交结果 <i class="ui icon green sync link" @click="get_history_data()"></i></th>
                         <th>提交时间</th>
                     </tr>
                     </thead>
@@ -51,8 +43,11 @@
                 </table>
                 <a v-bind:href="'/status?pid='+problem_id">More</a>
             </div>
+            <div class="ui red segment" v-if="isAccepted">
+                <a class="ui blue button inverted fluid" :href="'/problems/article/'+problem_id">题解</a>
+            </div>
         </div>
-        <div class="ui container twelve wide column" id="vue-problem">
+        <div class="ui container twelve wide column">
             <div class="ui raised piled segments fluid">
                 <div class="ui secondary center aligned segment" v-bind:class="{loading:!dataready}">
                     <h1>{{problem.title}}</h1>
@@ -189,6 +184,14 @@
         </div>
     </div>
 </div>
+<script src="/editor/lib/marked.min.js"></script>
+<script src="/editor/lib/raphael.min.js"></script>
+<script src="/editor/lib/underscore.min.js"></script>
+<script src="/editor/lib/sequence-diagram.min.js"></script>
+<script src="/editor/lib/flowchart.min.js"></script>
+<script src="/editor/lib/jquery.flowchart.min.js"></script>
+<script src="/editor/editormd.min.js"></script>
+<script src="/js/lib/clipboard.min.js"></script>
 <script language="JavaScript" src="/js/StatusInModal.js"></script>
 <script>
     $('.ui.checkbox').checkbox();

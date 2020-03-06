@@ -1,18 +1,11 @@
-<!--
-  ~ Copyright (c) 2019. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-  ~ Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
-  ~ Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
-  ~ Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
-  ~ Vestibulum commodo. Ut rhoncus gravida arcu.
-  -->
-
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <th:block th:insert="~{fragment/header :: header}"></th:block>
     <meta charset="UTF-8">
-    <title th:text="|题解 of ${problem.title}|"></title>
+    <title></title>
     <link rel="stylesheet" href="/editor/css/editormd.min.css">
+    <link rel="stylesheet" href="/js/prettify/skins/sunburst.css">
     <script src="/editor/lib/marked.min.js"></script>
     <script src="/editor/lib/raphael.min.js"></script>
     <script src="/editor/lib/underscore.min.js"></script>
@@ -20,107 +13,279 @@
     <script src="/editor/lib/flowchart.min.js"></script>
     <script src="/editor/lib/jquery.flowchart.min.js"></script>
     <script src="/editor/editormd.min.js"></script>
-    <link rel="stylesheet" href="/js/prettify/skins/sunburst.css">
+    <script src="/js/comment-component.js"></script>
 </head>
 <body>
-<main class="container" th:id="${problem.id}">
-    <div class="card mt-5 p-3">
-        <h2 class=" text-center" th:text="|${problem.title} - 题解|"></h2>
-        <div class="card-body">
-            <p class="card-text">
-                <span class="font-weight-bold lead">以下题解仅供学习参考使用。</span>
-            </p>
-            <p class="card-text">
-                <b class="text-danger">抄袭</b> 、<b class="text-danger">复制</b>题解，以达到刷AC率/AC数量或其他目的的行为，是严格禁止的。此类行为将会导致您成为
-                <b>作弊者</b>。
-            </p>
+<main class="ui container fluid" id="ana">
+    <div class="ui dimmer">
+        <div class="content">
+            <h2 class="ui inverted icon header"><i class="ui times icon"></i> {{dim_message}}</h2>
         </div>
     </div>
-    <div class="card mt-2" th:each="a:${articles}">
-        <div class="card-body">
-            <p class="card-text text-muted"><span class="m-3">作者：<a th:href="@{/user/{uid}(uid=${a.author.id})}"
-                                                                    th:text="${a.author.username}"></a></span><span
-                    th:text="|发布时间: ${a.normalPostTime}|" class="m-3"></span></p>
-            <hr>
-            <div class="card-text md-text">
-                <textarea style="display: none;" th:text="${a.text}"></textarea>
+    <div class="warning ui message">
+        <div class="header">
+            <span class="font-weight-bold lead">以下题解仅供学习参考使用。</span>
+        </div>
+        <div class="content">
+            <b class="text-danger">抄袭</b> 、<b class="text-danger">复制</b>题解，以达到刷AC率/AC数量或其他目的的行为，是严格禁止的。此类行为将会导致您成为
+            <b>作弊者</b>。
+        </div>
+    </div>
+    <div class="ui stacked segment" v-for="article in analyses" :class="{loading:!ready}">
+        <h2 class="ui left floated header">
+            <i class="user outline icon" :class="[randomColor()]"></i>
+            <div class="content">
+                <a v-html="article.user.name" :href="'/user/'+article.user.id"></a>
+                <div class="sub header">{{normalPostTime(article.postTime)}}</div>
+            </div>
+        </h2>
+        <a :href="'/problems/article/edit/'+article.id" class="ui right floated button basic"
+           v-if="isOwner(article.user.id)">Edit</a>
+        <div class="md-text" style="padding: 0;">
+            <textarea style="display: none;" v-html="article.text">TEXT</textarea>
+        </div>
+        <div class="ui accordion fluid styled">
+            <div class="ui top attached button" v-on:click="add_comment(article.id)"><i
+                    class="comment alternate outline icon"></i>Comment
+            </div>
+            <div class="title"><i class="icon dropdown"></i>Comments</div>
+            <div class="content">
+                <comment-group v-bind:comments="article.comment" v-bind:level="0"></comment-group>
             </div>
         </div>
     </div>
-    <div class="container-fluid mt-5 justify-content-sm-center">
-        <form action="" class="mt-1 justify-content-center" method="post">
-            <div class="form-group" id="editormd">
-                <textarea name="text" class="w-100"></textarea></div>
-            <input type="submit" th:value="发布"
-                   class="text-center text-light btn btn-primary mt-3 justify-content-center">
-        </form>
+    <form onsubmit="return false" class="ui form segment attached" :class="{loading:!ready}">
+        <div class="field">
+            <div id="editor-article">
+                <textarea style="display: none"></textarea>
+            </div>
+        </div>
+        <div class="button ui inverted green" v-on:click="send_article()"><i class="ui paper plane icon"></i>Post</div>
+    </form>
+    <div class="ui fullscreen modal">
+        <div class="dividing header">Comment</div>
+        <div class="content">
+            <div class="ui form">
+                <div class="field">
+                    <textarea v-model="reply_text"></textarea>
+                </div>
+            </div>
+            <div class="ui blue labeled submit icon button" v-on:change="change()" v-on:click="post_comment()">
+                <i class="icon edit"></i> Add Reply
+            </div>
+        </div>
     </div>
+
 </main>
+<footer th:replace="~{fragment/footer :: footer}"></footer>
+
 <script>
-    var editor = editormd({
-        id: "editormd",
-        path: "/editor/lib/",
-        height: 800,
-        codeFold: true,
-        saveHTMLToTextarea: true,
-        searchReplace: true,
-        gfm: true,
-        toc: true,
-        tocm: false,
-        tocStartLevel: 1,
-        tocTitle: "目录",
-        tocDropdown: false,
-        tocContainer: "",
-        markdown: "",
-        autoLoadKaTeX: true,
-        pageBreak: true,
-        atLink: true,    // for @link
-        emailLink: true,    // for mail address auto link
-        tex: true,
-        taskList: true,   // Github Flavored Markdown task lists
-        flowChart: true,
-        sequenceDiagram: true,
-        previewCodeHighlight: true
-    });
+    aid = location.pathname.split('/');
+    aid = aid[aid.length - 1];
+    var editor;
     $(function () {
-        $(".md-text").each(function () {
-            $(this).attr("id", "editormd-view")
-            editormd.markdownToHTML("editormd-view", {
-                gfm: true,
-                toc: true,
-                tocm: false,
-                tocStartLevel: 1,
-                tocTitle: "目录",
-                tocDropdown: false,
-                tocContainer: "",
-                markdown: "",
-                autoLoadKaTeX: true,
-                pageBreak: true,
-                atLink: true,    // for @link
-                emailLink: true,    // for mail address auto link
-                tex: true,
-                taskList: true,   // Github Flavored Markdown task lists
-                flowChart: true,
-                sequenceDiagram: true,
-                previewCodeHighlight: true
-            });
-            $(this).attr("id", "");
+        editor = editormd({
+            id: "editor-article",
+            path: "/editor/lib/",
+            pluginPath: "/editor/plugins/",
+            height: 500,
+            autoFocus: false,
+            markdown: "",
+            tocTitle: "目录",
+            pageBreak: true,
+            atLink: true,    // for @link
+            emailLink: true,    // for mail address auto link
+            tex: true,
+            taskList: true,   // Github Flavored Markdown task lists
+            flowChart: true,
+            sequenceDiagram: true,
+            previewCodeHighlight: true,
+            imageUploadURL: "/api/media/upload",
+            imageUpload: true,
+            imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "ico", "JPG", "JPEG", "PNG"],
         });
     });
+    var analysis = new Vue({
+        el: "#ana",
+        data: {
+            ready: false,
+            id: parseInt(aid),
+            analyses: [],
+            dim_message: "",
+            reply_text: "",
+            reply_id: "",
+            replyAna: "",
+            rHead: ""
+        },
+        methods: {
+            send_article() {
+                var that = this;
+                this.ready = false;
+                if (this.title == "") {
+                    alert("Title cannot be empty");
+                    return;
+                }
+                this.text = editor.getMarkdown();
+                if (this.text.length < 15) {
+                    alert("content too short! At least 15 letters");
+                    return;
+                }
+                axios.post("/api/problems/analysis/post/" + aid, {
+                    text: this.text
+                })
+                    .then(function (res) {
+                        if (res.data.code == 200) {
+                            alert(res.data.message);
+                            editor.setMarkdown("");
+                            that.loadData();
+                        } else {
+                            alert(res.data.message);
+                        }
+                    })
+                    .catch(function (e) {
+                        console.log(e);
+                    }).finally(function () {
+                });
+            },
+            isOwner(id) {
+                return user_bar.user.id == id;
+            },
+            change() {
+                if (this.reply_text.indexOf(this.rHead) != 0) {
+                    this.reply_id = 0;
+                    this.rHead = "";
+                }
+            }
+            ,
+            normalPostTime(s) {
+                return new Date(s).toLocaleString();
+            },
+            randomColor() {
+                colors = ["red", "orange", "yellow", "blue", "green", "teal", "purple", "violet", "pink", "brown"];
+                return colors[Math.floor(Math.random() * 10)];
+            },
+            add_comment(aid) {
+                this.replyAna = aid;
+                this.reply_id = 0;
+                this.reply_text = "";
+                this.rHead = "";
+                $(".modal").modal('show');
+            },
+            replya(id) {
+                this.reply_id = id;
+                var name = "";
+                for (aa of this.analyses) {
+                    for (c of aa.comment) {
+                        if (c.id == id) {
+                            name = c.user.username;
+                            this.replyAna = aa.id;
+                            break;
+                        }
+                    }
+                }
+                this.reply_text = "@" + name + " : ";
+                this.rHead = this.reply_text;
+                $('.modal').modal('show');
+            },
+            post_comment() {
+                $('.modal').modal('hide');
+                var that = this;
+                that.ready = false;
+                axios.post("/api/problems/analysis/post/comment/" + this.replyAna, {
+                    replyText: this.reply_text,
+                    replyId: this.reply_id
+                }).then(function (res) {
+                    if (res.data.code == 200) {
+                        that.loadData();
+                    } else {
+                        console.log(res.data);
+                        alert(res.data.message + " " + res.data.data);
+                    }
+                }).catch(function (e) {
+                    console.log(e);
+                    if (e.response.data.code != undefined) {
+                        console.log(e.response.data);
+                        alert(e.response.data.message);
+                    }
+                });
+            },
+            loadData() {
+                var that = this;
+                axios.get("/api/problems/analysis/" + aid)
+                    .then(function (res) {
+                        if (res.data.message != "success") {
+                            console.log(res.data.message);
+                        } else {
+                            that.analyses = res.data.data;
+                            that.ready = true;
+                            for (aa of that.analyses) {
+                                for (c1 of aa.comment) {
+                                    c1.fatherId = null;
+                                    c1.sons = [];
+                                    c1.reply_action = that.replya;
+                                }
+                                for (c1 of aa.comment) {
+                                    for (c2 of aa.comment) {
+                                        if (c2.father != undefined && c2.father.id == c1.id) {
+                                            c1.sons.push(c2);
+                                            c2.fatherId = c1.id;
+                                        }
+                                    }
+                                }
+                            }
+                            render_md();
+                            that.ready = true;
+                        }
+                    })
+                    .catch(function (e) {
+                        console.log(e);
+                        if (e.response.status == 404) {
+                            console.log("404");
+                            location.href = "/4O4";
+                        } else if (e.response.status == 403) {
+                            that.dim_message = e.response.data.message;
+                            $('#ana').dimmer('show');
+                            console.log("403");
+                        }
+                    });
+            }
+        },
+        created() {
+            this.loadData();
+        }
+    });
+
+    function render_md() {
+
+        $(function () {
+            $(".md-text").each(function () {
+                $(this).attr("id", "editormd-view")
+                editormd.markdownToHTML("editormd-view", {
+                    gfm: true,
+                    toc: true,
+                    tocm: false,
+                    tocStartLevel: 1,
+                    tocTitle: "目录",
+                    tocDropdown: false,
+                    tocContainer: "",
+                    markdown: "",
+                    autoLoadKaTeX: true,
+                    pageBreak: true,
+                    atLink: true,    // for @link
+                    emailLink: true,    // for mail address auto link
+                    tex: true,
+                    taskList: true,   // Github Flavored Markdown task lists
+                    flowChart: true,
+                    sequenceDiagram: true,
+                    previewCodeHighlight: true
+                });
+                $(this).attr("id", "");
+            });
+            $('.ui.accordion').accordion();
+        });
+    }
+
 </script>
-<footer th:replace="~{fragment/footer :: footer}"></footer>
-<!--<script type="text/x-mathjax-config">-->
-<!--MathJax.Hub.Config({-->
-<!--extensions: ["tex2jax.js"],-->
-<!--jax: ["input/TeX", "output/HTML-CSS"],-->
-<!--tex2jax: {-->
-<!--inlineMath: [ ['$','$'], ["\\(","\\)"] ],-->
-<!--displayMath: [ ['$$','$$'], ["\\[","\\]"] ],-->
-<!--processEscapes: true-->
-<!--},-->
-<!--"HTML-CSS": { availableFonts: ["TeX"] }-->
-<!--});-->
-<!--</script>-->
-<!--<script type="text/javascript" src="/js/MathJax.js"></script>-->
+
 </body>
 </html>

@@ -15,7 +15,6 @@ import java.time.Instant;
 @Slf4j
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class User implements Cloneable, Comparable {
-
     @Column(nullable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
     Instant createtime = Instant.now();
     @Id
@@ -99,6 +98,7 @@ public class User implements Cloneable, Comparable {
         setPassword(null);
         setEmail(null);
         setIntro(null);
+        setCreatetime(null);
         return this;
     }
 }

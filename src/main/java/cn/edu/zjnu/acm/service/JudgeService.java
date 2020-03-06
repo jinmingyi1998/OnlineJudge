@@ -4,17 +4,16 @@ import cn.edu.zjnu.acm.config.Config;
 import cn.edu.zjnu.acm.entity.oj.Contest;
 import cn.edu.zjnu.acm.entity.oj.ContestProblem;
 import cn.edu.zjnu.acm.entity.oj.Solution;
-import cn.edu.zjnu.acm.repo.ContestProblemRepository;
-import cn.edu.zjnu.acm.repo.ProblemRepository;
-import cn.edu.zjnu.acm.repo.UserProfileRepository;
+import cn.edu.zjnu.acm.entity.oj.UserProblem;
+import cn.edu.zjnu.acm.repo.contest.ContestProblemRepository;
+import cn.edu.zjnu.acm.repo.problem.ProblemRepository;
+import cn.edu.zjnu.acm.repo.user.UserProblemRepository;
+import cn.edu.zjnu.acm.repo.user.UserProfileRepository;
 import com.alibaba.fastjson.JSON;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Slf4j
 @Service
@@ -26,8 +25,9 @@ public class JudgeService {
     private final ProblemRepository problemRepository;
     private final ContestProblemRepository contestProblemRepository;
     private final ContestService contestService;
+    private final UserProblemRepository userProblemRepository;
 
-    public JudgeService(Config config, RESTService restService, SolutionService solutionService, UserProfileRepository userProfileRepository, ProblemRepository problemRepository, ContestProblemRepository contestProblemRepository, ContestService contestService) {
+    public JudgeService(Config config, RESTService restService, SolutionService solutionService, UserProfileRepository userProfileRepository, ProblemRepository problemRepository, ContestProblemRepository contestProblemRepository, ContestService contestService, UserProblemRepository userProblemRepository) {
         this.config = config;
         this.restService = restService;
         this.solutionService = solutionService;
@@ -35,6 +35,7 @@ public class JudgeService {
         this.problemRepository = problemRepository;
         this.contestProblemRepository = contestProblemRepository;
         this.contestService = contestService;
+        this.userProblemRepository = userProblemRepository;
     }
 
     public String submitCode(Solution solution) throws Exception {
@@ -62,6 +63,10 @@ public class JudgeService {
             default:
                 throw new Exception("no this language");
         }
+        if (!(solution.getLanguage().equals("c") || solution.getLanguage().equals("cpp"))) {
+            solution.getProblem().setTimeLimit(solution.getProblem().getTimeLimit() * 2);
+            solution.getProblem().setMemoryLimit(solution.getProblem().getMemoryLimit() * 2);
+        }
         JudgeService.SubmitCode submitCode = new JudgeService.SubmitCode(
                 solution.getId().intValue(),
                 solution.getProblem().getId().intValue(),
@@ -82,9 +87,18 @@ public class JudgeService {
 
     @Transactional
     public void update(Solution solution) {
+        submitSolutionFilter(solution);
+        acceptSolutionFilter(solution);
+        contestSolutionFilter(solution);
+    }
+
+    private void submitSolutionFilter(Solution solution) {
         solutionService.updateSolutionResultTimeMemoryCase(solution);
         userProfileRepository.updateUserSubmitted(solution.getUser().getUserProfile().getId(), 1);
         problemRepository.updateSubmittedNumber(solution.getProblem().getId(), 1);
+    }
+
+    private void contestSolutionFilter(Solution solution) {
         if (solution.getContest() != null) {
             Contest contest = contestService.getContestById(solution.getContest().getId(), true);
             for (ContestProblem cp : contest.getProblems()) {
@@ -97,19 +111,15 @@ public class JudgeService {
                 }
             }
         }
+    }
+
+    private void acceptSolutionFilter(Solution solution) {
         if (solution.getResult().equals(Solution.AC)) {
-            List<Solution> solutions = solutionService.getProblemSubmitOfUser(solution.getUser(), solution.getProblem());
-            boolean hasAc = false;
-            for (Solution s : solutions) {
-                if (s.getId().equals(solution.getId())) continue;
-                if (s.getResult().equals(Solution.AC)) {
-                    hasAc = true;
-                }
-            }
-            if (!hasAc) {
+            if (!userProblemRepository.existsAllByUserAndProblem(solution.getUser(), solution.getProblem())) {
                 userProfileRepository.updateUserScore(solution.getUser().getUserProfile().getId(), solution.getProblem().getScore());
                 userProfileRepository.updateUserAccepted(solution.getUser().getUserProfile().getId(), 1);
                 problemRepository.updateAcceptedNumber(solution.getProblem().getId(), 1);
+                userProblemRepository.save(new UserProblem(solution.getUser(), solution.getProblem()));
             }
         }
     }

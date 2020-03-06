@@ -11,6 +11,7 @@ import cn.edu.zjnu.acm.exception.NotFoundException;
 import cn.edu.zjnu.acm.service.ContestService;
 import cn.edu.zjnu.acm.service.TeamService;
 import cn.edu.zjnu.acm.service.UserService;
+import cn.edu.zjnu.acm.util.RestfulResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -40,7 +41,7 @@ public class TeamController {
     }
 
     @GetMapping("")
-    public Page<Team> teamPage(@RequestParam(value = "page", defaultValue = "0") int page) {
+    public RestfulResult teamPage(@RequestParam(value = "page", defaultValue = "0") int page) {
         page = Math.max(0, page);
         Page<Team> return_page = teamService.getAll(page, PAGE_SIZE);
         for (Team t : return_page.getContent()) {
@@ -48,7 +49,7 @@ public class TeamController {
             t = teamService.fillTeamTeammate(t);
             t.hideInfo();
         }
-        return return_page;
+        return new RestfulResult(200, RestfulResult.SUCCESS, return_page);
     }
 
     @GetMapping("/myteams")
@@ -93,10 +94,13 @@ public class TeamController {
         if (teammate == null) {
             throw new NotFoundException();
         }
-        if (!isUserPermitted(teammate.getTeam().getId(), Teammate.MASTER)) {
-            throw new ForbiddenException();
+        if (!isUserPermitted(teammate.getTeam().getId(), Teammate.MANAGER)) {
+            return "Permission denied";
         }
         User user = (User) session.getAttribute("currentUser");
+        Teammate selfTeammate = teamService.getUserInTeam(user, teammate.getTeam());
+        if (selfTeammate.getLevel() >= teammate.getLevel())
+            throw new ForbiddenException();
         if (teammate.getUser().getId() == user.getId())
             return "failed";
         teamService.deleteTeammate(teammate);
@@ -250,6 +254,9 @@ public class TeamController {
         if (currentUser == null) {
             throw new NeedLoginException();
         }
+        if (userService.getUserPermission(currentUser) == -1) {
+            return "permission denied";
+        }
         try {
             currentUser = userService.getUserById(currentUser.getId());
         } catch (NullPointerException e) {
@@ -257,6 +264,9 @@ public class TeamController {
         }
         if (teamService.isTeamNameExist(team.getName())) {
             return "name existed!";
+        }
+        if (teamService.checkUserCreateTeamLimit(20, currentUser)) {
+            return "number limit exceed";
         }
         team.setCreator(currentUser);
         team.setTeammates(new ArrayList<Teammate>());
@@ -267,6 +277,24 @@ public class TeamController {
         return "success";
     }
 
+    @GetMapping("/leave/{teamid:[0-9]+}")
+    public String leaveTeam(@PathVariable("teamid") Long teamId) {
+        User user = (User) session.getAttribute("currentUser");
+        if (user == null) {
+            throw new NeedLoginException();
+        }
+        Team team = teamService.getTeamById(teamId);
+        if (!teamService.isUserInTeam(user, team)) {
+            throw new NotFoundException();
+        }
+        Teammate teammate = teamService.getUserInTeam(user, team);
+        if (teammate.getLevel() == Teammate.MASTER) {
+            teamService.deleteTeam(team);
+        } else {
+            teamService.deleteTeammate(teammate);
+        }
+        return "success";
+    }
 }
 
 @Controller

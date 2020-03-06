@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="~{fragment/header :: header}"></th:block>
+    <meta charset="UTF-8">
+    <title>Donation</title>
+</head>
+<body>
+<main class="ui fluid container">
+    <div class="ui centered grid">
+        <div class="ui medium images">
+            <img src="/images/donate/alipay.jpg" alt="">
+            <img src="/images/donate/vx.png" alt="">
+            <img src="/images/donate/qq.png" alt="">
+        </div>
+    </div>
+</main>
+<footer th:replace="~{fragment/footer :: footer}"></footer>
+</body>
+</html>

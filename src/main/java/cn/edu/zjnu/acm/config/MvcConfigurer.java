@@ -38,9 +38,16 @@ public class MvcConfigurer implements WebMvcConfigurer {
         return new TeamInterceptor();
     }
 
+    @Bean
+    UnavailableInterceptor getUnavailableInterceptor() {
+        return new UnavailableInterceptor();
+    }
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        String[] needLogin = {"/contest/**", "/team/**", "/problems/**", "/user/**", "/admin/**", "/status/**"};
+        registry.addInterceptor(getUnavailableInterceptor()).addPathPatterns("/**")
+                .excludePathPatterns("/judge/callback");
+        String[] needLogin = {"/contest/**", "/team/**", "/problems/**", "/user/**", "/admin/**", "/status/**", "/forum/**"};
         registry.addInterceptor(getLoginViewInterceptor())
                 .addPathPatterns(needLogin);
         registry.addInterceptor(getTeacherCheckInterceptor())
@@ -49,21 +56,33 @@ public class MvcConfigurer implements WebMvcConfigurer {
                 .addPathPatterns("/api/admin/**");
         registry.addInterceptor(getAdminCheckInterceptor())
                 .addPathPatterns("/admin/settings")
+                .addPathPatterns("/admin/user/**")
+                .addPathPatterns("/admin/tag/**")
                 .addPathPatterns("/api/admin/config")
-                .addPathPatterns("/api/admin/correctData");
+                .addPathPatterns("/api/admin/correctData")
+                .addPathPatterns("/api/admin/maintain")
+                .addPathPatterns("/api/admin/user/**")
+                .addPathPatterns("/api/admin/tag/**");
         registry.addInterceptor(getContestInterceptor())
                 .addPathPatterns("/contest/*/**")
                 .excludePathPatterns("/contest/*")
                 .excludePathPatterns("/contest/problem/*")
                 .excludePathPatterns("/contest/create/**")
+                .excludePathPatterns("/contest/edit/**")
                 .addPathPatterns("/api/contest/*/**")
                 .excludePathPatterns("/api/contest/gate/*")
-                .excludePathPatterns("/api/contest/*");
-        String[] apiNeedLogin = {"/api/problems/submit/*",
-                "/api/status/view/*",
-                "/api/status/share/*",
-                "/api/user/edit/*",
-                "/api/team/**"};
+                .excludePathPatterns("/api/contest/*")
+                .excludePathPatterns("/api/contest/background/**")
+                .excludePathPatterns("/api/contest/clone/*");
+        String[] apiNeedLogin = {
+                "/api/problems/**",
+                "/api/status/**",
+                "/api/user/**",
+                "/api/team/**",
+                "/api/forum/**",
+                "/api/admin/**",
+                "/api/contest/**"
+        };
         registry.addInterceptor(getLoginInterceptor())
                 .addPathPatterns(apiNeedLogin)
                 .addPathPatterns();

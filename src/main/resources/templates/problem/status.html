@@ -6,9 +6,10 @@
     <title>提交列表</title>
     <script language="JavaScript" src="/js/StatusInModal.js"></script>
     <script src="/js/pagination.js"></script>
+    <link rel="stylesheet" href="/js/prettify/skins/sunburst.css">
 </head>
 <body>
-<div class="ui container" height="100%" id="vue-solutions">
+<main class="ui container" height="100%" id="vue-solutions">
     <form class="ui form" v-on:submit.prevent="search()">
         <div class=" fields">
             <div class="inline field">
@@ -60,7 +61,8 @@
         </tbody>
     </table>
     <div class="ui pagination menu">
-        <pagination :class="{disabled:first}" content='<i class="angle double left icon"></i>' v-on:change_page="get_page"
+        <pagination :class="{disabled:first}" content='<i class="angle double left icon"></i>'
+                    v-on:change_page="get_page"
                     v-bind:to_page="0"></pagination>
         <pagination :class="{disabled:first}" content="<i class='angle left icon'></i>"
                     v-on:change_page="get_page" v-bind:to_page="number-1"></pagination>
@@ -70,10 +72,11 @@
         </div>
         <pagination :class="{disabled:last}" content='<i class="angle  right icon"></i>'
                     v-on:change_page="get_page" v-bind:to_page="number+1"></pagination>
-        <pagination :class="{disabled:last}" content='<i class="angle double right icon"></i>' v-on:change_page="get_page"
+        <pagination :class="{disabled:last}" content='<i class="angle double right icon"></i>'
+                    v-on:change_page="get_page"
                     v-bind:to_page="totalPages-1"></pagination>
     </div>
-</div>
+</main>
 <div class="ui large modal" id="codemodal">
     <div class="">
         <div class="" style="padding: 1rem;">
@@ -155,7 +158,7 @@
                 url += "?pid=" + that.searchProblem;
             }
             axios.get(url).then(function (res) {
-                res = res.data;
+                res = res.data.data;
                 that.solutions = res.content;
                 that.totalPages = res.totalPages;
                 that.totalElements = res.totalElements;
@@ -173,11 +176,11 @@
         },
         methods: {
             get_page(page) {
-                if(page>=this.totalPages||page<0)return;
+                if (page >= this.totalPages || page < 0) return;
                 var that = this;
                 url = "/api/status?page=" + page + "&user=" + that.searchUser + "&pid=" + that.searchProblem + "&AC=" + that.searchAC;
                 axios.get(url).then(function (res) {
-                    res = res.data;
+                    res = res.data.data;
                     that.solutions = res.content;
                     that.totalPages = res.totalPages;
                     that.totalElements = res.totalElements;
@@ -191,6 +194,8 @@
                     for (var i = Math.max(0, that.number - 5); i < Math.min(that.totalPages, that.number + 6); i++) {
                         that.npage.push(i)
                     }
+                }).catch(function (e) {
+                    console.log(e.response.data);
                 })
             },
             search() {

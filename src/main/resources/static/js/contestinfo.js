@@ -22,7 +22,8 @@ function render_md() {
                 taskList: false,   // Github Flavored Markdown task lists
                 flowChart: true,
                 sequenceDiagram: true,
-                previewCodeHighlight: true
+                previewCodeHighlight: true,
+                htmlDecode: "style,script,iframe|on*",
             });
             $(this).attr("id", tid);
         });
@@ -32,6 +33,7 @@ function render_md() {
 var cont = new Vue({
     el: "#contest-content",
     data: {
+        cid: cid,
         password: "",
         attend: false,
         dataready: false,
@@ -54,12 +56,13 @@ var cont = new Vue({
         language: "c",
         share: false,
         timeLeft: "",
-        percentage:0,
-        code: ""
+        percentage: 0,
+        code: "",
+        creator: false
     },
     methods: {
-        init_window(){
-            setInterval(this.time_left,500);
+        init_window() {
+            setInterval(this.time_left, 500);
             $(".progress").progress();
             $(function () {
                 code_editor = editormd("code-editor", {
@@ -94,14 +97,14 @@ var cont = new Vue({
                 ss = d3.getUTCSeconds();
                 mm = d3.getUTCMinutes();
                 hh = d3.getUTCHours();
-                dd = d3.getUTCDate()-1;
+                dd = d3.getUTCDate() - 1;
                 dd += days_of_month[d3.getUTCMonth()];
-                let len = dend-dsta;
+                let len = dend - dsta;
                 let gon = dn - dsta;
-                per =gon/len*100;
-                $("#time-pogress").progress("set percent",per);
+                per = gon / len * 100;
+                $("#time-pogress").progress("set percent", per);
             }
-            this.timeLeft = dd + (hh<10?":0":":") + hh + (mm<10?":0":":") + mm + (ss<10?":0":":") + ss;
+            this.timeLeft = dd + (hh < 10 ? ":0" : ":") + hh + (mm < 10 ? ":0" : ":") + mm + (ss < 10 ? ":0" : ":") + ss;
             // setInterval(this.time_left,500);
         },
         change_lang() {
@@ -111,8 +114,8 @@ var cont = new Vue({
                 code_editor.setCodeMirrorOption("mode", "python");
             } else if (this.language.indexOf("c") === 0) {
                 code_editor.setCodeMirrorOption("mode", "clike");
-            }else if (this.language.indexOf("go")===0){
-                code_editor.setCodeMirrorOption("mode","go");
+            } else if (this.language.indexOf("go") === 0) {
+                code_editor.setCodeMirrorOption("mode", "go");
             }
         },
         change_problem(id) {
@@ -137,7 +140,7 @@ var cont = new Vue({
             $("#problem-hint").empty();
             $("#problem-hint").append(" <textarea style=\"display: none;\"></textarea>");
             $("#problem-hint").children("textarea").text(this.problem.problem.hint);
-            render_md()
+            render_md();
             this.dataready = true;
         },
         submit() {
@@ -148,11 +151,15 @@ var cont = new Vue({
                 source: that.code,
                 share: that.share
             }).then(function (res) {
-                console.log(res.data)
-                if (res.data != "success") {
+                console.log(res.data);
+                if (res.data.code != 200) {
                     alert(res.data);
                 } else {
                     scrollTo(0, 0);//x,y
+                }
+            }).catch(function (e) {
+                if (e.response.data.code != undefined) {
+                    alert(e.response.data.message);
                 }
             })
         },
@@ -179,7 +186,6 @@ var cont = new Vue({
     created() {
         var that = this;
         that.dataready = false;
-        // this.attend=true;
         axios.get('/api/contest/' + cid)
             .then(function (response) {
                 that.contest = response.data;
@@ -193,9 +199,22 @@ var cont = new Vue({
                     $('title').text(that.contest.title);
                     that.init_window();
                     that.dataready = true;
+                    axios.get("/api/contest/background/access/" + cid)
+                        .then(function (res) {
+                            if (res.data == "success") {
+                                that.creator = true;
+                            }
+                        }).catch(function (e) {
+                        console.log(e)
+                    });
                 } else {
                     that.attend = false;
                 }
-            });
+            }).catch(function (e) {
+            if (e.response.status == 404) {
+                location.href = "/contest";
+            }
+            console.log(e);
+        });
     }
 });

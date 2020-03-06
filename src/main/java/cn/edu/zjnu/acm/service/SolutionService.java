@@ -5,7 +5,7 @@ import cn.edu.zjnu.acm.entity.oj.Contest;
 import cn.edu.zjnu.acm.entity.oj.Problem;
 import cn.edu.zjnu.acm.entity.oj.Solution;
 import cn.edu.zjnu.acm.entity.oj.Tag;
-import cn.edu.zjnu.acm.repo.SolutionRepository;
+import cn.edu.zjnu.acm.repo.problem.SolutionRepository;
 import cn.edu.zjnu.acm.util.PageHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -125,7 +125,7 @@ public class SolutionService {
     }
 
     public Long countOfProblem(Problem problem) {
-        return solutionRepository.countAllByProblemAndResult(problem, Solution.AC);
+        return solutionRepository.countAllByProblem(problem);
     }
 
     public Long countAcOfProblemContest(Problem problem, Contest contest) {

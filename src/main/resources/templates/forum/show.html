@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <th:block th:insert="~{fragment/header :: header}"></th:block>
+    <title></title>
+    <meta content="text/html;charset=UTF-8" http-equiv="Content-Type">
+    <link rel="stylesheet" href="/editor/css/editormd.min.css">
+    <link rel="stylesheet" href="/js/prettify/skins/sunburst.css">
+</head>
+<body>
+<script src="/js/comment-component.js"></script>
+<main class="ui container fluid">
+    <div class="ui segment piled" id="article">
+        <div class="ui header center aligned">
+            <h2 class="ui content" v-html="article.title"></h2>
+            <div class="ui sub header" v-html="normalPostTime(article.postTime)"></div>
+            <div class="ui sub header" v-html="article.user.name"></div>
+        </div>
+        <a :href="'/forum/edit/'+article.id" class="ui button right floated mini"
+           v-if="isAuthor"><i class="ui edit icon"></i>Edit</a>
+        <div class="md-text">
+            <textarea style="display: none" v-html="article.text"></textarea>
+        </div>
+        <div class="ui divider"></div>
+        <comment-group v-bind:comments="article.comment" v-bind:level="0"></comment-group>
+        <form class="ui reply form">
+            <div class="field" id="comment-editor">
+                <textarea style="display: none"></textarea>
+            </div>
+            <div class="ui primary submit labeled icon button" v-on:click="post_comment()">
+                <i class="icon edit"></i> Add Reply
+            </div>
+        </form>
+    </div>
+</main>
+<script src="/editor/lib/marked.min.js"></script>
+<script src="/editor/lib/raphael.min.js"></script>
+<script src="/editor/lib/underscore.min.js"></script>
+<script src="/editor/lib/sequence-diagram.min.js"></script>
+<script src="/editor/lib/flowchart.min.js"></script>
+<script src="/editor/lib/jquery.flowchart.min.js"></script>
+<script src="/editor/editormd.min.js"></script>
+<script>
+    aid = location.pathname.split('/');
+    aid = aid[aid.length - 1];
+
+    function render_md() {
+        $(function () {
+            $(".md-text").each(function () {
+                $(this).attr("id", "editormd-view");
+                editormd.markdownToHTML("editormd-view", {
+                    toc: true,
+                    tocStartLevel: 1,
+                    path: "/editor/lib/",
+                    pluginPath: "/editor/plugins",
+                    markdown: article.text,
+                    tocTitle: "目录",
+                    tocDropdown: false,
+                    tocContainer: "",
+                    pageBreak: true,
+                    atLink: true,    // for @link
+                    emailLink: true,    // for mail address auto link
+                    tex: true,
+                    taskList: true,   // Github Flavored Markdown task lists
+                    flowChart: true,
+                    sequenceDiagram: true,
+                    previewCodeHighlight: true,
+                    autoLoadModules: true
+                });
+                $(this).attr("id", "");
+            });
+        });
+    }
+
+    var mdeditor;
+    $(function () {
+        mdeditor = editormd("comment-editor", {
+            path: "/editor/lib/",
+            width: "100%",
+            height: "150",
+            gfm: true,
+            toolbar: false,
+            toc: false,
+            tocm: false,
+            autoFocus: false,
+            autoLoadKaTeX: true,
+            pageBreak: true,
+            atLink: true,    // for @link
+            emailLink: false,    // for mail address auto link
+            tex: true,
+            taskList: false,   // Github Flavored Markdown task lists
+            flowChart: false,
+            sequenceDiagram: true,
+            previewCodeHighlight: true,
+            onchange: function () {
+                article.change();
+            }
+        });
+    });
+    var article = new Vue({
+        el: "#article",
+        data: {
+            article: {
+                id: aid,
+                title: "",
+                text: "",
+                postTime: "",
+                comment: [],
+                user: {name: ""}
+            },
+            isAuthor: false,
+            reply_text: "",
+            reply_id: ""
+        },
+        methods: {
+            change() {
+                this.reply_text = mdeditor.getMarkdown();
+                if (this.reply_text.length < 2) this.reply_id = 0;
+            },
+            post_comment() {
+                axios.post("/api/forum/post/comment/" + aid, {
+                    replyText: this.reply_text,
+                    replyId: this.reply_id
+                }).then(function (res) {
+                    if (res.data == "success") {
+                        console.log(res);
+                        location.reload();
+                    } else {
+                        alert(res.data);
+                    }
+                }).catch(function (e) {
+                    console.log(e);
+                });
+            },
+            normalPostTime(s) {
+                return new Date(s).toLocaleString();
+            },
+            doreply(id) {
+                this.reply_id = id;
+                var name = "";
+                for (c of this.article.comment) {
+                    if (c.id == id) {
+                        name = c.user.username;
+                        break;
+                    }
+                }
+                this.reply_text = "@" + name + " : ";
+                mdeditor.setMarkdown(this.reply_text);
+            }
+        },
+        created() {
+            let that = this;
+            axios.get("/api/forum/" + aid)
+                .then(function (res) {
+                    that.article = res.data;
+                    $("title").html(res.data.title);
+                    for (c of that.article.comment) {
+                        c.fatherId = null;
+                        c.sons = [];
+                        c.reply_action = that.doreply;
+                    }
+                    for (c of that.article.comment) {
+                        for (s of that.article.comment) {
+                            if (s.father != undefined && s.father.id == c.id) {
+                                c.sons.push(s);
+                                s.fatherId = c.id;
+                            }
+                        }
+                    }
+                    render_md();
+                    if (user_bar.user.id == that.article.user.id) {
+                        that.isAuthor = true;
+                    }
+                }).catch(function (e) {
+                if (e.response.status == 404) {
+                    location.href = "4O4";
+                }
+            });
+        }
+    });
+</script>
+</body>
+</html>

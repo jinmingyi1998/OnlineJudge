@@ -28,7 +28,7 @@ public class Contest implements Cloneable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     // TODO check contest title unique when creating
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String title;
     @Column(nullable = false, columnDefinition = "LONGTEXT default ''")
     private String description;
@@ -42,13 +42,13 @@ public class Contest implements Cloneable {
     private Instant endTime;
     @ManyToOne(optional = false)
     private User creator;
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
     private Instant createTime;
-    @OneToMany(mappedBy = "contest")
-    private List<Comment> contestComments;
-    @OneToMany(mappedBy = "contest")
+    @OneToMany(mappedBy = "contest", cascade = CascadeType.REMOVE)
+    private List<ContestComment> contestComments;
+    @OneToMany(mappedBy = "contest", cascade = CascadeType.REMOVE)
     private List<ContestProblem> problems;
-    @OneToMany(mappedBy = "contest")
+    @OneToMany(mappedBy = "contest", cascade = CascadeType.REMOVE)
     private List<Solution> solutions;
     @Column(nullable = false, columnDefinition = "varchar(20) default 'acm'")
     private String pattern = "acm";
@@ -100,7 +100,7 @@ public class Contest implements Cloneable {
     public String getLength() {
         Duration d = Duration.between(startTime, endTime);
         Long minutes = d.toMinutes();
-        return (minutes / 60) + ":" + (minutes % 60);
+        return minutes.toString();
     }
 
     public String getNormalStartTime() {
@@ -115,6 +115,11 @@ public class Contest implements Cloneable {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         LocalDateTime localDateTime = LocalDateTime.parse(startTime, dtf);
         this.startTime = Instant.from(localDateTime.atZone(ZoneId.systemDefault()));
+    }
+
+    public void setStartAndEndTime(String startTime, Long length) {
+        setStartTime(startTime);
+        this.endTime = this.startTime.plusSeconds(60 * length);
     }
 
     public void setEndTime(String startTime, String lastTime) {

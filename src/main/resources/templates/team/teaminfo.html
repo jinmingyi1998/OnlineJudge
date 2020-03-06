@@ -11,22 +11,26 @@
         <div class="twelve wide column">
             <div class="ui raised segments">
                 <h2 class="ui header">比赛</h2>
-                <div class="ui segment" v-for="c in contests">
-                    <div class="content">
+                <div class="ui clearing segment" v-for="c in contests">
+                    <div class="ui left floated header">
                         <a :href="'/contest/'+c.id" class="ui header" v-html="c.title"></a>
+                    </div>
+                    <div class="ui right floated header">
                         <div class="description" v-html="c.normalStartTime"></div>
+                        <div class="description" v-html="c.normalEndTime"></div>
                     </div>
                 </div>
             </div>
         </div>
         <div class="four wide column">
             <div class="ui segment">
+                <div class="ui mini button" v-on:click="leaveTeam()">Leave</div>
                 <a :href="'manage/'+id" class="ui mini button" v-if="isManager()">管理队伍</a>
                 <h2>{{id}} - {{name}}</h2>
                 <div class="ui list" v-for="m in teammates">
-                    <div class="item">{{m.user.name}}
-                        <div class="ui small orange label" v-if="m.level==0">master</div>
-                        <div class="ui small label" v-if="m.level==1">manager</div>
+                    <div class="link item"><a v-bind:href="'/user/'+m.user.id">{{m.user.name}}</a>
+                        <div class="ui mini orange basic label" v-if="m.level==0">master</div>
+                        <div class="ui mini teal basic label" v-if="m.level==1">manager</div>
                     </div>
                 </div>
             </div>
@@ -59,6 +63,29 @@
                 }
                 return false;
             },
+            leaveTeam() {
+                for (tm of this.teammates) {
+                    if (tm.user.id == user_bar.user.id) {
+                        if (tm.level == 0) {
+                            alert("将会解散此群");
+                        }
+                    }
+                }
+                if (confirm("Leave This Team?")) {
+                    axios.get("/api/team/leave/" + tid)
+                        .then(function (res) {
+                            if (res.data == "success") {
+                                alert("success");
+                                location.href = "/team";
+                            } else {
+                                alert(res.data);
+                            }
+                        })
+                        .catch(function (e) {
+                            console.log(e);
+                        });
+                }
+            }
         },
         created() {
             var that = this;
@@ -74,7 +101,12 @@
                     that.attend = res.attend;
                     that.normalCreateTime = res.normalCreateTime;
                     that.createTime = res.createTime;
-                })
+                }).catch(function (e) {
+                if (e.response.status == 404) {
+                    console.log(e);
+                    location.href = "4O4";
+                }
+            });
         }
     })
 </script>

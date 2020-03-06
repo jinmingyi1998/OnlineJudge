@@ -1,38 +1,63 @@
-<!--
-  ~ Copyright (c) 2019. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-  ~ Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
-  ~ Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
-  ~ Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
-  ~ Vestibulum commodo. Ut rhoncus gravida arcu.
-  -->
-
 <!DOCTYPE html>
-<html th:fragment="header" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta content="text/html;charset=UTF-8" http-equiv="Content-Type">
-    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
-    <link rel="stylesheet" th:href="@{/css/font-awesome.css}">
-    <script th:src="@{/js/jquery-3.2.1.min.js}"></script>
-    <script th:src="@{/js/popper.min.js}"></script>
-    <script th:src="@{/js/bootstrap.min.js}"></script>
     <title>Tags</title>
-
+    <th:block th:insert="~{fragment/header :: header}"></th:block>
 </head>
 <body>
-<div class="row">
-    <ul class="row col-9">
-        <li class="list-inline-item col-3 border-success border rounded m-1" th:each="tag:${tags}">
-            <span th:text="${tag.name}"></span>
-            <button th:id="${tag.id}" class="btn btn-sm btn-danger">Delete</button>
-        </li>
-    </ul>
-    <div class="col-3">
+<main class="ui container" id="tags">
+    <div class="ui form">
         新增标签
-        <form action="" method="post">
-            标签名<input type="text" name="name" required class="form-control">
-            <input type="submit" class="btn btn-outline-success">
-        </form>
+        <div class="field">
+            标签名<input type="text" name="name" required v-model="tagname">
+            <div class="ui button" @click="add_tag()">Submit</div>
+        </div>
     </div>
-</div>
+    <div class="ui segment">
+        <div class="ui celled  list">
+            <div class="item" v-for="t in tags">
+                <div class="ui left floated header" v-html="t.name"></div>
+            </div>
+        </div>
+    </div>
+</main>
+<script>
+    var tags = new Vue({
+            el: "#tags",
+            data: {
+                tags: [],
+                tagname: ""
+            },
+            methods: {
+                get_tags() {
+                    let that = this;
+                    axios.get("/api/admin/tag")
+                        .then(function (res) {
+                            if (res.data.code == 200) {
+                                that.tags = res.data.data;
+                            }
+                        });
+                },
+                add_tag() {
+                    let that = this;
+                    axios.post("/api/admin/tag/add/", {
+                        tagname: this.tagname
+                    })
+                        .then(function (res) {
+                            if (res.data.code != 200) {
+                                alert(res.data.message);
+                            } else {
+                                that.get_tags();
+                            }
+                        });
+                }
+            },
+            created() {
+                this.get_tags();
+            }
+        })
+    ;
+</script>
 </body>
 </html>

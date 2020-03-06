@@ -4,13 +4,6 @@
     <th:block th:insert="~{fragment/header :: header}"></th:block>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="/editor/css/editormd.min.css">
-    <script src="/editor/lib/marked.min.js"></script>
-    <script src="/editor/lib/raphael.min.js"></script>
-    <script src="/editor/lib/underscore.min.js"></script>
-    <script src="/editor/lib/sequence-diagram.min.js"></script>
-    <script src="/editor/lib/flowchart.min.js"></script>
-    <script src="/editor/lib/jquery.flowchart.min.js"></script>
-    <script src="/editor/editormd.min.js"></script>
     <link rel="stylesheet" href="/js/prettify/skins/sunburst.css">
     <title>Q&A</title>
     <script language="JavaScript" src="/js/StatusInModal.js"></script>
@@ -23,6 +16,7 @@
     <script src="/js/comment-component.js"></script>
 </head>
 <body>
+<script src="/js/contesttab.js"></script>
 <main class="ui fluid container" height="100%" id="vue-comment">
     <header-tab loc="comment" v-bind:cid="contest.id"></header-tab>
     <div class="ui segment">
@@ -37,8 +31,15 @@
         </form>
     </div>
 </main>
+<script src="/editor/lib/marked.min.js"></script>
+<script src="/editor/lib/raphael.min.js"></script>
+<script src="/editor/lib/underscore.min.js"></script>
+<script src="/editor/lib/sequence-diagram.min.js"></script>
+<script src="/editor/lib/flowchart.min.js"></script>
+<script src="/editor/lib/jquery.flowchart.min.js"></script>
+<script src="/editor/editormd.min.js"></script>
 <script src="/js/contestcomment.js"></script>
-<script src="/js/contesttab.js"></script>
+
 <footer th:replace="~{fragment/footer :: footer}"></footer>
 </body>
 </html>

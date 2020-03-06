@@ -5,46 +5,99 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta content="text/html;charset=UTF-8" http-equiv="Content-Type">
     <link rel="shortcut icon" href="/favicon.ico">
-    <link rel="stylesheet" href="/js/prettify/skins/sunburst.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
-    <script src="http://lib.sinaapp.com/js/jquery/3.1.0/jquery-3.1.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios@0.19.2/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="/css/semantic.min.css">
+    <script src="/js/lib/jquery-3.2.1.min.js"></script>
+    <script src="/js/lib/vue.min.js"></script>
+    <script src="/js/lib/axios.min.js"></script>
     <script src="/js/prettify/prettify.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+    <script src="/js/lib/semantic.min.js"></script>
     <style>
         body {
             background-color: #f9f9f9;
             padding: 0;
-            padding-top: 6rem;
             margin: 0;
         }
 
         .ui.fluid.container {
             max-width: 85% !important;
         }
+
+        .katex {
+            font-size: 1.21em !important;
+        }
+
+        .editormd-html-preview, .editormd-preview-containe {
+            font-size: 16px !important;
+        }
     </style>
 </head>
 <body>
-<nav class="ui fixed massive menu borderless">
-    <div class="ui container">
-        <a href="/" class="header item">
-            <img src="/images/acmlogo.png" alt="logo"></a>
-        <a class="link item" href="/">主页</a>
-        <a class="link item" href="/problems">题库</a>
-        <a class="link item" href="/contest">比赛</a>
-        <a class="link item" href="/status">提交记录</a>
-        <a class="link item" href="/user/standing">排名</a>
-        <a class="link item" href="/team">队伍</a>
-        <div class="ui right borderless menu" id="userbar">
-            <div v-if="!isLogin" class="ui menu">
-                <a class="item" href="/login">登录</a>
-                <a class="item" href="/register">注册</a>
-            </div>
-            <div v-if="isLogin" class="ui menu">
-                <a class="item" :href="'/user/'+user.id" v-if="isLogin"
-                   data-inverted="" v-bind:data-tooltip="user.name" data-position="bottom center">个人中心</a>
-                <a class="item" href="/logout">注销</a>
+<nav class="ui stackable menu borderless">
+    <a href="/" class="header item">
+        <img src="/images/acmlogo.png" alt="logo"></a>
+    <a class="link item animated fade ui button" href="/">
+        <div class="visible content">Home</div>
+        <div class="hidden content"><i class="ui home icon"></i>主页</div>
+    </a>
+    <a class="link item animated fade ui button" href="/problems">
+        <div class="hidden content"><i class="ui tasks icon"></i>题库</div>
+        <div class="visible content">Problem set</div>
+    </a>
+    <a class="link item animated fade ui button" href="/contest">
+        <div class="hidden content"><i class="ui flag checkered icon"></i>比赛</div>
+        <div class="visible content">Contests</div>
+    </a>
+    <a class="link item animated fade ui button" href="/status">
+        <div class="hidden content"><i class="ui microchip icon"></i>评测姬</div>
+        <div class="visible content">Judge Status</div>
+    </a>
+    <a class="link item animated fade ui button" href="/user/standing">
+        <div class="hidden content"><i class="ui sort amount up icon"></i>排名</div>
+        <div class="visible content">Ranklist</div>
+    </a>
+    <a class="link item animated fade ui button" href="/team">
+        <div class="hidden content"><i class="ui users icon"></i>队伍</div>
+        <div class="visible content">Teams</div>
+    </a>
+    <a class="link item animated fade ui button" href="/forum">
+        <div class="hidden content"><i class="ui rss icon"></i>论坛</div>
+        <div class="visible content">Forum</div>
+    </a>
+    <a class="link item animated fade ui button" href="/donate">
+        <div class="hidden content"><i class="ui dollar sign icon"></i>捐赠</div>
+        <div class="visible content">Donate</div>
+    </a>
+    <div class="ui right menu" id="userbar">
+        <div class="ui simple dropdown item">
+            <span v-if="!isLogin">Sign in/Sign up</span>
+            <span v-if="isLogin"><i class="user outline icon"></i></span>
+            <i class="dropdown icon"></i>
+            <div class="menu">
+                <div v-if="!isLogin">
+                    <a class="item animated fade ui button" href="/login">
+                        <div class="hidden content"><i class="ui sign-in icon"></i>登录</div>
+                        <div class="visible content">Sign in</div>
+                    </a>
+                    <a class="item animated fade ui button" href="/register">
+                        <div class="hidden content"><i class="ui user plus icon"></i>注册</div>
+                        <div class="visible content">Sing up</div>
+                    </a>
+                </div>
+                <div v-if="isLogin">
+                    <a :href="'/user/'+user.id" class="item animated fade ui button">
+                        <div class="visible content" v-html="user.name"></div>
+                        <div class="hidden content"><i class="ui user circle icon"></i></div>
+                    </a>
+                    <a href="/admin" class="item animated fade ui button" v-if="privilege!=-1">
+                        <div class="visible content">Background</div>
+                        <div class="hidden content"><i class="ui server icon"></i>后台管理</div>
+                    </a>
+
+                    <a class="item animated fade ui button" href="/logout">
+                        <div class="hidden content"><i class="ui sign-out icon"></i>注销</div>
+                        <div class="visible content">log out</div>
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -54,17 +107,18 @@
         el: "#userbar",
         data: {
             user: {},
-            isLogin: false
+            isLogin: false,
+            privilege:-1
         },
         created() {
-            var that = this
+            var that = this;
             axios.get("/user/session").then(function (res) {
-                res = res.data;
-                if (res.username != undefined) {
-                    that.user = res;
+                if (res.data.code == 200) {
+                    that.user = res.data.data;
+                    that.privilege=res.data.message
                     that.isLogin = true;
                 }
-            })
+            });
         }
     })
 </script>

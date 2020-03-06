@@ -1473,7 +1473,7 @@
             
             if (settings.previewCodeHighlight) 
             {
-                previewContainer.find("pre").addClass("prettyprint linenums");
+                previewContainer.find("pre").addClass("prettyprint");
                 
                 if (typeof prettyPrint !== "undefined")
                 {                    
@@ -3347,7 +3347,7 @@
     editormd.firstUpperCase = editormd.ucfirst = firstUpperCase;
     
     editormd.urls = {
-        atLinkBase : "https://github.com/"
+        atLinkBase : "/api/user/username/"
     };
     
     editormd.regexs = {
@@ -3994,7 +3994,7 @@
             
         if (settings.previewCodeHighlight) 
         {
-            div.find("pre").addClass("prettyprint linenums");
+            div.find("pre").addClass("prettyprint");
             prettyPrint();
         }
         

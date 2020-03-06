@@ -4,7 +4,6 @@
     <th:block th:insert="~{fragment/header :: header}"></th:block>
     <meta charset="UTF-8">
     <title>登录</title>
-
     <style type="text/css">
         body {
             background-color: #EEEEEE;
@@ -120,10 +119,10 @@
                 })
                     .then(function (response) {
                         $('form').form('reset');
-                        if (response.data == "success") {
+                        if (response.data.code == 200) {
                             location.href = "/"
                         } else {
-                            alert(response.data)
+                            alert(response.data.message)
                         }
                         setTimeout(function () {
                             that.ready = true;
