@@ -43,7 +43,6 @@
         </div>
         <div class="required field">
             <label>开始时间Start Time(yyyy-MM-dd HH:mm):</label>
-<!--            <input name="startTime" placeholder="2020-02-20 02:02" required type="text" v-model="content.startTime">-->
             <input class="form-datetime form-control" data-date-format="yyyy-mm-dd hh:ii" id="startTime" minuteStep="1"
                    name="startTime" type="text" v-model="content.startTime">
         </div>
@@ -63,6 +62,7 @@
             <div class="required field">alias:<input type="text" v-model="p.tempTitle"></div>
         </div>
         <a @click="submit_form()" class="ui button green" id="submit-contest">提交Submit</a>
+        <div class="ui error message"></div>
     </form>
 </div>
 <script type="text/javascript">
@@ -125,9 +125,20 @@
                     this.content.problems.pop();
                 }
             },
+            form_validate() {
+                if (this.content.title.length < 2) {
+                    alert("title too short");
+                    return false;
+                }
+                if (this.content.startTime.)
+                    return true;
+            },
+
             submit_form() {
-                this.content.startTime=$("#startTime").val();
-                console.log(this.content);
+                this.content.startTime = $("#startTime").val();
+
+                if
+                    console.log(this.content);
                 axios.post("/api/contest/create", this.content)
                     .then(function (res) {
                         res = res.data;

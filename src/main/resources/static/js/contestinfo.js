@@ -145,6 +145,10 @@ var cont = new Vue({
         },
         submit() {
             this.code = code_editor.getMarkdown();
+            if (this.code.length < 5) {
+                alert("too short");
+                return;
+            }
             var that = this;
             axios.post('/api/contest/submit/' + this.pid + "/" + cid, {
                 language: that.language,
@@ -153,7 +157,7 @@ var cont = new Vue({
             }).then(function (res) {
                 console.log(res.data);
                 if (res.data.code != 200) {
-                    alert(res.data);
+                    alert(res.data.message);
                 } else {
                     scrollTo(0, 0);//x,y
                 }
@@ -161,7 +165,7 @@ var cont = new Vue({
                 if (e.response.data.code != undefined) {
                     alert(e.response.data.message);
                 }
-            })
+            });
         },
         check_password() {
             var that = this;

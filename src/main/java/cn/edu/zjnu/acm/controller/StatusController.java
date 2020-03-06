@@ -61,14 +61,10 @@ public class StatusController {
             s.setTime(0);
             s.setMemory(0);
             s.setLength(0);
-            s.setInfo("");
             s.setShare(false);
         }
         s.setIp(null);
-        s.getUser().setPassword(null);
-        s.getUser().setEmail(null);
-        s.getUser().setIntro(null);
-        s.getUser().setUserProfile(null);
+        s.getUser().hideInfo();
         Problem p = Problem.jsonReturnProblemFactory();
         p.setId(s.getProblem().getId());
         s.setProblem(p);
@@ -113,17 +109,23 @@ public class StatusController {
             assert solution != null;
             User user = (User) session.getAttribute("currentUser");
             if (user == null) {
+                solution.setInfo(null);
                 solution.setSource("This Source Code Is Not Shared!");
             }
             if (userService.getUserPermission(user) == -1) {
                 if (user.getId() != solution.getUser().getId()) {
-                    // This submit belongs to this user.
+                    // This submit not belongs to this user.
                     solution.setSource("This Source Code Is Not Shared!");
-                }
-                if (user.getUserProfile().getScore() < config.getLeastScoreToSeeOthersCode() && solution.getShare()) {
-                    // This submit is shared and user has enough score
+                    solution.setInfo(null);
+                } else if (user.getUserProfile().getScore() < config.getLeastScoreToSeeOthersCode() && solution.getShare()) {
+                    // This submit is not shared and user doesn't have enough score
                     solution.setSource("This Source Code Is Not Shared!");
+                    solution.setInfo(null);
+                } else {
+                    solution.setContest(null);
                 }
+            } else {
+                solution.setContest(null);
             }
             return solutionFilter(solution);
         } catch (Exception e) {

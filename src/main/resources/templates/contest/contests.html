@@ -40,7 +40,7 @@
                 </div>
             </div>
             <div class="right floated">
-                <div class="ui label">{{c.runStatu}}
+                <div :class="{green:c.runStatu=='进行中',orange:c.runStatu=='未开始'}" class="ui label">{{c.runStatu}}
                     <div class="detail"> {{c.normalStartTime}} <i class="ui hourglass icon"
                                                                   :class="{start:c.runStatu=='未开始',half:c.runStatu=='进行中',end:c.runStatu=='已结束'}"></i>
                         {{c.normalEndTime}}

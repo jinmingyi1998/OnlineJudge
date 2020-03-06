@@ -1,7 +1,7 @@
 spring:
   datasource:
-    username: ${MYSQL_USER:-root}
-    password: ${MYSQL_PASSWORD:-1234}
+    username: ${MYSQL_USER:root}
+    password: ${MYSQL_PASSWORD:1234}
     url: jdbc:mysql://${MYSQL_URL}?serverTimezone=GMT%2B8&useUnicode=yes&characterEncoding=UTF-8
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
@@ -18,8 +18,8 @@ spring:
     redis:
       time-to-live: 120
   redis:
-    host: ${REDIS_URL:-localhost}
-    port: ${REDIS_PORT:-6379}
+    host: ${REDIS_URL:localhost}
+    port: ${REDIS_PORT:6379}
   devtools:
     restart:
       enabled: false
