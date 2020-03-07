@@ -130,15 +130,30 @@
                     alert("title too short");
                     return false;
                 }
-                if (this.content.startTime.)
-                    return true;
+                if (this.content.startTime.search(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/) != 0) {
+                    alert("日期格式错误");
+                    return false;
+                }
+                for (p of this.content.problems) {
+                    if ((p.id + "").length < 1) {
+                        alert("id 不能为空")
+                        return false;
+                    }
+                    if ((p.tempTitle + "").length < 1) {
+                        alert("alias 不能为空");
+                        return false;
+                    }
+                }
+                return true;
             },
 
             submit_form() {
                 this.content.startTime = $("#startTime").val();
+                if (!this.form_validate()) {
+                    return false;
+                }
 
-                if
-                    console.log(this.content);
+                console.log(this.content);
                 axios.post("/api/contest/create", this.content)
                     .then(function (res) {
                         res = res.data;
