@@ -44,7 +44,7 @@
                         <div class="ui pointing vertical menu fluid">
                             <div class="link item" v-for="p in contest.problems" :class="{active:p.tempId==pid}"
                                  @click="change_problem(p.tempId)">
-                                {{p.tempTitle}}
+                                {{p.tempId}} {{p.tempTitle}}
                                 <div class="ui left pointing orange label">
                                     {{p.accepted}}/{{p.submitted}}
                                 </div>
@@ -56,7 +56,7 @@
             <div class="ui container twelve wide column">
                 <div class="ui raised piled segments fluid">
                     <div class="ui secondary center aligned segment" v-bind:class="{loading:!dataready}">
-                        <h1>{{problem.tempTitle}}</h1>
+                        <h1>{{problem.tempId}} {{problem.tempTitle}}</h1>
                         <table class="ui center aligned table">
                             <tr>
                                 <td><i class="fa fa-clock-o"></i>时间限制</td>
