@@ -47,7 +47,7 @@ services:
     container_name: oj
     depends_on:
       - db
-      - judger
+      - judgerserver
       - redis
     ports:
       - 8080:8080
