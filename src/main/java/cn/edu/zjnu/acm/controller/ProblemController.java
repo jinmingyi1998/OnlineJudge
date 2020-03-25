@@ -87,7 +87,7 @@ public class ProblemController {
         return null;
     }
 
-    Problem checkProblemExist(Long pid) {
+    private Problem checkProblemExist(Long pid) {
         Problem problem = problemService.getProblemById(pid);
         if (problem == null) {
             throw new NotFoundException("No Problem Found");
@@ -105,7 +105,7 @@ public class ProblemController {
             if (spl >= 0) {
                 String tags = search.substring(spl + 2);
                 search = search.substring(0, spl);
-                String[] tagNames = tags.split("\\,");
+                String[] tagNames = tags.split(",");
                 List<Problem> _problems = problemService.searchActiveProblem(0, 1, search, true).getContent();
                 problemPage = problemService.getByTagName(page, PAGE_SIZE, Arrays.asList(tagNames), _problems);
             } else {
@@ -220,6 +220,14 @@ public class ProblemController {
 
     @GetMapping("/analysis/edit/{aid:[0-9]+}")
     public RestfulResult getOneAnalysis(@PathVariable Long aid, @SessionAttribute User currentUser) {
+        Analysis analysis = getAnalysisById(aid, currentUser);
+        analysis.getUser().hideInfo();
+        analysis.setProblem(null);
+        analysis.setComment(null);
+        return new RestfulResult(200, "success", analysis);
+    }
+
+    private Analysis getAnalysisById(Long aid, User currentUser) {
         Analysis analysis = problemService.getAnalysisById(aid);
         if (analysis == null) {
             throw new NotFoundException("Analysis not found");
@@ -229,27 +237,16 @@ public class ProblemController {
                 throw new ForbiddenException("Permission denied");
             }
         }
-        analysis.getUser().hideInfo();
-        analysis.setProblem(null);
-        analysis.setComment(null);
-        return new RestfulResult(200, "success", analysis);
+        return analysis;
     }
 
     @PostMapping("/analysis/edit/{aid:[0-9]+}")
     public RestfulResult editAnalysis(@PathVariable Long aid,
                                       @SessionAttribute User currentUser,
-                                      @RequestBody @Validated Analysis analysis) {
-        Analysis ana = problemService.getAnalysisById(aid);
-        if (analysis == null) {
-            throw new NotFoundException("Analysis not found");
-        }
-        if (userService.getUserPermission(currentUser) == -1) {
-            if (ana.getUser().getId() != currentUser.getId()) {
-                throw new ForbiddenException("Permission denied");
-            }
-        }
-        ana.setText(analysis.getText());
-        problemService.postAnalysis(ana);
+                                      @RequestBody @Validated Analysis postAnalysis) {
+        Analysis analysis = getAnalysisById(aid, currentUser);
+        analysis.setText(postAnalysis.getText());
+        problemService.postAnalysis(analysis);
         return new RestfulResult(200, "success", null);
     }
 
