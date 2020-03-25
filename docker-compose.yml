@@ -1,21 +1,23 @@
 version: "3"
 services:
   db:
-    image: mariadb:10.4
+    image: mysql:8.0.19
     container_name: db
     ports:
-      - 3306:3306
+      - 13306:3306
     volumes:
-      - /mysql:/var/lib/mysql  # data storage path
+      - e:\docker\mysql:/var/lib/mysql  # data storage path # on Windows
+#      - /mysql:/var/lib/msyql          # on Linux
     restart: always
     environment:
-      - MYSQL_ROOT_PASSWORD=1234
+      - MYSQL_ROOT_PASSWORD=1234 # should change
       - MYSQL_DATABASE=oj
-      - MYSQL_USER=user # optional
-      - MYSQL_PASSWORD=1234 # optional
+      - MYSQL_USER=user          # optional
+      - MYSQL_PASSWORD=1234      # optional
       - TZ=Asia/Shanghai
       - LC_ALL=C
     command: [
+      "--default-authentication-plugin=mysql_native_password",
       "--character-set-server=utf8mb4",
       "--collation-server=utf8mb4_bin"]
 
@@ -23,12 +25,14 @@ services:
     image: registry.cn-hangzhou.aliyuncs.com/jinmingyi/judgerserver
     container_name: judger
     volumes:
-      - /ojdata:/ojdata # problem test data path
+      - e:\docker\ojdata:/ojdata # problem test data path # on Windows
+#      - /ojdata:/ojdata         # on Linux
     ports:
       - 12345:12345
       - 8000:8000
     restart: always
     environment:
+      - PASSWORD=iAMaPASSWORD # should change
       - SERVICE_PORT=12345
       - OJ_BACKEND_CALLBACK=http://onlinejudge:8080/judge/callback
       - TZ=Asia/Shanghai
@@ -52,7 +56,8 @@ services:
     ports:
       - 8080:8080
     volumes:
-      - /onlinejudge:/onlinejudge # log files
+      - e:\onlinejudge:/onlinejudge # on Windows
+#      - /onlinejudge:/onlinejudge  # on Linux
     restart: always
     environment:
       - TZ=Asia/Shanghai
