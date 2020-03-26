@@ -55,6 +55,7 @@ server:
  - REDIS_URL (default = localhost)
  - REDIS_PORT (default = 6379)
  - JUDGE_SERVICE (**one** link to submit codes)
+ - ADMIN_PASSWORD (default = 123456)
  
 ## 浏览器支持：
 Chrome ~~Firefox, Edge without Chromium, IE~~

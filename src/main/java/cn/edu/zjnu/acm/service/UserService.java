@@ -1,5 +1,6 @@
 package cn.edu.zjnu.acm.service;
 
+import cn.edu.zjnu.acm.entity.Teacher;
 import cn.edu.zjnu.acm.entity.User;
 import cn.edu.zjnu.acm.entity.UserProfile;
 import cn.edu.zjnu.acm.repo.user.TeacherRepository;
@@ -12,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 
 @Service
@@ -19,6 +21,20 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserProfileRepository userProfileRepository;
     private final TeacherRepository teacherRepository;
+
+    @PostConstruct
+    public void AddAdministratorAccount(){
+        if (!userRepository.findByUsername("administrator").isPresent()){
+            String password = System.getenv("ADMIN_PASSWORD");
+            if (password==null){
+                password="123456";
+            }
+            User admin = new User("administrator",password,"Administrator","email@address.com","");
+            admin = registerUser(admin);
+            Teacher teacher = new Teacher(admin,Teacher.ADMIN);
+            teacherRepository.save(teacher);
+        }
+    }
 
     public UserService(UserRepository userRepository, UserProfileRepository userProfileRepository, TeacherRepository teacherRepository) {
         this.userRepository = userRepository;
@@ -42,8 +58,7 @@ public class UserService {
     public User registerUser(User u) {
         if (userRepository.findByUsername(u.getUsername()).isPresent())
             return null;
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        u.setPassword(encoder.encode(u.getPassword()));
+        u = setUserPassword(u,u.getPassword());
         UserProfile userProfile = new UserProfile();
         u = userRepository.save(u);
         if (u == null)

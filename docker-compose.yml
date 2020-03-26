@@ -69,3 +69,4 @@ services:
       - REDIS_URL=redis
       - REDIS_PORT=6379
       - JUDGER_SERVICE=http://judgerserver:12345/judge
+      - ADMIN_PASSWORD=123456
