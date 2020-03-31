@@ -36,7 +36,7 @@ public class Problem implements Cloneable {
     @Column(nullable = false, columnDefinition = "int default 65536")
     private Integer memoryLimit = 1;
     @Column(nullable = false, columnDefinition = "bit(1) default 0")
-    private Boolean active = false;
+    private Boolean active = Boolean.FALSE;
     @Column(columnDefinition = "integer default 0")
     private Integer score = 0;
     @ManyToMany(fetch = FetchType.EAGER)

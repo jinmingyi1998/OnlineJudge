@@ -22,7 +22,7 @@ public class TeamApply implements Serializable {
     @Column(columnDefinition = "DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP")
     private Instant time;
     @Column(nullable = false, columnDefinition = "bit(1) default 1")
-    private Boolean active = true;
+    private Boolean active = Boolean.TRUE;
     @Column(nullable = false, columnDefinition = "varchar(20) default 'rejected'")
     private String result = REJECTED;
 

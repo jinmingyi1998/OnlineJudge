@@ -67,7 +67,7 @@ public class Solution implements Cloneable {
     @Column(nullable = false, columnDefinition = "varchar(50) default 'Wrong Answer'", length = 50)
     private String result = WA;
     @Column(nullable = false, columnDefinition = "bit(1) default 0")
-    private Boolean share;
+    private Boolean share = Boolean.FALSE;
     @Column(nullable = false, columnDefinition = "LONGTEXT default ''")
     private String info;
     @Column(nullable = false, columnDefinition = "int default 0")

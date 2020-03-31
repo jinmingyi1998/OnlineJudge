@@ -53,7 +53,7 @@ public class Contest implements Cloneable {
     @Column(nullable = false, columnDefinition = "varchar(20) default 'acm'")
     private String pattern = "acm";
     @Column(nullable = false, columnDefinition = "bit(1) default 1")
-    private Boolean freezeRank = true;
+    private Boolean freezeRank = Boolean.TRUE;
     @ManyToOne
     private Team team;
 
