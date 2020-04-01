@@ -1,10 +1,7 @@
 package cn.edu.zjnu.acm.service;
 
 import cn.edu.zjnu.acm.config.Config;
-import cn.edu.zjnu.acm.entity.oj.Contest;
-import cn.edu.zjnu.acm.entity.oj.ContestProblem;
-import cn.edu.zjnu.acm.entity.oj.Solution;
-import cn.edu.zjnu.acm.entity.oj.UserProblem;
+import cn.edu.zjnu.acm.entity.oj.*;
 import cn.edu.zjnu.acm.repo.contest.ContestProblemRepository;
 import cn.edu.zjnu.acm.repo.problem.ProblemRepository;
 import cn.edu.zjnu.acm.repo.user.UserProblemRepository;
@@ -14,6 +11,15 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.PostConstruct;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Service
@@ -26,6 +32,7 @@ public class JudgeService {
     private final ContestProblemRepository contestProblemRepository;
     private final ContestService contestService;
     private final UserProblemRepository userProblemRepository;
+    private static List<HostLoad> judgerLoadScore = new ArrayList<>();
 
     public JudgeService(Config config, RESTService restService, SolutionService solutionService, UserProfileRepository userProfileRepository, ProblemRepository problemRepository, ContestProblemRepository contestProblemRepository, ContestService contestService, UserProblemRepository userProblemRepository) {
         this.config = config;
@@ -39,7 +46,7 @@ public class JudgeService {
     }
 
     public String submitCode(Solution solution) throws Exception {
-        String host = config.getJudgerhost().get(solution.getId().intValue() % config.getJudgerhost().size());
+        String host = getNextJudger(solution);
         Config.LanguageConfig language;
         switch (solution.getLanguage()) {
             case "c":
@@ -83,6 +90,23 @@ public class JudgeService {
         log.info(language.toString());
         String jsonString = JSON.toJSONString(submitCode);
         return restService.postJson(jsonString, host);
+    }
+
+    @PostConstruct
+    public void initJudgerQueue() {
+        for (String host : config.getJudgerhost()) {
+            judgerLoadScore.add(new HostLoad(host));
+        }
+    }
+
+    public synchronized String getNextJudger(Solution solution) {
+        if (judgerLoadScore.size() == 1) {
+            return judgerLoadScore.get(0).getHost();
+        }
+        String host = judgerLoadScore.get(0).getHost();
+        judgerLoadScore.get(0).update(solution.getProblem());
+        judgerLoadScore.sort((o1, o2) -> (int) (Math.round(o1.getScore()) - Math.round(o2.getScore())));
+        return host;
     }
 
     @Transactional
@@ -165,5 +189,30 @@ public class JudgeService {
                     ", source='" + source + '\'' +
                     '}';
         }
+    }
+}
+
+@Data
+class HostLoad {
+    private String host;
+    private Double score;
+    private Instant last;
+    private int cpu=4;
+
+    HostLoad(String host) {
+        this.host = host;
+        this.score = 0.0;
+        this.last = Instant.now();
+    }
+
+    double update(Problem p) {
+        double dt = Duration.between(this.last, Instant.now()).toMillis();
+        if (dt > 60000) {
+            score = 0.0;
+        } else {
+            score = (score + p.getTimeLimit().doubleValue() / dt * p.getMemoryLimit().doubleValue()/1024/1024) / cpu;
+        }
+        last = Instant.now();
+        return score;
     }
 }
