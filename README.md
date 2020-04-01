@@ -76,5 +76,9 @@ Chrome ~~Firefox, Edge without Chromium, IE~~
 ### Forum
 （高于一定分数限制的）用户可发布文章
 
+## 注
+
+- 设置网站logo可将文件添加到 `/media/favicon.ico` 和 `/media/logo`
+
 ## 许可
 The [MIT](http://opensource.org/licenses/MIT) License
