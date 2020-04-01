@@ -18,8 +18,8 @@ public class IconInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         try {
-            mediaController.downloadImage("favicon.ico",response);
-            log.info("hit icon");
+            String filename = request.getRequestURI().substring(1);
+            mediaController.downloadImage(filename,response);
             return false;
         } catch (Exception e) {
             return true;
