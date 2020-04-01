@@ -43,8 +43,14 @@ public class MvcConfigurer implements WebMvcConfigurer {
         return new UnavailableInterceptor();
     }
 
+    @Bean
+    IconInterceptor getIconInterceptor() {
+        return new IconInterceptor();
+    }
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(getIconInterceptor()).addPathPatterns("/favicon.ico");
         registry.addInterceptor(getUnavailableInterceptor()).addPathPatterns("/**")
                 .excludePathPatterns("/judge/callback");
         String[] needLogin = {"/contest/**", "/team/**", "/problems/**", "/user/**", "/admin/**", "/status/**", "/forum/**"};

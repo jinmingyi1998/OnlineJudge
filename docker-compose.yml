@@ -2,7 +2,7 @@ version: "3"
 services:
   db:
     image: mysql:8.0.19
-    container_name: db
+    container_name: db1
     ports:
       - 13306:3306
     volumes:
@@ -56,7 +56,7 @@ services:
     ports:
       - 8080:8080
     volumes:
-      - e:\onlinejudge:/onlinejudge # on Windows
+      - e:\docker\onlinejudge:/onlinejudge # on Windows
 #      - /onlinejudge:/onlinejudge  # on Linux
     restart: always
     environment:
