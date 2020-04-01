@@ -1,4 +1,4 @@
-FROM openjdk:8-alpine
+FROM openjdk:8-jdk-alpine
 COPY .  /app
 WORKDIR /app
 RUN chmod 755 gradlew && ./gradlew --no-daemon bootJar \
