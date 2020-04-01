@@ -63,12 +63,11 @@ var prom = new Vue({
                 source: that.code,
                 share: that.share
             }).then(function (res) {
-                console.log(res.data)
                 if (res.data.code != 200) {
                     alert(res.data.message);
                     return;
                 } else {
-                    vue_history.get_data();
+                    that.get_history_data();
                     scrollTo(0, 0);//x,y
                 }
             });
@@ -80,7 +79,6 @@ var prom = new Vue({
             if (response.data.code != 200) {
                 return;
             }
-
             that.problem = response.data.data;
             that.tags = that.problem.tags;
             that.ready = true;
