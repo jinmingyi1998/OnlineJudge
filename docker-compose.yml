@@ -7,7 +7,7 @@ services:
       - 13306:3306
     volumes:
       - e:\docker\mysql:/var/lib/mysql  # data storage path # on Windows
-#      - /mysql:/var/lib/msyql          # on Linux
+#      - /mysql:/var/lib/mysql          # on Linux
     restart: always
     environment:
       - MYSQL_ROOT_PASSWORD=1234 # should change
