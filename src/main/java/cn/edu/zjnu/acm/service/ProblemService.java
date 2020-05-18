@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -35,6 +36,31 @@ public class ProblemService {
         this.userProblemRepository = userProblemRepository;
         this.analysisCommentRepository = analysisCommentRepository;
         this.analysisRepository = analysisRepository;
+    }
+
+    @PostConstruct
+    public void initializeTags() {
+        String[] names = {"初级",
+                "中级",
+                "高级",
+                "数据结构",
+                "动态规划",
+                "搜索",
+                "图论",
+                "概率论",
+                "数论",
+                "字符串",
+                "计算几何"
+        };
+        for (String s : names) {
+            Tag t = new Tag(s);
+            try {
+                tagRepository.save(t);
+            }
+            catch (Exception e){
+                ;
+            }
+        }
     }
 
     public Page<Problem> getAllActiveProblems(int page, int size) {
