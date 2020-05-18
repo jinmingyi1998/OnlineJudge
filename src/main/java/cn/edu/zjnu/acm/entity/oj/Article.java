@@ -25,7 +25,7 @@ public class Article {
     private String title;
     @Size(min = 15, max = 5000)
     @NotNull(message = "text cannot be null")
-    @Column(nullable = false, columnDefinition = "LONGTEXT DEFAULT ''")
+    @Column(nullable = false)
     private String text;
     @Column(nullable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
     private Instant postTime = Instant.now();

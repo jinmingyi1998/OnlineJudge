@@ -17,19 +17,19 @@ public class Problem implements Cloneable {
     private Long id;
     @Column(length = 50, unique = true, nullable = false)
     private String title = "";
-    @Column(nullable = false, columnDefinition = "LONGTEXT default ''")
+    @Column(nullable = false)
     private String description = "";
-    @Column(nullable = false, columnDefinition = "LONGTEXT default ''")
+    @Column(nullable = false)
     private String input = "";
-    @Column(nullable = false, columnDefinition = "LONGTEXT default ''")
+    @Column(nullable = false)
     private String output = "";
-    @Column(nullable = false, columnDefinition = "LONGTEXT default ''")
+    @Column(nullable = false)
     private String sampleInput = "";
-    @Column(nullable = false, columnDefinition = "LONGTEXT default ''")
+    @Column(nullable = false)
     private String sampleOutput = "";
-    @Column(nullable = false, columnDefinition = "LONGTEXT default ''")
+    @Column(nullable = false)
     private String hint = "";
-    @Column(nullable = false, columnDefinition = "LONGTEXT default ''")
+    @Column(nullable = false)
     private String source = "";
     @Column(nullable = false, columnDefinition = "int default 1000")
     private Integer timeLimit = 1;

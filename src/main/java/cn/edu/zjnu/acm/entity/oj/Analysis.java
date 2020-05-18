@@ -16,7 +16,7 @@ public class Analysis {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Size(min = 15, max = 5000)
-    @Column(nullable = false, columnDefinition = "LONGTEXT DEFAULT ''")
+    @Column(nullable = false)
     private String text;
     @ManyToOne(optional = false)
     private User user;

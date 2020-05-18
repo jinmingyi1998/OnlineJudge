@@ -25,7 +25,7 @@ public class Team {
     @Size(min = 1, max = 99)
     @Column(nullable = false, unique = true, columnDefinition = "varchar(100) default ''")
     private String name;
-    @Column(nullable = false, columnDefinition = "LONGTEXT default ''")
+    @Column(nullable = false)
     private String description;
     @OneToMany(mappedBy = "team", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Teammate> teammates;

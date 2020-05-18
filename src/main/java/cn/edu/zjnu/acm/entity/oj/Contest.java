@@ -30,7 +30,7 @@ public class Contest implements Cloneable {
     // TODO check contest title unique when creating
     @Column(nullable = false)
     private String title;
-    @Column(nullable = false, columnDefinition = "LONGTEXT default ''")
+    @Column(nullable = false)
     private String description;
     @Column(nullable = false, columnDefinition = "varchar(20) default 'public'")
     private String privilege = PUBLIC;

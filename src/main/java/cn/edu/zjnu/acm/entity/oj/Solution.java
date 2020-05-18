@@ -68,7 +68,7 @@ public class Solution implements Cloneable {
     private String result = WA;
     @Column(nullable = false, columnDefinition = "bit(1) default 0")
     private Boolean share = Boolean.FALSE;
-    @Column(nullable = false, columnDefinition = "LONGTEXT default ''")
+    @Column(nullable = false)
     private String info;
     @Column(nullable = false, columnDefinition = "int default 0")
     private Integer caseNumber = 0;
