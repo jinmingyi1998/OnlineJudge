@@ -1,6 +1,10 @@
 # 在线评测系统
 作者 ZJNU **金明熠**
 
+----
+*** 作者最近很少登录gitee 有问题请->https://github.com/jinmingyi1998/OnlineJudge***
+
+----
 - 基于Springboot开发，前端jQuery、Vuejs
 - [判题服务](https://github.com/jinmingyi1998/JudgerServer)基于青岛大学OJ的[Judger](https://github.com/QingdaoU/Judger "Judger")
 - 多语言支持: `C`, `C++`, `Java`, `Python2`, `Python3`，etc..
