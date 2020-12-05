@@ -84,6 +84,6 @@ Chrome ~~Firefox, Edge without Chromium, IE~~
 The [MIT](http://opensource.org/licenses/MIT) License
 
 ## Quick start
-登录管理员账号 administrator / 123456
-进入管理员界面 /admin
-enjoy it!
+- 登录管理员账号 administrator / 123456
+- 进入管理员界面 /admin
+- enjoy it!
