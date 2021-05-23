@@ -17,18 +17,25 @@ public class Problem implements Cloneable {
     private Long id;
     @Column(length = 50, unique = true, nullable = false)
     private String title = "";
+    @Lob
     @Column(nullable = false)
     private String description = "";
+    @Lob
     @Column(nullable = false)
     private String input = "";
+    @Lob
     @Column(nullable = false)
     private String output = "";
     @Column(nullable = false)
+    @Lob
     private String sampleInput = "";
     @Column(nullable = false)
+    @Lob
     private String sampleOutput = "";
     @Column(nullable = false)
+    @Lob
     private String hint = "";
+    @Lob
     @Column(nullable = false)
     private String source = "";
     @Column(nullable = false, columnDefinition = "int default 1000")
